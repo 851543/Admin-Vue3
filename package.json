@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "@types/js-cookie": "^3.0.6",
     "@vue/reactivity": "^3.4.35",
     "@vueuse/core": "^11.0.0",
     "@wangeditor/editor": "^5.1.23",
@@ -53,6 +54,7 @@
     "element-plus": "^2.8.0",
     "file-saver": "^2.0.5",
     "highlight.js": "^11.10.0",
+    "js-cookie": "^3.0.5",
     "md-editor-v3": "^4.17.0",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",

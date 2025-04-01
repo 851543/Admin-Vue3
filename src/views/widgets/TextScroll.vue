@@ -2,7 +2,7 @@
   <div class="page-content">
     <!-- 基础用法 -->
     <TextScroll
-      text="Art Design Pro 是一款专注于用户体验和视觉设计的后台管理系统模版 <a target='_blank' href='https://www.lingchen.kim/art-design-pro/docs/'>点击我 </a>访问官方文档"
+      text="Admin-Vue3 是一款专注于用户体验和视觉设计的后台管理系统模版 <a target='_blank' href='https://www.lingchen.kim/art-design-pro/docs/'>点击我 </a>访问官方文档"
     />
 
     <!-- 使用不同的类型 -->

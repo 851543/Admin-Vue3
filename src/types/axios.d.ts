@@ -29,3 +29,10 @@ export interface PaginationResult<T> extends BaseResult {
   total: number // 总条数
   data: T
 }
+
+// 验证码返回数据结构
+export interface CaptchaResult {
+  captchaEnabled: boolean
+  uuid: string
+  img: string
+}

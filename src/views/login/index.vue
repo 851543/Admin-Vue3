@@ -63,7 +63,37 @@
                 autocomplete="off"
               />
             </el-form-item>
-            <div class="drag-verify">
+            <el-form-item prop="code" v-if="captchaEnabled">
+              <el-input
+                v-model="formData.code"
+                size="large"
+                auto-complete="off"
+                placeholder="验证码"
+                style="width: 63%"
+                @keyup.enter="null"
+              >
+                <template #prefix
+                  ><svg-icon icon-class="validCode" class="el-input__icon input-icon"
+                /></template>
+              </el-input>
+              <div
+                class="login-code"
+                style="
+                  display: inline-block;
+                  height: 46px;
+                  vertical-align: bottom;
+                  margin-left: 8px;
+                "
+              >
+                <img
+                  :src="codeUrl"
+                  @click="getCode"
+                  class="login-code-img"
+                  style="height: 46px; width: 150px; cursor: pointer; border-radius: 8px"
+                />
+              </div>
+            </el-form-item>
+            <div class="drag-verify" v-if="sliderEnabled">
               <div class="drag-verify-content" :class="{ error: !isPassing && isClickPass }">
                 <!-- :background="isDark ? '#181818' : '#eee'" -->
                 <DragVerify
@@ -85,10 +115,12 @@
             </div>
 
             <div class="forget-password">
-              <el-checkbox v-model="formData.rememberPassword">{{
+              <el-checkbox v-model="formData.rememberPwd">{{
                 $t('login.rememberPwd')
               }}</el-checkbox>
-              <router-link to="/forget-password">{{ $t('login.forgetPwd') }}</router-link>
+              <router-link to="/forget-password" v-if="forgetPwdEnabled">{{
+                $t('login.forgetPwd')
+              }}</router-link>
             </div>
 
             <div style="margin-top: 30px">
@@ -104,7 +136,7 @@
               </el-button>
             </div>
 
-            <div class="footer">
+            <div class="footer" v-if="registerEnabled">
               <p>
                 {{ $t('login.noAccount') }}
                 <router-link to="/register">{{ $t('login.register') }}</router-link>
@@ -119,7 +151,6 @@
 
 <script setup lang="ts">
   import LeftView from '@/components/Pages/Login/LeftView.vue'
-  import AppConfig from '@/config'
   import { ElMessage, ElNotification } from 'element-plus'
   import { useUserStore } from '@/store/modules/user'
   import { HOME_PAGE } from '@/router'
@@ -128,6 +159,7 @@
   import { languageOptions } from '@/language'
   import { LanguageEnum, SystemThemeEnum } from '@/enums/appEnum'
   import { useI18n } from 'vue-i18n'
+  import Cookies from 'js-cookie'
 
   const { t } = useI18n()
   import { useSettingStore } from '@/store/modules/setting'
@@ -138,12 +170,13 @@
   const isPassing = ref(false)
   const isClickPass = ref(false)
 
-  const systemName = AppConfig.systemInfo.name
   const formRef = ref<FormInstance>()
   const formData = reactive({
-    username: AppConfig.systemInfo.login.username,
-    password: AppConfig.systemInfo.login.password,
-    rememberPassword: true
+    username: '',
+    password: '',
+    rememberPwd: false,
+    code: '',
+    uuid: ''
   })
 
   const rules = computed<FormRules>(() => ({
@@ -159,6 +192,8 @@
 
   const onPass = () => {}
 
+  import CryptoJS from 'crypto-js'
+
   const handleSubmit = async () => {
     if (!formRef.value) return
 
@@ -171,23 +206,39 @@
 
         loading.value = true
 
+        if (formData.rememberPwd) {
+          Cookies.set('username', formData.username, { expires: 30 })
+          Cookies.set(
+            'password',
+            CryptoJS.AES.encrypt(
+              formData.password,
+              import.meta.env.VITE_PASSWORD_ENCRYPT_KEY
+            ).toString(),
+            { expires: 30 }
+          )
+          Cookies.set('rememberPwd', formData.rememberPwd.toString(), { expires: 30 })
+        } else {
+          Cookies.remove('username')
+          Cookies.remove('password')
+          Cookies.remove('rememberPwd')
+        }
+
         // 延时辅助函数
         const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
         try {
-          const res = await UserService.login({
-            body: JSON.stringify({
-              username: formData.username,
-              password: formData.password
-            })
+          const res = await LoginService.login({
+            username: formData.username,
+            password: formData.password,
+            code: formData.code,
+            uuid: formData.uuid
           })
-
-          if (res.code === ApiStatus.success && res.data) {
+          if (res.code === ApiStatus.success) {
             // 设置 token
-            userStore.setToken(res.data.accessToken)
+            userStore.setToken(res.token || '')
 
             // 获取用户信息
-            const userRes = await UserService.getUserInfo()
+            const userRes = await LoginService.getInfo()
             if (userRes.code === ApiStatus.success) {
               userStore.setUserInfo(userRes.data)
             }
@@ -220,7 +271,7 @@
         showClose: false,
         duration: 2500,
         zIndex: 10000,
-        message: `${t('login.success.message')}, ${systemName}!`
+        message: `${t('login.success.message')}, ${null}!`
       })
     }, 300)
   }
@@ -236,12 +287,88 @@
 
   // 切换主题
   import { useTheme } from '@/composables/useTheme'
-  import { UserService } from '@/api/usersApi'
+  import { LoginService } from '@/api/loginApi'
 
   const toggleTheme = () => {
     let { LIGHT, DARK } = SystemThemeEnum
     useTheme().switchThemeStyles(useSettingStore().systemThemeType === LIGHT ? DARK : LIGHT)
   }
+
+  // 获取验证码
+  const codeUrl = ref('')
+  // 是否开启验证码
+  const captchaEnabled = ref(true)
+  const getCode = async () => {
+    const res = await LoginService.getCodeImg()
+    captchaEnabled.value = res.captchaEnabled === undefined ? true : res.captchaEnabled
+    if (captchaEnabled.value) {
+      codeUrl.value = 'data:image/gif;base64,' + res.img
+      formData.uuid = res.uuid
+    }
+  }
+
+  //注册用户开关
+  const registerEnabled = ref(true)
+  const getRegisterEnabled = async () => {
+    const res = await LoginService.getRegisterEnabled()
+    if (res.data) {
+      registerEnabled.value = true
+      return
+    }
+    registerEnabled.value = false
+  }
+
+  // 获取滑块开关
+  const sliderEnabled = ref(true)
+  const getSliderEnabled = async () => {
+    const res = await LoginService.getSliderEnabled()
+    if (res.data) {
+      sliderEnabled.value = true
+      return
+    }
+    sliderEnabled.value = false
+  }
+
+  // 获取忘记密码开关
+  const forgetPwdEnabled = ref(true)
+  const getForgetPwdEnabled = async () => {
+    const res = await LoginService.getForgetPasswordEnabled()
+    if (res.data) {
+      forgetPwdEnabled.value = true
+      return
+    }
+    forgetPwdEnabled.value = false
+  }
+
+  // 获取Cookie
+  const getCookie = () => {
+    formData.username = Cookies.get('username') || ''
+    const encryptedPassword = Cookies.get('password')
+    if (encryptedPassword) {
+      try {
+        formData.password = CryptoJS.AES.decrypt(
+          encryptedPassword,
+          import.meta.env.VITE_PASSWORD_ENCRYPT_KEY
+        ).toString(CryptoJS.enc.Utf8)
+      } catch (error) {
+        console.error('密码解密失败:', error)
+        formData.password = ''
+        Cookies.remove('password')
+      }
+    }
+    formData.rememberPwd = Boolean(Cookies.get('rememberPwd'))
+  }
+
+  onMounted(() => {
+    getCode()
+    getRegisterEnabled()
+    getSliderEnabled()
+    getForgetPwdEnabled()
+    getCookie()
+  })
+
+  import AppConfig from '@/config'
+  const systemName = AppConfig.systemInfo.name
 </script>
 
 <style lang="scss" scoped>

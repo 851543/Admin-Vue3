@@ -3,7 +3,7 @@
     <!-- 基础文字水印 -->
     <el-card class="card" shadow="never">
       <template #header>基础文字水印</template>
-      <el-watermark content="Art Design Pro" :font="{ color: 'rgba(128, 128, 128, 0.2)' }">
+      <el-watermark content="Admin-Vue3" :font="{ color: 'rgba(128, 128, 128, 0.2)' }">
         <div style="height: 200px"></div>
       </el-watermark>
     </el-card>
@@ -12,7 +12,7 @@
     <el-card class="card" shadow="never">
       <template #header>多行文字水印</template>
       <el-watermark
-        :content="['Art Design Pro', '专注用户体验，视觉设计']"
+        :content="['Admin-Vue3', '专注用户体验，视觉设计']"
         :font="{ fontSize: 16, color: 'rgba(128, 128, 128, 0.2)' }"
       >
         <div style="height: 200px"></div>
@@ -31,7 +31,7 @@
     <el-card class="card" shadow="never">
       <template #header>自定义样式水印</template>
       <el-watermark
-        content="Art Design Pro"
+        content="Admin-Vue3"
         :font="{
           fontSize: 20,
           fontFamily: 'Arial',

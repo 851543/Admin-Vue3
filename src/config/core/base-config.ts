@@ -6,10 +6,12 @@ import { SystemConfig } from '../types'
 export const createBaseConfig = (): SystemConfig => ({
   // 系统信息
   systemInfo: {
-    name: 'Art Design Pro',
+    name: 'Admin-Vue3',
     login: {
-      username: 'admin',
-      password: '123456'
+      username: '',
+      password: '',
+      code: '',
+      uuid: ''
     }
   },
   // Element Plus 主题
