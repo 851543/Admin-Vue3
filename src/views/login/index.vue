@@ -68,7 +68,7 @@
                 v-model="formData.code"
                 size="large"
                 auto-complete="off"
-                placeholder="验证码"
+                :placeholder="$t('login.placeholder[3]')"
                 style="width: 63%"
                 @keyup.enter="null"
               >
@@ -136,7 +136,7 @@
               </el-button>
             </div>
 
-            <div class="footer" v-if="registerEnabled">
+            <div class="footer" v-if="registerUserEnabled">
               <p>
                 {{ $t('login.noAccount') }}
                 <router-link to="/register">{{ $t('login.register') }}</router-link>
@@ -181,7 +181,8 @@
 
   const rules = computed<FormRules>(() => ({
     username: [{ required: true, message: t('login.placeholder[0]'), trigger: 'blur' }],
-    password: [{ required: true, message: t('login.placeholder[1]'), trigger: 'blur' }]
+    password: [{ required: true, message: t('login.placeholder[1]'), trigger: 'blur' }],
+    code: [{ required: true, message: t('login.placeholder[3]'), trigger: 'blur' }]
   }))
 
   const loading = ref(false)
@@ -199,7 +200,7 @@
 
     await formRef.value.validate(async (valid) => {
       if (valid) {
-        if (!isPassing.value) {
+        if (sliderEnabled.value && !isPassing.value) {
           isClickPass.value = true
           return
         }
@@ -307,37 +308,21 @@
     }
   }
 
-  //注册用户开关
-  const registerEnabled = ref(true)
-  const getRegisterEnabled = async () => {
-    const res = await LoginService.getRegisterEnabled()
-    if (res.data) {
-      registerEnabled.value = true
-      return
-    }
-    registerEnabled.value = false
-  }
-
   // 获取滑块开关
   const sliderEnabled = ref(true)
-  const getSliderEnabled = async () => {
-    const res = await LoginService.getSliderEnabled()
-    if (res.data) {
-      sliderEnabled.value = true
-      return
-    }
-    sliderEnabled.value = false
-  }
-
   // 获取忘记密码开关
   const forgetPwdEnabled = ref(true)
-  const getForgetPwdEnabled = async () => {
-    const res = await LoginService.getForgetPasswordEnabled()
-    if (res.data) {
-      forgetPwdEnabled.value = true
-      return
-    }
-    forgetPwdEnabled.value = false
+  //注册用户开关
+  const registerUserEnabled = ref(true)
+  // 获取登录功能开关
+  const getLoginFunctionEnabled = async () => {
+    const res = await LoginService.getLoginFunctionEnabled()
+    getCode()
+    sliderEnabled.value = res.sliderEnabled === undefined ? true : res.sliderEnabled
+    forgetPwdEnabled.value =
+      res.forgetPasswordEnabled === undefined ? true : res.forgetPasswordEnabled
+    registerUserEnabled.value =
+      res.registerUserEnabled === undefined ? true : res.registerUserEnabled
   }
 
   // 获取Cookie
@@ -360,10 +345,7 @@
   }
 
   onMounted(() => {
-    getCode()
-    getRegisterEnabled()
-    getSliderEnabled()
-    getForgetPwdEnabled()
+    getLoginFunctionEnabled()
     getCookie()
   })
 

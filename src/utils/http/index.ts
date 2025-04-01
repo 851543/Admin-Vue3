@@ -65,15 +65,7 @@ axiosInstance.interceptors.response.use(
     ) {
       return response
     }
-    if (code === ApiStatus.unauthorized) {
-      ElMessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
-        confirmButtonText: '重新登录',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-
-      return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
-    } else if (code === ApiStatus.error) {
+    if (code === ApiStatus.error) {
       ElMessage({ message: msg, type: 'error' })
       return Promise.reject(new Error(msg))
     } else if (code === ApiStatus.forbidden) {

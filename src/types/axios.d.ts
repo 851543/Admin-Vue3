@@ -36,3 +36,10 @@ export interface CaptchaResult {
   uuid: string
   img: string
 }
+
+// 登录功能开关返回数据结构
+export interface loginFunctionEnabledResult {
+  sliderEnabled: boolean
+  forgetPasswordEnabled: boolean
+  registerUserEnabled: boolean
+}

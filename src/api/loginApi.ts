@@ -1,6 +1,6 @@
 import request from '@/utils/http'
 import { LoginModel } from './model/loginModel'
-import { BaseResult, CaptchaResult } from '@/types/axios'
+import { BaseResult, CaptchaResult, loginFunctionEnabledResult } from '@/types/axios'
 
 // 登陆
 export class LoginService {
@@ -11,16 +11,10 @@ export class LoginService {
       data
     })
   }
-  // 获取滑块开关
-  static getSliderEnabled() {
-    return request.get<BaseResult>({
-      url: '/sliderEnabled'
-    })
-  }
-  // 获取忘记密码开关
-  static getForgetPasswordEnabled() {
-    return request.get<BaseResult>({
-      url: '/forgetPasswordEnabled'
+  // 获取登录功能开关
+  static getLoginFunctionEnabled() {
+    return request.get<loginFunctionEnabledResult>({
+      url: '/loginFunctionEnabled'
     })
   }
   // 注册方法
@@ -28,12 +22,6 @@ export class LoginService {
     return request.post<BaseResult>({
       url: '/register',
       data
-    })
-  }
-  // 获取注册用户开关
-  static getRegisterEnabled() {
-    return request.get<BaseResult>({
-      url: '/registerEnabled'
     })
   }
   // 获取用户信息
