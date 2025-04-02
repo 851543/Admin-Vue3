@@ -108,23 +108,18 @@
   },
   "login": {
     "leftView": {
-      "title": "Management system",
-      "subTitle": "A sleek and practical interface for a great user experience"
+      "title": "Admin System",
+      "subTitle": "Beautiful and practical interface, visually optimized for excellent user experience"
     },
-    "title": "Welcome back",
-    "subTitle": "Please enter your account and password to login",
-    "placeholder": [
-      "Please enter your account",
-      "Please enter your password",
-      "Please slide to verify",
-      "Please enter verification code"
-    ],
-    "sliderText": "Please slide to verify",
+    "title": "Login",
+    "subTitle": "Welcome back, please enter your account information",
+    "placeholder": ["Enter account/email", "Enter password", "Complete verification", "Enter verification code"],
+    "sliderText": "Hold and drag",
     "sliderSuccessText": "Verification successful",
     "rememberPwd": "Remember password",
     "forgetPwd": "Forgot password",
     "btnText": "Login",
-    "noAccount": "No account yet?",
+    "noAccount": "Don't have an account?",
     "register": "Register",
     "success": {
       "title": "Login successful",
@@ -133,7 +128,7 @@
   },
   "forgetPassword": {
     "title": "Forgot Password?",
-    "subTitle": "Enter your account and email to reset your password",
+    "subTitle": "Enter your email to reset your password",
     "usernameF": "Please enter your account",
     "email": "Please enter your email",
     "verifyCode": "Please enter verification code",

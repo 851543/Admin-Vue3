@@ -107,7 +107,8 @@
   const form = reactive({
     email: '',
     verifyCode: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   })
 
   const rules: FormRules = {

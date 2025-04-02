@@ -180,7 +180,24 @@
   })
 
   const rules = computed<FormRules>(() => ({
-    username: [{ required: true, message: t('login.placeholder[0]'), trigger: 'blur' }],
+    username: [
+      { required: true, message: t('login.placeholder[0]'), trigger: 'blur' },
+      {
+        validator: (rule: any, value: string, callback: any) => {
+          // 验证是否为邮箱格式
+          const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+          // 验证是否为账号格式（字母开头，允许3-12字节，允许字母数字下划线）
+          const accountRegex = /^[a-zA-Z][a-zA-Z0-9_]{2,11}$/
+
+          if (emailRegex.test(value) || accountRegex.test(value)) {
+            callback()
+          } else {
+            callback(new Error('请输入正确的账号或邮箱格式'))
+          }
+        },
+        trigger: ['blur', 'change']
+      }
+    ],
     password: [{ required: true, message: t('login.placeholder[1]'), trigger: 'blur' }],
     code: [{ required: true, message: t('login.placeholder[3]'), trigger: 'blur' }]
   }))
