@@ -1,11 +1,11 @@
 import request from '@/utils/http'
-import { LoginModel } from './model/loginModel'
+import { LoginType, RegisterType } from './model/loginModel'
 import { BaseResult, CaptchaResult, loginFunctionEnabledResult } from '@/types/axios'
 
 // 登陆
 export class LoginService {
   // 登录方法
-  static login(data: LoginModel) {
+  static login(data: LoginType) {
     return request.post<BaseResult>({
       url: '/login',
       data
@@ -18,7 +18,7 @@ export class LoginService {
     })
   }
   // 注册方法
-  static register(data: LoginModel) {
+  static register(data: RegisterType) {
     return request.post<BaseResult>({
       url: '/register',
       data
@@ -44,6 +44,13 @@ export class LoginService {
         isToken: false
       },
       timeout: 20000
+    })
+  }
+  // 发送邮箱验证码
+  static sendEmailCode(data: { mailAddress: string }) {
+    return request.get<BaseResult>({
+      url: '/mailCode',
+      params: data
     })
   }
 }

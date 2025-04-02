@@ -23,6 +23,34 @@
               />
             </el-form-item>
 
+            <el-form-item prop="email">
+              <el-input
+                v-model.trim="formData.email"
+                :placeholder="$t('forgetPassword.email')"
+                size="large"
+              />
+            </el-form-item>
+
+            <el-form-item prop="verifyCode">
+              <div style="display: flex; width: 100%">
+                <el-input
+                  v-model.trim="formData.verifyCode"
+                  :placeholder="$t('forgetPassword.verifyCode')"
+                  size="large"
+                  style="width: 65%"
+                />
+                <el-button
+                  type="primary"
+                  size="large"
+                  style="width: 33%; margin-left: 2%; height: 44px"
+                  @click="getVerifyCode"
+                  :disabled="!formData.email || cooldown > 0"
+                >
+                  {{ cooldown > 0 ? `${cooldown}s` : $t('forgetPassword.getVerifyCode') }}
+                </el-button>
+              </div>
+            </el-form-item>
+
             <el-form-item prop="password">
               <el-input
                 v-model.trim="formData.password"
@@ -87,6 +115,7 @@
   import { ElMessage } from 'element-plus'
   import type { FormInstance, FormRules } from 'element-plus'
   import { useI18n } from 'vue-i18n'
+  import { LoginService } from '@/api/loginApi'
 
   const { t } = useI18n()
 
@@ -98,10 +127,36 @@
 
   const formData = reactive({
     username: '',
+    email: '',
+    verifyCode: '',
     password: '',
     confirmPassword: '',
     agreement: false
   })
+
+  const cooldown = ref(0)
+
+  const startCooldown = () => {
+    cooldown.value = 60
+    const timer = setInterval(() => {
+      cooldown.value--
+      if (cooldown.value <= 0) {
+        clearInterval(timer)
+      }
+    }, 1000)
+  }
+
+  const getVerifyCode = async () => {
+    try {
+      const res = await LoginService.sendEmailCode({ mailAddress: formData.email })
+      if (res.code === 200) {
+        ElMessage.success('验证码已发送')
+        startCooldown()
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const validatePass = (rule: any, value: string, callback: any) => {
     if (value === '') {
@@ -129,6 +184,11 @@
       { required: true, message: t('register.placeholder[0]'), trigger: 'blur' },
       { min: 3, max: 20, message: t('register.rule[2]'), trigger: 'blur' }
     ],
+    email: [
+      { required: true, message: t('forgetPassword.email'), trigger: 'blur' },
+      { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+    ],
+    verifyCode: [{ required: true, message: t('forgetPassword.verifyCode'), trigger: 'blur' }],
     password: [
       { required: true, validator: validatePass, trigger: 'blur' },
       { min: 6, message: t('register.rule[3]'), trigger: 'blur' }
@@ -154,14 +214,19 @@
     try {
       await formRef.value.validate()
       loading.value = true
-
-      // 模拟注册请求
-      setTimeout(() => {
-        loading.value = false
+      const res = await LoginService.register({
+        username: formData.username,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        email: formData.email,
+        verifyCode: formData.verifyCode
+      })
+      if (res.code === 200) {
         ElMessage.success('注册成功')
         toLogin()
-      }, 1000)
+      }
     } catch (error) {
+      loading.value = false
       console.log('验证失败', error)
     }
   }
@@ -176,4 +241,19 @@
 <style lang="scss" scoped>
   @use '../login/index' as login;
   @use './index' as register;
+  .login {
+    .right-wrap {
+      .login-wrap {
+        position: absolute;
+        inset: 0;
+        width: 440px;
+        height: 650px;
+        padding: 0 5px;
+        margin: auto;
+        overflow: hidden;
+        background-size: cover;
+        border-radius: 5px;
+      }
+    }
+  }
 </style>

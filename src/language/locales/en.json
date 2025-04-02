@@ -132,11 +132,16 @@
     }
   },
   "forgetPassword": {
-    "title": "Forgot password?",
-    "subTitle": "Enter your email to reset your password",
-    "placeholder": "Please enter your email",
+    "title": "Forgot Password?",
+    "subTitle": "Enter your account and email to reset your password",
+    "usernameF": "Please enter your account",
+    "email": "Please enter your email",
+    "verifyCode": "Please enter verification code",
+    "passwordP": "Please enter new password",
+    "confirmPas": "Please confirm new password",
     "submitBtnText": "Submit",
-    "backBtnText": "Back"
+    "backBtnText": "Back to Login",
+    "getVerifyCode": "Get Code"
   },
   "register": {
     "title": "Create account",

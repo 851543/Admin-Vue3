@@ -121,10 +121,15 @@
   },
   "forgetPassword": {
     "title": "忘记密码？",
-    "subTitle": "输入您的电子邮件来重置您的密码",
-    "placeholder": "请输入您的电子邮件",
+    "subTitle": "输入您的账号和邮箱来重置密码",
+    "usernameF": "请输入账号",
+    "email": "请输入邮箱地址",
+    "verifyCode": "请输入验证码",
+    "passwordP": "请输入新密码",
+    "confirmPas": "请确认新密码",
     "submitBtnText": "提交",
-    "backBtnText": "返回"
+    "backBtnText": "返回登录",
+    "getVerifyCode": "获取验证码"
   },
   "register": {
     "title": "创建账号",

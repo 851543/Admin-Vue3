@@ -14,33 +14,80 @@
         <div class="form">
           <h3 class="title">{{ $t('forgetPassword.title') }}</h3>
           <p class="sub-title">{{ $t('forgetPassword.subTitle') }}</p>
-          <div class="input-wrap">
-            <span class="input-label" v-if="showInputLabel">账号</span>
-            <el-input
-              :placeholder="$t('forgetPassword.placeholder')"
-              size="large"
-              v-model.trim="username"
-            />
-          </div>
+          <el-form
+            ref="formRef"
+            :model="form"
+            :rules="rules"
+            label-position="top"
+            style="margin-top: 25px"
+          >
+            <el-form-item prop="email">
+              <el-input
+                :placeholder="$t('forgetPassword.email')"
+                size="large"
+                v-model.trim="form.email"
+              />
+            </el-form-item>
 
-          <div style="margin-top: 15px">
-            <el-button
-              class="login-btn"
-              size="large"
-              type="primary"
-              @click="register"
-              :loading="loading"
-              v-ripple
-            >
-              {{ $t('forgetPassword.submitBtnText') }}
-            </el-button>
-          </div>
+            <el-form-item prop="verifyCode">
+              <div style="display: flex; width: 100%">
+                <el-input
+                  :placeholder="$t('forgetPassword.verifyCode')"
+                  size="large"
+                  v-model.trim="form.verifyCode"
+                  style="width: 65%"
+                />
+                <el-button
+                  type="primary"
+                  size="large"
+                  style="width: 33%; margin-left: 2%; height: 44px"
+                  @click="getVerifyCode"
+                  :disabled="!form.email || cooldown > 0"
+                >
+                  {{ cooldown > 0 ? `${cooldown}s` : $t('forgetPassword.getVerifyCode') }}
+                </el-button>
+              </div>
+            </el-form-item>
 
-          <div style="margin-top: 15px">
-            <el-button style="width: 100%; height: 46px" size="large" plain @click="toLogin">
-              {{ $t('forgetPassword.backBtnText') }}
-            </el-button>
-          </div>
+            <el-form-item prop="password">
+              <el-input
+                :placeholder="$t('forgetPassword.passwordP')"
+                size="large"
+                type="password"
+                show-password
+                v-model.trim="form.password"
+              />
+            </el-form-item>
+
+            <el-form-item prop="confirmPassword">
+              <el-input
+                :placeholder="$t('forgetPassword.confirmPas')"
+                size="large"
+                type="password"
+                show-password
+                v-model.trim="form.confirmPassword"
+              />
+            </el-form-item>
+
+            <el-form-item>
+              <el-button
+                class="login-btn"
+                size="large"
+                type="primary"
+                @click="submitForm"
+                :loading="loading"
+                v-ripple
+              >
+                {{ $t('forgetPassword.submitBtnText') }}
+              </el-button>
+            </el-form-item>
+
+            <el-form-item>
+              <el-button style="width: 100%; height: 46px" size="large" plain @click="toLogin">
+                {{ $t('forgetPassword.backBtnText') }}
+              </el-button>
+            </el-form-item>
+          </el-form>
         </div>
       </div>
     </div>
@@ -50,14 +97,97 @@
 <script setup lang="ts">
   import AppConfig from '@/config'
   import LeftView from '@/components/Pages/Login/LeftView.vue'
+  import { ElMessage } from 'element-plus'
+  import type { FormInstance, FormRules } from 'element-plus'
   const router = useRouter()
-  const showInputLabel = ref(false)
+  const formRef = ref<FormInstance>()
 
   const systemName = AppConfig.systemInfo.name
-  const username = ref('')
-  const loading = ref(false)
+  const form = ref({
+    email: '',
+    verifyCode: '',
+    password: '',
+    confirmPassword: ''
+  })
 
-  const register = async () => {}
+  const rules: FormRules = {
+    email: [
+      { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+      { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+    ],
+    verifyCode: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+    password: [
+      { required: true, message: '请输入新密码', trigger: 'blur' },
+      { min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+    ],
+    confirmPassword: [
+      { required: true, message: '请输入确认密码', trigger: 'blur' },
+      {
+        validator: (rule: any, value: string, callback: (error?: Error) => void) => {
+          if (value !== form.value.password) {
+            callback(new Error('两次输入的密码不一致'))
+          } else {
+            callback()
+          }
+        },
+        trigger: 'blur'
+      }
+    ]
+  }
+
+  const loading = ref(false)
+  const cooldown = ref(0)
+
+  const startCooldown = () => {
+    cooldown.value = 60
+    const timer = setInterval(() => {
+      cooldown.value--
+      if (cooldown.value <= 0) {
+        clearInterval(timer)
+      }
+    }, 1000)
+  }
+
+  const getVerifyCode = async () => {
+    if (!form.value.email) {
+      ElMessage.warning('请输入邮箱地址')
+      return
+    }
+    try {
+      // TODO: 调用获取验证码接口
+      // await api.getVerifyCode({
+      //   email: form.value.email
+      // })
+      ElMessage.success('验证码已发送')
+      startCooldown()
+    } catch (error) {
+      console.error(error)
+      ElMessage.error('获取验证码失败')
+    }
+  }
+
+  const submitForm = async () => {
+    if (!formRef.value) return
+
+    try {
+      await formRef.value.validate()
+      loading.value = true
+
+      // TODO: 调用重置密码接口
+      // await api.resetPassword({
+      //   email: form.value.email,
+      //   verifyCode: form.value.verifyCode,
+      //   password: form.value.password
+      // })
+      ElMessage.success('密码重置成功')
+      router.push('/login')
+    } catch (error) {
+      console.error(error)
+      ElMessage.error('密码重置失败')
+    } finally {
+      loading.value = false
+    }
+  }
 
   const toLogin = () => {
     router.push('/login')
