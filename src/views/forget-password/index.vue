@@ -99,15 +99,15 @@
   import LeftView from '@/components/Pages/Login/LeftView.vue'
   import { ElMessage } from 'element-plus'
   import type { FormInstance, FormRules } from 'element-plus'
+  import { LoginService } from '@/api/loginApi'
   const router = useRouter()
   const formRef = ref<FormInstance>()
 
   const systemName = AppConfig.systemInfo.name
-  const form = ref({
+  const form = reactive({
     email: '',
     verifyCode: '',
-    password: '',
-    confirmPassword: ''
+    password: ''
   })
 
   const rules: FormRules = {
@@ -124,7 +124,7 @@
       { required: true, message: '请输入确认密码', trigger: 'blur' },
       {
         validator: (rule: any, value: string, callback: (error?: Error) => void) => {
-          if (value !== form.value.password) {
+          if (value !== form.password) {
             callback(new Error('两次输入的密码不一致'))
           } else {
             callback()
@@ -149,20 +149,14 @@
   }
 
   const getVerifyCode = async () => {
-    if (!form.value.email) {
-      ElMessage.warning('请输入邮箱地址')
-      return
-    }
     try {
-      // TODO: 调用获取验证码接口
-      // await api.getVerifyCode({
-      //   email: form.value.email
-      // })
-      ElMessage.success('验证码已发送')
-      startCooldown()
+      const res = await LoginService.sendEmailCode({ mailAddress: form.email })
+      if (res.code === 200) {
+        ElMessage.success('验证码已发送')
+        startCooldown()
+      }
     } catch (error) {
       console.error(error)
-      ElMessage.error('获取验证码失败')
     }
   }
 
@@ -172,18 +166,17 @@
     try {
       await formRef.value.validate()
       loading.value = true
-
-      // TODO: 调用重置密码接口
-      // await api.resetPassword({
-      //   email: form.value.email,
-      //   verifyCode: form.value.verifyCode,
-      //   password: form.value.password
-      // })
-      ElMessage.success('密码重置成功')
-      router.push('/login')
+      const res = await LoginService.forgetPwd({
+        email: form.email,
+        verifyCode: form.verifyCode,
+        password: form.password
+      })
+      if (res.code === 200) {
+        ElMessage.success('密码重置成功')
+        router.push('/login')
+      }
     } catch (error) {
       console.error(error)
-      ElMessage.error('密码重置失败')
     } finally {
       loading.value = false
     }

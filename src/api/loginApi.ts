@@ -53,4 +53,11 @@ export class LoginService {
       params: data
     })
   }
+  // 重置密码
+  static forgetPwd(data: { email: string; verifyCode: string; password: string }) {
+    return request.post<BaseResult>({
+      url: '/forgetPwd',
+      data
+    })
+  }
 }
