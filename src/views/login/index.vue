@@ -258,7 +258,7 @@
             // 获取用户信息
             const userRes = await LoginService.getInfo()
             if (userRes.code === ApiStatus.success) {
-              userStore.setUserInfo(userRes.data)
+              userStore.setUserInfo(userRes.user)
             }
 
             // 设置登录状态
@@ -270,7 +270,7 @@
             // 跳转首页
             router.push(HOME_PAGE)
           } else {
-            ElMessage.error(res.message)
+            ElMessage.error(res.msg)
           }
         } finally {
           await delay(1000)

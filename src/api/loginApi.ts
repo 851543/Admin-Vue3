@@ -1,6 +1,12 @@
 import request from '@/utils/http'
 import { LoginType, RegisterType } from './model/loginModel'
-import { BaseResult, CaptchaResult, loginFunctionEnabledResult } from '@/types/axios'
+import {
+  BaseResult,
+  CaptchaResult,
+  loginFunctionEnabledResult,
+  LoginResult,
+  UserInfoResult
+} from '@/types/axios'
 
 // 登陆
 export class LoginService {
@@ -26,7 +32,7 @@ export class LoginService {
   }
   // 获取用户信息
   static getInfo() {
-    return request.get<BaseResult>({
+    return request.get<LoginResult<UserInfoResult>>({
       url: '/getInfo'
     })
   }

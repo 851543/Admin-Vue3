@@ -1,13 +1,8 @@
 import { MenuThemeEnum, SystemThemeEnum } from '@/enums/appEnum'
+import { UserInfoResult } from './axios'
 
 // 用户信息
-export interface UserInfo {
-  id: number
-  name: string
-  username: string
-  avatar: string
-  email: string
-}
+export type UserInfo = UserInfoResult
 
 // 系统主题样式（light | dark）
 export interface SystemThemeType {
