@@ -203,10 +203,7 @@
   const editPwd = () => {
     isEditPwd.value = !isEditPwd.value
     if (!isEditPwd.value) {
-      const res = await UserService.resetUserPwd(pwdForm)
-      if (res.code === 200) {
-        ElMessage.success(res.msg)
-      }
+      console.log(pwdForm)
     }
   }
 
