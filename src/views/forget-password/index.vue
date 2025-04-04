@@ -95,12 +95,14 @@
 </template>
 
 <script setup lang="ts">
+  import { useI18n } from 'vue-i18n'
   import AppConfig from '@/config'
   import LeftView from '@/components/Pages/Login/LeftView.vue'
   import { ElMessage } from 'element-plus'
   import type { FormInstance, FormRules } from 'element-plus'
   import { LoginService } from '@/api/loginApi'
   const router = useRouter()
+  const { t } = useI18n()
   const formRef = ref<FormInstance>()
 
   const systemName = AppConfig.systemInfo.name
@@ -113,20 +115,22 @@
 
   const rules: FormRules = {
     email: [
-      { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-      { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+      { required: true, message: t('forgetPassword.emailRequired'), trigger: 'blur' },
+      { type: 'email', message: t('forgetPassword.emailInvalid'), trigger: ['blur', 'change'] }
     ],
-    verifyCode: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+    verifyCode: [
+      { required: true, message: t('forgetPassword.verifyCodeRequired'), trigger: 'blur' }
+    ],
     password: [
-      { required: true, message: '请输入新密码', trigger: 'blur' },
-      { min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+      { required: true, message: t('forgetPassword.passwordRequired'), trigger: 'blur' },
+      { min: 6, message: t('forgetPassword.passwordMinLength'), trigger: 'blur' }
     ],
     confirmPassword: [
-      { required: true, message: '请输入确认密码', trigger: 'blur' },
+      { required: true, message: t('forgetPassword.confirmPasswordRequired'), trigger: 'blur' },
       {
         validator: (rule: any, value: string, callback: (error?: Error) => void) => {
           if (value !== form.password) {
-            callback(new Error('两次输入的密码不一致'))
+            callback(new Error(t('forgetPassword.passwordMismatch')))
           } else {
             callback()
           }
@@ -153,7 +157,7 @@
     try {
       const res = await LoginService.sendEmailCode({ mailAddress: form.email })
       if (res.code === 200) {
-        ElMessage.success('验证码已发送')
+        ElMessage.success(t('forgetPassword.codeSent'))
         startCooldown()
       }
     } catch (error) {
@@ -173,7 +177,7 @@
         password: form.password
       })
       if (res.code === 200) {
-        ElMessage.success('密码重置成功')
+        ElMessage.success(t('forgetPassword.resetSuccess'))
         router.push('/login')
       }
     } catch (error) {

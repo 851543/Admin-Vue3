@@ -33,7 +33,6 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const { accessToken } = useUserStore()
-    console.log(accessToken)
     // 如果 token 存在，则设置请求头
     if (accessToken) {
       request.headers.set({

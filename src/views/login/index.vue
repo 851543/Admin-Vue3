@@ -192,7 +192,7 @@
           if (emailRegex.test(value) || accountRegex.test(value)) {
             callback()
           } else {
-            callback(new Error('请输入正确的账号或邮箱格式'))
+            callback(new Error(t('login.validation.accountFormat')))
           }
         },
         trigger: ['blur', 'change']
@@ -258,7 +258,13 @@
             // 获取用户信息
             const userRes = await LoginService.getInfo()
             if (userRes.code === ApiStatus.success) {
-              userStore.setUserInfo(userRes.user)
+              userStore.setUserInfo({
+                id: userRes.user.userId.toString(),
+                name: userRes.user.userName,
+                avatar: userRes.user.avatar,
+                roles: userRes.roles,
+                permissions: userRes.permissions
+              })
             }
 
             // 设置登录状态
@@ -353,7 +359,7 @@
           import.meta.env.VITE_PASSWORD_ENCRYPT_KEY
         ).toString(CryptoJS.enc.Utf8)
       } catch (error) {
-        console.error('密码解密失败:', error)
+        console.error(error)
         formData.password = ''
         Cookies.remove('password')
       }

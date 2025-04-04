@@ -150,7 +150,7 @@
     try {
       const res = await LoginService.sendEmailCode({ mailAddress: formData.email })
       if (res.code === 200) {
-        ElMessage.success('验证码已发送')
+        ElMessage.success(t('register.verifyCodeSent'))
         startCooldown()
       }
     } catch (error) {
@@ -186,7 +186,7 @@
     ],
     email: [
       { required: true, message: t('forgetPassword.email'), trigger: 'blur' },
-      { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+      { type: 'email', message: t('register.invalidEmail'), trigger: ['blur', 'change'] }
     ],
     verifyCode: [{ required: true, message: t('forgetPassword.verifyCode'), trigger: 'blur' }],
     password: [
@@ -222,12 +222,12 @@
         verifyCode: formData.verifyCode
       })
       if (res.code === 200) {
-        ElMessage.success('注册成功')
+        ElMessage.success(t('register.registerSuccess'))
         toLogin()
       }
     } catch (error) {
       loading.value = false
-      console.log('验证失败', error)
+      console.log(t('register.validationFailed'), error)
     }
   }
 

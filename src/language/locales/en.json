@@ -12,10 +12,13 @@
     }
   },
   "common": {
-    "tips": "Prompt",
+    "tips": "Tips",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "logOutTips": "Do you want to log out?"
+    "logOutTips": "Are you sure to log out?",
+    "save": "Save",
+    "edit": "Edit",
+    "select": "Select"
   },
   "search": {
     "placeholder": "Search page",
@@ -124,6 +127,9 @@
     "success": {
       "title": "Login successful",
       "message": "Welcome back"
+    },
+    "validation": {
+      "accountFormat": "Please enter a valid account or email format"
     }
   },
   "forgetPassword": {
@@ -136,7 +142,16 @@
     "confirmPas": "Please confirm new password",
     "submitBtnText": "Submit",
     "backBtnText": "Back to Login",
-    "getVerifyCode": "Get Code"
+    "getVerifyCode": "Get Code",
+    "emailRequired": "Please enter your email address",
+    "emailInvalid": "Please enter a valid email address",
+    "verifyCodeRequired": "Please enter verification code",
+    "passwordRequired": "Please enter new password",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "confirmPasswordRequired": "Please confirm your password",
+    "passwordMismatch": "The passwords do not match",
+    "codeSent": "Verification code sent",
+    "resetSuccess": "Password reset successful"
   },
   "register": {
     "title": "Create account",
@@ -148,16 +163,20 @@
     ],
     "rule": [
       "Please enter your password again",
-      "The two passwords are inconsistent!",
-      "The length is 3 to 20 characters",
-      "The password length cannot be less than 6 digits",
+      "The two passwords do not match!",
+      "Length should be between 3 and 20 characters",
+      "Password must be at least 6 characters",
       "Please agree to the privacy policy"
     ],
     "agreeText": "I agree",
     "privacyPolicy": "Privacy policy",
     "submitBtnText": "Register",
     "hasAccount": "Already have an account?",
-    "toLogin": "To login"
+    "toLogin": "To login",
+    "verifyCodeSent": "Verification code sent",
+    "invalidEmail": "Please enter a valid email address",
+    "registerSuccess": "Registration successful",
+    "validationFailed": "Validation failed"
   },
   "lockScreen": {
     "pwdError": "Password error",
@@ -381,5 +400,33 @@
       "title": "Help Center",
       "document": "Document"
     }
+  },
+  "user": {
+    "basicSettings": "Basic Settings",
+    "username": "Username",
+    "gender": "Gender",
+    "nickname": "Nickname",
+    "email": "Email",
+    "phone": "Phone Number",
+    "address": "Address",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "changePassword": "Change Password",
+    "tags": {
+      "title": "Tags",
+      "focused": "Focused Design",
+      "creative": "Creative Thinking",
+      "inclusive": "Open-minded"
+    }
+  },
+  "gender": {
+    "male": "Male",
+    "female": "Female"
+  },
+  "validation": {
+    "required": "Please enter {field}",
+    "length": "Length must be between {min} and {max} characters",
+    "passwordMismatch": "The passwords do not match"
   }
 }

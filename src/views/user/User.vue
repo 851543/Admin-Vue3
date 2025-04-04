@@ -5,25 +5,29 @@
         <div class="user-wrap box-style">
           <img class="bg" src="@imgs/avatar/bg.png" />
           <img class="avatar" :src="userInfo.avatar || defaultAvatar" />
-          <h2 class="name">{{ userInfo.nickName || userInfo.userName }}</h2>
+          <h2 class="name">{{ userInfo.name }}</h2>
 
           <div class="outer-info">
             <div>
               <i class="iconfont-sys">&#xe608;</i>
-              <span>{{ userInfo.remark || '用户' }}</span>
+              <span>{{ info.nickName }}</span>
             </div>
-            <div v-if="userInfo.email">
+            <div v-if="info.email">
               <i class="iconfont-sys">&#xe72e;</i>
-              <span>{{ userInfo.email }}</span>
+              <span>{{ info.email }}</span>
             </div>
-            <div v-if="userInfo.dept?.deptName || userInfo.dept?.leader">
+            <div v-if="info.deptName && info.postGroup">
               <i class="iconfont-sys">&#xe811;</i>
-              <span>字节跳动－{{ userInfo.dept?.deptName }} - {{ userInfo.dept?.leader }}</span>
+              <span>{{ info.deptName }} - {{ info.postGroup }}</span>
+            </div>
+            <div v-if="info.roleGroup">
+              <i class="iconfont-sys">&#xe724;</i>
+              <span>{{ info.roleGroup }}</span>
             </div>
           </div>
 
           <div class="lables">
-            <h3>标签</h3>
+            <h3>{{ t('user.tags.title') }}</h3>
             <div>
               <div v-for="item in lableList" :key="item">
                 {{ item }}
@@ -35,7 +39,7 @@
 
       <div class="right-wrap">
         <div class="info box-style">
-          <h1 class="title">基本设置</h1>
+          <h1 class="title">{{ t('user.basicSettings') }}</h1>
 
           <el-form
             :model="form"
@@ -46,15 +50,15 @@
             label-position="top"
           >
             <el-row>
-              <el-form-item label="用户名" prop="userName">
-                <el-input v-model="form.userName" :disabled="!editUserName" />
+              <el-form-item :label="t('user.nickname')" prop="nickName">
+                <el-input v-model="form.nickName" :disabled="!isEdit" />
               </el-form-item>
-              <el-form-item label="性别" prop="sex" class="right-input">
-                <el-select v-model="form.sex" placeholder="Select" :disabled="!isEdit">
+              <el-form-item :label="t('user.gender')" prop="sex" class="right-input">
+                <el-select v-model="form.sex" :placeholder="t('common.select')" :disabled="!isEdit">
                   <el-option
                     v-for="item in options"
                     :key="item.value"
-                    :label="item.label"
+                    :label="t(item.label)"
                     :value="item.value"
                   />
                 </el-select>
@@ -62,47 +66,48 @@
             </el-row>
 
             <el-row>
-              <el-form-item label="昵称" prop="nickName">
-                <el-input v-model="form.nickName" :disabled="!isEdit" />
-              </el-form-item>
-              <el-form-item label="邮箱" prop="email" class="right-input">
-                <el-input v-model="form.email" :disabled="!isEdit" />
-              </el-form-item>
-            </el-row>
-
-            <el-row>
-              <el-form-item label="手机" prop="phonenumber">
+              <el-form-item :label="t('user.phone')" prop="phonenumber">
                 <el-input v-model="form.phonenumber" :disabled="!isEdit" />
+              </el-form-item>
+              <el-form-item :label="t('user.email')" prop="email" class="right-input">
+                <el-input v-model="form.email" :disabled="!isEdit" />
               </el-form-item>
             </el-row>
 
             <div class="el-form-item-right">
               <el-button type="primary" style="width: 90px" v-ripple @click="edit">
-                {{ isEdit ? '保存' : '编辑' }}
+                {{ isEdit ? t('common.save') : t('common.edit') }}
               </el-button>
             </div>
           </el-form>
         </div>
 
         <div class="info box-style" style="margin-top: 20px">
-          <h1 class="title">更改密码</h1>
+          <h1 class="title">{{ t('user.changePassword') }}</h1>
 
-          <el-form :model="pwdForm" class="form" label-width="86px" label-position="top">
-            <el-form-item label="当前密码" prop="password">
+          <el-form
+            :model="pwdForm"
+            class="form"
+            label-width="86px"
+            label-position="top"
+            :rules="pwdRules"
+            ref="pwdFormRef"
+          >
+            <el-form-item :label="t('user.currentPassword')" prop="password">
               <el-input v-model="pwdForm.password" type="password" :disabled="!isEditPwd" />
             </el-form-item>
 
-            <el-form-item label="新密码" prop="newPassword">
+            <el-form-item :label="t('user.newPassword')" prop="newPassword">
               <el-input v-model="pwdForm.newPassword" type="password" :disabled="!isEditPwd" />
             </el-form-item>
 
-            <el-form-item label="确认新密码" prop="confirmPassword">
+            <el-form-item :label="t('user.confirmPassword')" prop="confirmPassword">
               <el-input v-model="pwdForm.confirmPassword" type="password" :disabled="!isEditPwd" />
             </el-form-item>
 
             <div class="el-form-item-right">
               <el-button type="primary" style="width: 90px" v-ripple @click="editPwd">
-                {{ isEditPwd ? '保存' : '编辑' }}
+                {{ isEditPwd ? t('common.save') : t('common.edit') }}
               </el-button>
             </div>
           </el-form>
@@ -117,19 +122,29 @@
   import { FormInstance, FormRules } from 'element-plus'
   import defaultAvatar from '@/assets/img/avatar/default-avatar.png'
   import { UserService } from '@/api/system/userApi'
+  import { useI18n } from 'vue-i18n'
+
+  const { t } = useI18n()
   const userStore = useUserStore()
   const userInfo = computed(() => userStore.getUserInfo)
 
   const isEdit = ref(false)
   const isEditPwd = ref(false)
-  const date = ref('')
+
+  const info = reactive({
+    nickName: '',
+    email: '',
+    deptName: '',
+    postGroup: '',
+    roleGroup: ''
+  })
+
   const form = reactive({
-    userId: userInfo.value.userId,
-    userName: userInfo.value.userName,
-    nickName: userInfo.value.nickName,
-    email: userInfo.value.email,
-    phonenumber: userInfo.value.phonenumber,
-    sex: userInfo.value.sex
+    userName: '',
+    nickName: '',
+    email: '',
+    phonenumber: '',
+    sex: ''
   })
 
   const pwdForm = reactive({
@@ -142,73 +157,162 @@
 
   const rules = reactive<FormRules>({
     nickName: [
-      { required: true, message: '请输入昵称', trigger: 'blur' },
-      { min: 2, max: 50, message: '长度在 2 到 30 个字符', trigger: 'blur' }
+      {
+        required: true,
+        message: t('validation.required', { field: t('user.nickname') }),
+        trigger: 'blur'
+      },
+      { min: 2, max: 50, message: t('validation.length', { min: 2, max: 30 }), trigger: 'blur' }
     ],
-    email: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
-    phonenumber: [{ required: true, message: '请输入手机号码', trigger: 'blur' }],
-    address: [{ required: true, message: '请输入地址', trigger: 'blur' }],
-    sex: [{ type: 'array', required: true, message: '请选择性别', trigger: 'blur' }]
+    email: [
+      {
+        required: true,
+        message: t('validation.required', { field: t('user.email') }),
+        trigger: 'blur'
+      }
+    ],
+    phonenumber: [
+      {
+        required: true,
+        message: t('validation.required', { field: t('user.phone') }),
+        trigger: 'blur'
+      }
+    ],
+    address: [
+      {
+        required: true,
+        message: t('validation.required', { field: t('user.address') }),
+        trigger: 'blur'
+      }
+    ],
+    sex: [
+      {
+        required: true,
+        message: t('validation.required', { field: t('user.gender') }),
+        trigger: 'blur'
+      }
+    ]
   })
+
+  const pwdRules = reactive<FormRules>({
+    password: [
+      {
+        required: true,
+        message: t('validation.required', { field: t('user.currentPassword') }),
+        trigger: 'blur'
+      }
+    ],
+    newPassword: [
+      {
+        required: true,
+        message: t('validation.required', { field: t('user.newPassword') }),
+        trigger: 'blur'
+      }
+    ],
+    confirmPassword: [
+      {
+        required: true,
+        message: t('validation.required', { field: t('user.confirmPassword') }),
+        trigger: 'blur'
+      },
+      {
+        validator: (rule: any, value: string, callback: (error?: Error) => void) => {
+          if (value !== pwdForm.newPassword) {
+            callback(new Error(t('validation.passwordMismatch')))
+          } else {
+            callback()
+          }
+        },
+        trigger: 'blur'
+      }
+    ]
+  })
+
+  const GENDER_OPTIONS = {
+    MALE: '0',
+    FEMALE: '1'
+  }
 
   const options = [
     {
-      value: '1',
-      label: '男'
+      value: GENDER_OPTIONS.MALE,
+      label: 'gender.male'
     },
     {
-      value: '2',
-      label: '女'
+      value: GENDER_OPTIONS.FEMALE,
+      label: 'gender.female'
     }
   ]
 
-  const lableList: Array<string> = ['专注设计', '很有想法', '海纳百川']
+  const lableList: Array<string> = [
+    t('user.tags.focused'),
+    t('user.tags.creative'),
+    t('user.tags.inclusive')
+  ]
 
   onMounted(() => {
-    getDate()
+    getProfile()
   })
 
-  const getDate = () => {
-    const d = new Date()
-    const h = d.getHours()
-    let text = ''
-
-    if (h >= 6 && h < 9) {
-      text = '早上好'
-    } else if (h >= 9 && h < 11) {
-      text = '上午好'
-    } else if (h >= 11 && h < 13) {
-      text = '中午好'
-    } else if (h >= 13 && h < 18) {
-      text = '下午好'
-    } else if (h >= 18 && h < 24) {
-      text = '晚上好'
-    } else if (h >= 0 && h < 6) {
-      text = '很晚了，早点睡'
-    }
-
-    date.value = text
-  }
-
   const edit = async () => {
-    isEdit.value = !isEdit.value
     if (!isEdit.value) {
-      const res = await UserService.editUserInfo(form)
-      if (res.code === 200) {
-        ElMessage.success(res.msg)
+      isEdit.value = true
+      return
+    }
+
+    if (!ruleFormRef.value) return
+
+    await ruleFormRef.value.validate(async (valid) => {
+      if (valid) {
+        const res = await UserService.editProfile(form)
+        if (res.code === 200) {
+          ElMessage.success(res.msg)
+          getProfile()
+          isEdit.value = false
+        }
       }
-    }
+    })
   }
 
-  const editPwd = () => {
-    isEditPwd.value = !isEditPwd.value
+  const pwdFormRef = ref<FormInstance>()
+  const editPwd = async () => {
     if (!isEditPwd.value) {
-      console.log(pwdForm)
+      isEditPwd.value = true
+      return
     }
+    if (!pwdFormRef.value) return
+
+    await pwdFormRef.value.validate(async (valid) => {
+      if (valid) {
+        const res = await UserService.editProfilePwd({
+          oldPassword: pwdForm.password,
+          newPassword: pwdForm.newPassword
+        })
+        if (res.code === 200) {
+          ElMessage.success(res.msg)
+          isEditPwd.value = false
+        }
+      }
+    })
   }
 
-  // 是否可以编辑用户名
-  const editUserName = ref(false)
+  // 获取个人信息
+  const getProfile = async () => {
+    const res = await UserService.getProfile()
+    if (res.code === 200) {
+      info.nickName = res.data.nickName
+      info.email = res.data.email
+      info.deptName = res.data.dept.deptName
+      info.postGroup = res.postGroup
+      info.roleGroup = res.roleGroup
+
+      form.userName = res.data.userName
+      form.nickName = res.data.nickName
+      form.email = res.data.email
+      form.phonenumber = res.data.phonenumber
+      form.sex = res.data.sex
+    }
+  }
 </script>
 
 <style lang="scss">

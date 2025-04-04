@@ -145,8 +145,7 @@
                 <div class="user-head">
                   <img class="cover" :src="userInfo.avatar || defaultAvatar" style="float: left" />
                   <div class="user-wrap">
-                    <span class="name">{{ userInfo.nickName || userInfo.userName }}</span>
-                    <span class="email" v-if="userInfo.email">{{ userInfo.email }}</span>
+                    <span class="name">{{ userInfo.name }}</span>
                   </div>
                 </div>
                 <ul class="user-menu">

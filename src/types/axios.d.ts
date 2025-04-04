@@ -1,16 +1,16 @@
 export type ErrorMessageMode = 'none' | 'modal' | 'message' | undefined
 
 export interface RequestOptions {
-  joinParamsToUrl?: boolean
-  formatDate?: boolean
-  isTransformResponse?: boolean
-  isReturnNativeResponse?: boolean
-  joinPrefix?: boolean
-  apiUrl?: string
-  errorMessageMode?: ErrorMessageMode
-  joinTime?: boolean
-  ignoreCancelToken?: boolean
-  withToken?: boolean
+  joinParamsToUrl: boolean
+  formatDate: boolean
+  isTransformResponse: boolean
+  isReturnNativeResponse: boolean
+  joinPrefix: boolean
+  apiUrl: string
+  errorMessageMode: ErrorMessageMode
+  joinTime: boolean
+  ignoreCancelToken: boolean
+  withToken: boolean
 }
 
 // 基础接口返回的数据结构
@@ -18,7 +18,7 @@ export interface BaseResult<T = any> {
   code: number // 状态码
   msg: string // 消息
   data: T // 数据
-  token?: string // 可选字段，用于返回 token
+  token: string // 可选字段，用于返回 token
 }
 
 // 分页数据结构，继承基础结果结构
@@ -51,6 +51,12 @@ export interface LoginResult<T> {
   permissions: string[]
   roles: string[]
   user: T
+}
+
+// 个人信息返回数据结构
+export interface ProfileResult extends BaseResult {
+  postGroup: string
+  roleGroup: string
 }
 
 // 用户信息返回数据结构
