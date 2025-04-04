@@ -55,23 +55,46 @@ export interface LoginResult<T> {
 
 // 用户信息返回数据结构
 export interface UserInfoResult {
+  createBy: string
+  createTime: string
+  updateBy: string
+  updateTime: string
+  remark: string
+  params: {
+    '@type': 'java.util.HashMap'
+  }
   userId: number
-  deptId: any
+  deptId: number
   userName: string
   nickName: string
   email: string
-  phonenumber: any
+  phonenumber: string
   sex: string
-  avatar: any
+  avatar: string
   password: string
   status: string
   delFlag: string
   loginIp: string
   loginDate: string
-  dept: any
+  dept: Dept
   roles: []
-  roleIds: any
-  postIds: any
-  roleId: any
+  roleIds: []
+  postIds: []
+  roleId: number
   admin: boolean
+}
+
+export interface Dept {
+  deptId: number
+  parentId: number
+  ancestors: string
+  deptName: string
+  orderNum: number
+  leader: string
+  phone: string
+  email: string
+  status: string
+  delFlag: string
+  parentName: string
+  children: []
 }

@@ -138,14 +138,14 @@
             popper-style="border: 1px solid var(--art-border-dashed-color); border-radius: calc(var(--custom-radius) / 2 + 4px); padding: 5px 16px; 5px 16px;"
           >
             <template #reference>
-              <img class="cover" :src="userInfo.avatar" />
+              <img class="cover" :src="userInfo.avatar || defaultAvatar" />
             </template>
             <template #default>
               <div class="user-menu-box">
                 <div class="user-head">
-                  <img class="cover" :src="userInfo.avatar" style="float: left" />
+                  <img class="cover" :src="userInfo.avatar || defaultAvatar" style="float: left" />
                   <div class="user-wrap">
-                    <span class="name">{{ userInfo.username }}</span>
+                    <span class="name">{{ userInfo.nickName || userInfo.userName }}</span>
                     <span class="email" v-if="userInfo.email">{{ userInfo.email }}</span>
                   </div>
                 </div>
@@ -154,17 +154,13 @@
                     <i class="menu-icon iconfont-sys">&#xe734;</i>
                     <span class="menu-txt">{{ $t('topBar.user.userCenter') }}</span>
                   </li>
-                  <li @click="toDocs()">
-                    <i class="menu-icon iconfont-sys" style="font-size: 15px">&#xe828;</i>
-                    <span class="menu-txt">{{ $t('topBar.user.docs') }}</span>
+                  <li @click="lockScreen()">
+                    <i class="menu-icon iconfont-sys">&#xe817;</i>
+                    <span class="menu-txt">{{ $t('topBar.user.lockScreen') }}</span>
                   </li>
                   <li @click="toGithub()">
                     <i class="menu-icon iconfont-sys">&#xe8d6;</i>
                     <span class="menu-txt">{{ $t('topBar.user.github') }}</span>
-                  </li>
-                  <li @click="lockScreen()">
-                    <i class="menu-icon iconfont-sys">&#xe817;</i>
-                    <span class="menu-txt">{{ $t('topBar.user.lockScreen') }}</span>
                   </li>
                   <div class="line"></div>
                   <div class="logout-btn" @click="loginOut">
@@ -184,6 +180,7 @@
 </template>
 
 <script setup lang="ts">
+  import defaultAvatar from '@/assets/img/avatar/default-avatar.png'
   import Breadcrumb from '../Breadcrumb/index.vue'
   import Notice from '../Notice/index.vue'
   import MixedMenu from '../MixedMenu/index.vue'
@@ -274,10 +271,6 @@
 
   const goPage = (path: string) => {
     router.push(path)
-  }
-
-  const toDocs = () => {
-    window.open(WEB_LINKS.DOCS)
   }
 
   const toGithub = () => {

@@ -266,7 +266,7 @@
             // 延时辅助函数
             await delay(1000)
             // 登录成功提示
-            showLoginSuccessNotice()
+            showLoginSuccessNotice(userRes.user.nickName || userRes.user.userName)
             // 跳转首页
             router.push(HOME_PAGE)
           } else {
@@ -281,7 +281,7 @@
   }
 
   // 登录成功提示
-  const showLoginSuccessNotice = () => {
+  const showLoginSuccessNotice = (name: string) => {
     setTimeout(() => {
       ElNotification({
         title: t('login.success.title'),
@@ -289,7 +289,7 @@
         showClose: false,
         duration: 2500,
         zIndex: 10000,
-        message: `${t('login.success.message')}, ${null}!`
+        message: `${t('login.success.message')}, ${name}`
       })
     }, 300)
   }

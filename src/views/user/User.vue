@@ -3,27 +3,22 @@
     <div class="content">
       <div class="left-wrap">
         <div class="user-wrap box-style">
-          <img class="bg" src="@imgs/user/bg.png" />
-          <img class="avatar" :src="userInfo.avatar" />
-          <h2 class="name">{{ userInfo.username }}</h2>
-          <p class="des">Admin-Vue3 是一款漂亮的后台管理系统模版.</p>
+          <img class="bg" src="@imgs/avatar/bg.png" />
+          <img class="avatar" :src="userInfo.avatar || defaultAvatar" />
+          <h2 class="name">{{ userInfo.nickName || userInfo.userName }}</h2>
 
           <div class="outer-info">
             <div>
-              <i class="iconfont-sys">&#xe72e;</i>
-              <span>jdkjjfnndf@mall.com</span>
-            </div>
-            <div>
               <i class="iconfont-sys">&#xe608;</i>
-              <span>交互专家</span>
+              <span>{{ userInfo.remark || '用户' }}</span>
             </div>
-            <div>
-              <i class="iconfont-sys">&#xe736;</i>
-              <span>广东省深圳市</span>
+            <div v-if="userInfo.email">
+              <i class="iconfont-sys">&#xe72e;</i>
+              <span>{{ userInfo.email }}</span>
             </div>
-            <div>
+            <div v-if="userInfo.dept?.deptName || userInfo.dept?.leader">
               <i class="iconfont-sys">&#xe811;</i>
-              <span>字节跳动－某某平台部－UED</span>
+              <span>字节跳动－{{ userInfo.dept?.deptName }} - {{ userInfo.dept?.leader }}</span>
             </div>
           </div>
 
@@ -36,16 +31,8 @@
             </div>
           </div>
         </div>
-
-        <!-- <el-carousel class="gallery" height="160px"
-          :interval="5000"
-          indicator-position="none"
-        >
-          <el-carousel-item class="item" v-for="item in galleryList" :key="item">
-            <img :src="item"/>
-          </el-carousel-item>
-        </el-carousel> -->
       </div>
+
       <div class="right-wrap">
         <div class="info box-style">
           <h1 class="title">基本设置</h1>
@@ -59,8 +46,8 @@
             label-position="top"
           >
             <el-row>
-              <el-form-item label="姓名" prop="realName">
-                <el-input v-model="form.realName" :disabled="!isEdit" />
+              <el-form-item label="用户名" prop="userName">
+                <el-input v-model="form.userName" :disabled="!editUserName" />
               </el-form-item>
               <el-form-item label="性别" prop="sex" class="right-input">
                 <el-select v-model="form.sex" placeholder="Select" :disabled="!isEdit">
@@ -75,8 +62,8 @@
             </el-row>
 
             <el-row>
-              <el-form-item label="昵称" prop="nikeName">
-                <el-input v-model="form.nikeName" :disabled="!isEdit" />
+              <el-form-item label="昵称" prop="nickName">
+                <el-input v-model="form.nickName" :disabled="!isEdit" />
               </el-form-item>
               <el-form-item label="邮箱" prop="email" class="right-input">
                 <el-input v-model="form.email" :disabled="!isEdit" />
@@ -84,17 +71,10 @@
             </el-row>
 
             <el-row>
-              <el-form-item label="手机" prop="mobile">
-                <el-input v-model="form.mobile" :disabled="!isEdit" />
-              </el-form-item>
-              <el-form-item label="地址" prop="address" class="right-input">
-                <el-input v-model="form.address" :disabled="!isEdit" />
+              <el-form-item label="手机" prop="phonenumber">
+                <el-input v-model="form.phonenumber" :disabled="!isEdit" />
               </el-form-item>
             </el-row>
-
-            <el-form-item label="个人介绍" prop="des" :style="{ height: '130px' }">
-              <el-input type="textarea" :rows="4" v-model="form.des" :disabled="!isEdit" />
-            </el-form-item>
 
             <div class="el-form-item-right">
               <el-button type="primary" style="width: 90px" v-ripple @click="edit">
@@ -135,7 +115,8 @@
 <script setup lang="ts">
   import { useUserStore } from '@/store/modules/user'
   import { FormInstance, FormRules } from 'element-plus'
-
+  import defaultAvatar from '@/assets/img/avatar/default-avatar.png'
+  import { UserService } from '@/api/system/userApi'
   const userStore = useUserStore()
   const userInfo = computed(() => userStore.getUserInfo)
 
@@ -143,13 +124,12 @@
   const isEditPwd = ref(false)
   const date = ref('')
   const form = reactive({
-    realName: 'John Snow',
-    nikeName: '皮卡丘',
-    email: '59301283@mall.com',
-    mobile: '18888888888',
-    address: '广东省深圳市宝安区西乡街道101栋201',
-    sex: '2',
-    des: 'Admin-Vue3 是一款漂亮的后台管理系统模版.'
+    userId: userInfo.value.userId,
+    userName: userInfo.value.userName,
+    nickName: userInfo.value.nickName,
+    email: userInfo.value.email,
+    phonenumber: userInfo.value.phonenumber,
+    sex: userInfo.value.sex
   })
 
   const pwdForm = reactive({
@@ -161,16 +141,12 @@
   const ruleFormRef = ref<FormInstance>()
 
   const rules = reactive<FormRules>({
-    realName: [
-      { required: true, message: '请输入昵称', trigger: 'blur' },
-      { min: 2, max: 50, message: '长度在 2 到 30 个字符', trigger: 'blur' }
-    ],
-    nikeName: [
+    nickName: [
       { required: true, message: '请输入昵称', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 30 个字符', trigger: 'blur' }
     ],
     email: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
-    mobile: [{ required: true, message: '请输入手机号码', trigger: 'blur' }],
+    phonenumber: [{ required: true, message: '请输入手机号码', trigger: 'blur' }],
     address: [{ required: true, message: '请输入地址', trigger: 'blur' }],
     sex: [{ type: 'array', required: true, message: '请选择性别', trigger: 'blur' }]
   })
@@ -186,7 +162,7 @@
     }
   ]
 
-  const lableList: Array<string> = ['专注设计', '很有想法', '辣~', '大长腿', '川妹子', '海纳百川']
+  const lableList: Array<string> = ['专注设计', '很有想法', '海纳百川']
 
   onMounted(() => {
     getDate()
@@ -214,13 +190,28 @@
     date.value = text
   }
 
-  const edit = () => {
+  const edit = async () => {
     isEdit.value = !isEdit.value
+    if (!isEdit.value) {
+      const res = await UserService.editUserInfo(form)
+      if (res.code === 200) {
+        ElMessage.success(res.msg)
+      }
+    }
   }
 
   const editPwd = () => {
     isEditPwd.value = !isEditPwd.value
+    if (!isEditPwd.value) {
+      const res = await UserService.resetUserPwd(pwdForm)
+      if (res.code === 200) {
+        ElMessage.success(res.msg)
+      }
+    }
   }
+
+  // 是否可以编辑用户名
+  const editUserName = ref(false)
 </script>
 
 <style lang="scss">

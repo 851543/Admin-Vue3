@@ -3,8 +3,8 @@
     <div v-if="!isLock">
       <el-dialog v-model="visible" :width="370" :show-close="false" @open="handleDialogOpen">
         <div class="lock-content">
-          <img class="cover" :src="userInfo.avatar" />
-          <div class="username">{{ userInfo.username }}</div>
+          <img class="cover" :src="userInfo.avatar || defaultAvatar" />
+          <div class="username">{{ userInfo.nickName || userInfo.userName }}</div>
           <el-form ref="formRef" :model="formData" :rules="rules" @submit.prevent="handleLock">
             <el-form-item prop="password">
               <el-input
@@ -32,8 +32,8 @@
 
     <div class="unlock-content" v-else>
       <div class="box">
-        <img class="cover" :src="userInfo.avatar" />
-        <div class="username">{{ userInfo.username }}</div>
+        <img class="cover" :src="userInfo.avatar || defaultAvatar" />
+        <div class="username">{{ userInfo.nickName || userInfo.userName }}</div>
         <el-form
           ref="unlockFormRef"
           :model="unlockForm"
@@ -69,6 +69,7 @@
 </template>
 
 <script setup lang="ts">
+  import defaultAvatar from '@/assets/img/avatar/default-avatar.png'
   import { Lock, Unlock } from '@element-plus/icons-vue'
   import type { FormInstance, FormRules } from 'element-plus'
   import { useUserStore } from '@/store/modules/user'
