@@ -1,7 +1,7 @@
 <template>
   <div class="cutter-container">
     <div class="cutter-component">
-      <div class="title">{{ title }}</div>
+      <div class="title">{{ displayTitle }}</div>
       <ImgCutter
         ref="imgCutterModal"
         @cutDown="cutDownImg"
@@ -13,7 +13,7 @@
         class="img-cutter"
       >
         <template #choose>
-          <el-button type="primary" plain v-ripple>选择图片</el-button>
+          <el-button type="primary" plain v-ripple>{{ t('common.select') }}</el-button>
         </template>
         <template #cancel>
           <div></div>
@@ -25,7 +25,7 @@
     </div>
 
     <div v-if="showPreview" class="preview-container">
-      <div class="title">{{ previewTitle }}</div>
+      <div class="title">{{ displayPreviewTitle }}</div>
       <div
         class="preview-box"
         :style="{
@@ -33,11 +33,16 @@
           height: `${cutterProps.cutHeight}px`
         }"
       >
-        <img class="preview-img" :src="temImgPath" alt="预览图" v-if="temImgPath" />
+        <img
+          class="preview-img"
+          :src="temImgPath"
+          :alt="t('user.avatar.preview')"
+          v-if="temImgPath"
+        />
       </div>
-      <el-button class="download-btn" @click="downloadImg" :disabled="!temImgPath" v-ripple
-        >提交</el-button
-      >
+      <el-button class="download-btn" @click="downloadImg" :disabled="!temImgPath" v-ripple>
+        {{ t('common.confirm') }}
+      </el-button>
     </div>
   </div>
 </template>
@@ -45,6 +50,9 @@
 <script setup lang="ts">
   import ImgCutter from 'vue-img-cutter'
   import { ref, watch, onMounted, computed } from 'vue'
+  import { useI18n } from 'vue-i18n'
+
+  const { t } = useI18n()
 
   interface CutterProps {
     // 基础配置
@@ -98,8 +106,8 @@
     isModal: false,
     tool: true,
     toolBgc: '#fff',
-    title: '图像裁剪',
-    previewTitle: '图像预览',
+    title: '',
+    previewTitle: '',
     showPreview: true,
 
     // 尺寸相关默认值
@@ -149,6 +157,10 @@
     WatermarkColor: props.watermarkColor
   }))
 
+  // 计算属性：标题
+  const displayTitle = computed(() => props.title || t('menus.widgets.imageCrop'))
+  const displayPreviewTitle = computed(() => props.previewTitle || t('user.avatar.preview'))
+
   // 图片预加载
   function preloadImage(url: string): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -166,12 +178,12 @@
       try {
         await preloadImage(props.imgUrl)
         imgCutterModal.value?.handleOpen({
-          name: '封面图片',
+          name: t('user.avatar.change'),
           src: props.imgUrl
         })
       } catch (error) {
         emit('error', error)
-        console.error('图片加载失败:', error)
+        console.error(t('login.validation.accountFormat'), error)
       }
     }
   }

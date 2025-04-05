@@ -418,6 +418,10 @@
       "focused": "Focused Design",
       "creative": "Creative Thinking",
       "inclusive": "Open-minded"
+    },
+    "avatar": {
+      "change": "Change Avatar",
+      "preview": "Preview"
     }
   },
   "gender": {

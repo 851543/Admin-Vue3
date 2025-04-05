@@ -411,6 +411,10 @@
       "focused": "专注设计",
       "creative": "很有想法",
       "inclusive": "海纳百川"
+    },
+    "avatar": {
+      "change": "修改头像",
+      "preview": "预览"
     }
   },
   "gender": {

@@ -128,8 +128,8 @@
         :showPreview="true"
         :originalGraph="false"
         @onSubmit="handleAvatarSuccess"
-        title="裁剪"
-        previewTitle="预览"
+        :title="t('user.avatar.change')"
+        :previewTitle="t('user.avatar.preview')"
       />
     </el-dialog>
   </div>
