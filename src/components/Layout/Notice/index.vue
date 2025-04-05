@@ -29,18 +29,20 @@
           <li v-for="(item, index) in noticeList" :key="index">
             <div
               class="icon"
-              :style="{ background: getNoticeStyle(item.type).backgroundColor + '!important' }"
+              :style="{
+                background: getNoticeStyle(item.noticeType).backgroundColor + '!important'
+              }"
             >
               <i
                 class="iconfont-sys"
-                :style="{ color: getNoticeStyle(item.type).iconColor + '!important' }"
-                v-html="getNoticeStyle(item.type).icon"
+                :style="{ color: getNoticeStyle(item.noticeType).iconColor + '!important' }"
+                v-html="getNoticeStyle(item.noticeType).icon"
               >
               </i>
             </div>
             <div class="text">
-              <h4>{{ item.title }}</h4>
-              <p>{{ item.time }}</p>
+              <h4>{{ item.noticeTitle }}</h4>
+              <p>{{ item.createTime }}</p>
             </div>
           </li>
         </ul>
@@ -89,14 +91,10 @@
 </template>
 
 <script setup lang="ts">
-  import avatar1 from '@/assets/img/avatar/avatar1.jpg'
-  import avatar2 from '@/assets/img/avatar/avatar2.jpg'
-  import avatar3 from '@/assets/img/avatar/avatar3.jpg'
-  import avatar4 from '@/assets/img/avatar/avatar4.jpg'
-  import avatar5 from '@/assets/img/avatar/avatar5.jpg'
-  import avatar6 from '@/assets/img/avatar/avatar6.jpg'
+  import avatar from '@/assets/img/avatar/default-avatar.png'
   import AppConfig from '@/config'
   import { useI18n } from 'vue-i18n'
+  import type { NoticeResult } from '@/types/axios'
 
   const { t } = useI18n()
 
@@ -134,68 +132,24 @@
     }
   ])
 
-  const noticeList = [
-    {
-      title: '新增国际化',
-      time: '2024-6-13 0:10',
-      type: 'notice'
-    },
-    {
-      title: '冷月呆呆给你发了一条消息',
-      time: '2024-4-21 8:05',
-      type: 'message'
-    },
-    {
-      title: '小肥猪关注了你',
-      time: '2020-3-17 21:12',
-      type: 'collection'
-    },
-    {
-      title: '新增使用文档',
-      time: '2024-02-14 0:20',
-      type: 'notice'
-    },
-    {
-      title: '小肥猪给你发了一封邮件',
-      time: '2024-1-20 0:15',
-      type: 'email'
-    },
-    {
-      title: '菜单mock本地真实数据',
-      time: '2024-1-17 22:06',
-      type: 'notice'
-    }
-  ]
+  const noticeList = ref<NoticeResult[]>([])
+
+  import { NoticeService } from '@/api/system/noticeApi'
+  // 获取通知公告列表
+  const getNoticeList = async () => {
+    const res = await NoticeService.getNoticeList({})
+    noticeList.value = res.rows
+  }
+
+  onMounted(() => {
+    getNoticeList()
+  })
+
   const msgList: any = [
     {
-      title: '池不胖 关注了你',
+      title: '阿俊 关注了你',
       time: '2021-2-26 23:50',
-      avatar: avatar1
-    },
-    {
-      title: '唐不苦 关注了你',
-      time: '2021-2-21 8:05',
-      avatar: avatar2
-    },
-    {
-      title: '中小鱼 关注了你',
-      time: '2020-1-17 21:12',
-      avatar: avatar3
-    },
-    {
-      title: '何小荷 关注了你',
-      time: '2021-01-14 0:20',
-      avatar: avatar4
-    },
-    {
-      title: '誶誶淰 关注了你',
-      time: '2020-12-20 0:15',
-      avatar: avatar5
-    },
-    {
-      title: '冷月呆呆 关注了你',
-      time: '2020-12-17 22:06',
-      avatar: avatar6
+      avatar: avatar
     }
   ]
 

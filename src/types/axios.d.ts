@@ -21,6 +21,14 @@ export interface BaseResult<T = any> {
   token: string // 可选字段，用于返回 token
 }
 
+// 分页返回数据结构
+export interface BasePageResult<T> {
+  rows: T[]
+  total: number
+  code: number // 状态码
+  msg: string // 消息
+}
+
 // 分页数据结构，继承基础结果结构
 export interface PaginationResult<T> extends BaseResult {
   currentPage: number // 当前页
@@ -82,7 +90,7 @@ export interface UserInfoResult {
   delFlag: string
   loginIp: string
   loginDate: string
-  dept: Dept
+  dept: DeptResult
   roles: []
   roleIds: []
   postIds: []
@@ -90,7 +98,7 @@ export interface UserInfoResult {
   admin: boolean
 }
 
-export interface Dept {
+export interface DeptResult {
   deptId: number
   parentId: number
   ancestors: string
@@ -103,4 +111,17 @@ export interface Dept {
   delFlag: string
   parentName: string
   children: []
+}
+
+export interface NoticeResult {
+  noticeId: number
+  noticeTitle: string
+  noticeType: string
+  noticeContent: string
+  createBy: string
+  createTime: string
+  updateBy: string
+  updateTime: string
+  remark: string
+  status: string
 }

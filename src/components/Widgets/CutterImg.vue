@@ -1,4 +1,3 @@
-<!-- github: https://github.com/acccccccb/vue-img-cutter/tree/master -->
 <template>
   <div class="cutter-container">
     <div class="cutter-component">
@@ -17,10 +16,9 @@
           <el-button type="primary" plain v-ripple>选择图片</el-button>
         </template>
         <template #cancel>
-          <el-button type="danger" plain v-ripple>清除</el-button>
+          <div></div>
         </template>
         <template #confirm>
-          <!-- <el-button type="primary" style="margin-left: 10px">确定</el-button> -->
           <div></div>
         </template>
       </ImgCutter>
@@ -38,7 +36,7 @@
         <img class="preview-img" :src="temImgPath" alt="预览图" v-if="temImgPath" />
       </div>
       <el-button class="download-btn" @click="downloadImg" :disabled="!temImgPath" v-ripple
-        >下载图片</el-button
+        >提交</el-button
       >
     </div>
   </div>
@@ -132,7 +130,13 @@
     previewMode: true
   })
 
-  const emit = defineEmits(['update:imgUrl', 'error', 'imageLoadComplete', 'imageLoadError'])
+  const emit = defineEmits([
+    'update:imgUrl',
+    'error',
+    'imageLoadComplete',
+    'imageLoadError',
+    'onSubmit'
+  ])
 
   const temImgPath = ref('')
   const imgCutterModal = ref()
@@ -217,13 +221,9 @@
     temImgPath.value = ''
   }
 
-  // 下载图片
+  // 提交图片
   function downloadImg() {
-    console.log('下载图片')
-    const a = document.createElement('a')
-    a.href = temImgPath.value
-    a.download = 'image.png'
-    a.click()
+    emit('onSubmit', temImgPath.value)
   }
 </script>
 
@@ -231,6 +231,7 @@
   .cutter-container {
     display: flex;
     flex-flow: row wrap;
+    align-items: center;
 
     .title {
       padding-bottom: 10px;

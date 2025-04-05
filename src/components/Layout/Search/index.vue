@@ -135,7 +135,6 @@
   const search = (val: string) => {
     if (val) {
       searchResult.value = flattenAndFilterMenuItems(menuList.value, val)
-      console.log(searchResult.value)
     } else {
       searchResult.value = []
     }

@@ -4,7 +4,7 @@
       <div class="left-wrap">
         <div class="user-wrap box-style">
           <img class="bg" src="@imgs/avatar/bg.png" />
-          <img class="avatar" :src="userInfo.avatar || defaultAvatar" />
+          <img class="avatar" :src="avatarUrl" @click="handleClickAvatar" />
           <h2 class="name">{{ userInfo.name }}</h2>
 
           <div class="outer-info">
@@ -114,6 +114,24 @@
         </div>
       </div>
     </div>
+
+    <!-- 头像上传弹窗 -->
+    <el-dialog v-model="dialogVisible" width="800px" @close="handleDialogClose">
+      <CutterImg
+        v-model:imgUrl="avatarUrl"
+        :boxWidth="500"
+        :boxHeight="360"
+        :cutWidth="200"
+        :cutHeight="200"
+        :quality="1"
+        :tool="true"
+        :showPreview="true"
+        :originalGraph="false"
+        @onSubmit="handleAvatarSuccess"
+        title="裁剪"
+        previewTitle="预览"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -123,6 +141,8 @@
   import defaultAvatar from '@/assets/img/avatar/default-avatar.png'
   import { UserService } from '@/api/system/userApi'
   import { useI18n } from 'vue-i18n'
+  import CutterImg from '@/components/Widgets/CutterImg.vue'
+  import { ElMessage } from 'element-plus'
 
   const { t } = useI18n()
   const userStore = useUserStore()
@@ -313,6 +333,26 @@
       form.sex = res.data.sex
     }
   }
+
+  // 头像上传相关
+  const dialogVisible = ref(false)
+
+  const avatarUrl = ref(userInfo.value.avatar || defaultAvatar)
+
+  const handleClickAvatar = () => {
+    dialogVisible.value = true
+    avatarUrl.value = userInfo.value.avatar || defaultAvatar
+  }
+
+  const handleAvatarSuccess = (imageData: string) => {
+    dialogVisible.value = false
+    console.log('imageData', imageData)
+  }
+
+  const handleDialogClose = () => {
+    avatarUrl.value = ''
+    dialogVisible.value = false
+  }
 </script>
 
 <style lang="scss">
@@ -379,6 +419,13 @@
             object-fit: cover;
             border: 2px solid #fff;
             border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+
+            &:hover {
+              transform: scale(1.05);
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
           }
 
           .name {

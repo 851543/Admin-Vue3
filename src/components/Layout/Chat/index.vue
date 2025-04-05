@@ -67,8 +67,8 @@
   import { ref, onMounted } from 'vue'
   import { Picture, Paperclip } from '@element-plus/icons-vue'
   import mittBus from '@/utils/mittBus'
-  import meAvatar from '@/assets/img/avatar/avatar5.jpg'
-  import aiAvatar from '@/assets/img/avatar/avatar10.jpg'
+  import meAvatar from '@/assets/img/avatar/avatar-chat-right.png'
+  import aiAvatar from '@/assets/img/avatar/avatar-chat-left.png'
 
   const { width } = useWindowSize()
   const isMobile = computed(() => width.value < 500)
