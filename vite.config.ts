@@ -25,10 +25,11 @@ export default ({ mode }) => {
     server: {
       port: parseInt(VITE_PORT),
       proxy: {
-        '/api': {
+        '/dev-api': {
+          // 开发环境
           target: VITE_API_URL,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
+          rewrite: (path) => path.replace(/^\/dev-api/, '')
         }
       },
       host: true

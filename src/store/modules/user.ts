@@ -6,6 +6,7 @@ import { useSettingStore } from './setting'
 import { useWorktabStore } from './worktab'
 import { getSysStorage } from '@/utils/storage'
 import { MenuListType } from '@/types/menu'
+import { AvatarImga } from '@/utils/utils'
 
 interface UserState {
   language: LanguageEnum // 语言
@@ -77,6 +78,7 @@ export const useUserStore = defineStore({
       })
     },
     setUserInfo(info: UserInfo) {
+      info.avatar = AvatarImga(info.avatar) as string
       this.info = info
     },
     setLoginStatus(isLogin: boolean) {
@@ -102,6 +104,9 @@ export const useUserStore = defineStore({
       }
       sessionStorage.setItem('accessToken', accessToken)
       this.saveUserData()
+    },
+    setAvatar(url: string) {
+      this.info.avatar = AvatarImga(url)
     },
     logOut() {
       setTimeout(() => {

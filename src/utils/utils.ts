@@ -224,3 +224,30 @@ export function removeHtmlTags(str: string = ''): string {
 export function isIframe(url: string) {
   return url.includes('/outside/iframe')
 }
+
+// 获取完整的路径
+export function AvatarImga(url: string | undefined) {
+  return url ? import.meta.env.VITE_API_BASE_URL + url : url
+}
+
+/**
+ * 将 base64 格式的图片数据转换为 Blob 对象
+ * @param base64Data base64 格式的图片数据
+ * @param mimeType 文件类型，默认为 'image/png'
+ * @returns Blob 对象
+ */
+export const base64ToBlob = (base64Data: string, mimeType: string = 'image/png'): Blob => {
+  // 移除 base64 字符串中的 header（如果存在）
+  const base64WithoutHeader = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data
+
+  // 解码 base64
+  const byteCharacters = atob(base64WithoutHeader)
+  const byteNumbers = new Array(byteCharacters.length)
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i)
+  }
+
+  const byteArray = new Uint8Array(byteNumbers)
+  return new Blob([byteArray], { type: mimeType })
+}

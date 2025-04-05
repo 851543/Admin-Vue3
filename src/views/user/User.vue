@@ -137,6 +137,7 @@
 
 <script setup lang="ts">
   import { useUserStore } from '@/store/modules/user'
+  import { base64ToBlob } from '@/utils/utils'
   import { FormInstance, FormRules } from 'element-plus'
   import defaultAvatar from '@/assets/img/avatar/default-avatar.png'
   import { UserService } from '@/api/system/userApi'
@@ -343,14 +344,19 @@
     dialogVisible.value = true
     avatarUrl.value = userInfo.value.avatar || defaultAvatar
   }
-
-  const handleAvatarSuccess = (imageData: string) => {
+  const handleAvatarSuccess = async (imageData: string) => {
     dialogVisible.value = false
-    console.log('imageData', imageData)
+    const blob = base64ToBlob(imageData)
+    const data = new FormData()
+    data.append('avatarfile', blob, 'avatar')
+    const res = await UserService.editProfileAvatar(data)
+    if (res.code === 200) {
+      userStore.setAvatar((res as { imgUrl: string }).imgUrl)
+      avatarUrl.value = userStore.info.avatar || defaultAvatar
+    }
   }
 
   const handleDialogClose = () => {
-    avatarUrl.value = ''
     dialogVisible.value = false
   }
 </script>

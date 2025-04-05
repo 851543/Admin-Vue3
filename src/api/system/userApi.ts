@@ -19,4 +19,12 @@ export class UserService {
   static editProfilePwd(data: any) {
     return request.put<BaseResult>({ url: '/system/user/profile/updatePwd', data })
   }
+  //  修改个人信息头像
+  static editProfileAvatar(data: any) {
+    return request.post<any>({
+      url: '/system/user/profile/avatar',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      data
+    })
+  }
 }

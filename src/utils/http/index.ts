@@ -6,9 +6,21 @@ import errorCode from '@/utils/errorCode'
 import { ApiStatus } from '@/utils/http/status'
 const axiosInstance = axios.create({
   timeout: 15000, // 请求超时时间(毫秒)
-  baseURL: import.meta.env.VITE_API_URL, // API地址
+  baseURL: import.meta.env.VITE_API_BASE_URL, // API地址
   withCredentials: true, // 异步请求携带cookie
-  transformRequest: [(data) => JSON.stringify(data)], // 请求数据转换为 JSON 字符串
+  transformRequest: [
+    (data, headers) => {
+      const contentType = headers['Content-Type'] as string
+      if (contentType && contentType.includes('x-www-form-urlencoded')) {
+        try {
+          return data
+        } catch {
+          return JSON.stringify(data)
+        }
+      }
+      return JSON.stringify(data)
+    }
+  ], // 请求数据转换为 JSON 字符串
   validateStatus: (status) => status >= 200 && status < 300, // 只接受 2xx 的状态码
   headers: {
     get: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
@@ -36,7 +48,6 @@ axiosInstance.interceptors.request.use(
     // 如果 token 存在，则设置请求头
     if (accessToken) {
       request.headers.set({
-        'Content-Type': 'application/json',
         Authorization: accessToken
       })
     }
