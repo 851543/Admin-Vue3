@@ -6,5 +6,6 @@ export enum ApiStatus {
   notFound = 404,
   timeout = 408,
   conflict = 409,
-  tooManyRequests = 429
+  tooManyRequests = 429,
+  warning = 601
 }

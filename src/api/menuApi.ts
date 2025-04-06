@@ -4,7 +4,7 @@ import { MenuListType } from '@/types/menu'
 import { processRoute } from '@/utils/menu'
 import { ElLoading } from 'element-plus'
 
-// 菜单接口
+// 本地菜单接口
 export const menuService = {
   // 获取菜单列表，模拟网络请求
   getMenuList(

@@ -90,6 +90,9 @@ axiosInstance.interceptors.response.use(
     } else if (code === ApiStatus.forbidden) {
       ElMessage({ message: msg, type: 'warning' })
       return Promise.reject(new Error(msg))
+    } else if (code === ApiStatus.warning) {
+      ElMessage({ message: msg, type: 'warning' })
+      return Promise.reject(new Error(msg))
     } else if (code !== ApiStatus.success) {
       ElNotification.error({ title: msg })
       return Promise.reject('error')

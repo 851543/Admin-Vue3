@@ -1,5 +1,5 @@
 import { $t } from '@/language'
-import { MenuListType } from '@/types/menu'
+import { MenuListType, MenuResult } from '@/types/menu'
 
 // 创建递归函数处理嵌套路由
 /**
@@ -31,6 +31,101 @@ export const processRoute = (route: MenuListType, parentPath = ''): MenuListType
 }
 
 /**
+ * 处理菜单数据，转换为前端所需的树形结构
+ * @param menuList 原始菜单列表
+ * @returns 处理后的菜单树
+ * @throws {Error} 当输入数据格式不正确时抛出错误
+ */
+export const processMenu = (menuList: MenuResult[]): MenuListType[] => {
+  if (!Array.isArray(menuList)) {
+    throw new Error('菜单列表必须是数组类型')
+  }
+  // 使用 reduce 优化父子关系映射构建
+  const { menuMap, rootMenus } = menuList.reduce<{
+    menuMap: Map<number, MenuResult[]>
+    rootMenus: MenuResult[]
+  }>(
+    (acc, menu) => {
+      const { menuMap, rootMenus } = acc
+      const parentId = menu.parentId
+
+      // 先将所有菜单项添加到 Map 中
+      if (!menuMap.has(menu.menuId)) {
+        menuMap.set(menu.menuId, [])
+      }
+
+      // 如果有父级菜单，将当前菜单添加到父级的子菜单列表中
+      if (menuList.some((item) => item.menuId === parentId)) {
+        const children = menuMap.get(parentId) || []
+        menuMap.set(parentId, [...children, menu])
+      } else {
+        // 如果找不到父级菜单，则作为根菜单
+        rootMenus.push(menu)
+      }
+
+      return acc
+    },
+    { menuMap: new Map(), rootMenus: [] }
+  )
+
+  // 提取路径构建逻辑到独立函数
+  const buildPath = (route: MenuResult, parentPath: string): string => {
+    if (!route.path) return ''
+    if (route.isFrame === '1') return route.path
+    if (!parentPath) return route.path
+    return `${parentPath}/${route.path}`.replace(/\/+/g, '/')
+  }
+
+  // 提取元数据构建逻辑到独立函数
+  const buildMetaData = (route: MenuResult): MenuListType['meta'] => ({
+    title: route.menuName,
+    icon: route.icon,
+    isIframe: route.isFrame === '1',
+    keepAlive: route.isCache === '0',
+    isHide: route.visible === '1',
+    isHideTab: route.visible === '1',
+    showBadge: false,
+    showTextBadge: undefined,
+    link: route.isFrame === '1' ? route.path : undefined,
+    iframeSrc: route.isFrame === '1' ? route.path : undefined,
+    authList: route.perms
+      ? [
+          {
+            id: route.menuId,
+            title: route.menuName,
+            auth_mark: route.perms
+          }
+        ]
+      : [],
+    isInMainContainer: route.menuType === 'C',
+    menuType: route.menuType,
+    sort: route.orderNum,
+    isEnable: route.status === '0',
+    createTime: route.createTime,
+    status: route.status
+  })
+
+  // 递归处理菜单树
+  const processMenuItems = (items: MenuResult[], parentPath: string = ''): MenuListType[] => {
+    return items.map((route): MenuListType => {
+      const currentPath = buildPath(route, parentPath)
+      const children = menuMap.get(route.menuId) || []
+
+      return {
+        id: route.menuId,
+        name: route.routeName || route.menuName,
+        path: currentPath,
+        component: route.component,
+        meta: buildMetaData(route),
+        children: children.length > 0 ? processMenuItems(children, currentPath) : []
+      }
+    })
+  }
+
+  return processMenuItems(rootMenus)
+}
+
+/**
  * 保存 iframe 路由到 sessionStorage 中
  * @param list iframe 路由列表
  */
@@ -41,7 +136,7 @@ export const saveIframeRoutes = (list: MenuListType[]): void => {
 }
 
 // 获取 iframe 路由
-export const getIframeRoutes = () => {
+export const getIframeRoutes = (): MenuListType[] => {
   return JSON.parse(sessionStorage.getItem('iframeRoutes') || '[]')
 }
 
@@ -50,6 +145,6 @@ export const getIframeRoutes = () => {
  * @param title 菜单标题，可以是 i18n 的 key，也可以是字符串，比如：'用户列表'
  * @returns 格式化后的菜单标题
  */
-export const formatMenuTitle = (title: string) => {
+export const formatMenuTitle = (title: string): string => {
   return title.startsWith('menus.') ? $t(title) : title
 }
