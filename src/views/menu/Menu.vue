@@ -21,7 +21,7 @@
         </el-form>
       </template>
       <template #bottom>
-        <el-button v-auth="'add'" @click="showModel('add')" v-ripple>添加菜单</el-button>
+        <el-button @click="showModel('add')" v-ripple>添加菜单</el-button>
       </template>
     </table-bar>
 
@@ -34,12 +34,12 @@
         </el-table-column>
         <el-table-column label="图标" prop="icon" v-if="columns[1].show">
           <template #default="scope">
-            <i class="menu-icon iconfont-sys">{{ scope.row.meta?.icon }}</i>
+            <i class="iconfont-sys" v-html="scope.row.meta?.icon" />
           </template>
         </el-table-column>
         <el-table-column label="排序" prop="sort" v-if="columns[2].show">
           <template #default="scope">
-            <i class="menu-icon iconfont-sys">{{ scope.row.meta?.sort }}</i>
+            {{ scope.row.meta?.sort }}
           </template>
         </el-table-column>
         <el-table-column label="权限标识" prop="name" v-if="columns[3].show">
@@ -66,9 +66,21 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
-            <button-table type="add" v-auth="'add'" @click="showModel('add', scope.row)" />
-            <button-table type="edit" v-auth="'edit'" @click="showModel('edit', scope.row)" />
-            <button-table type="delete" v-auth="'delete'" @click="deleteMenu(scope.row)" />
+            <button-table
+              type="add"
+              v-auth="['system:menu:add']"
+              @click="showModel('add', scope.row)"
+            />
+            <button-table
+              type="edit"
+              v-auth="['system:menu:edit']"
+              @click="showModel('edit', scope.row)"
+            />
+            <button-table
+              type="delete"
+              v-auth="['system:menu:remove']"
+              @click="deleteMenu(scope.row)"
+            />
           </template>
         </el-table-column>
       </template>
@@ -121,7 +133,7 @@
           <el-row :gutter="24">
             <el-col :span="12">
               <el-form-item label="菜单图标">
-                <icon-selector :iconType="iconType" v-model="form.icon" />
+                <icon-selector :iconType="iconType" @getIcon="(icon) => (form.icon = icon)" />
               </el-form-item>
             </el-col>
             <el-col :span="12">

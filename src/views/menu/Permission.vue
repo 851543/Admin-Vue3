@@ -84,9 +84,9 @@
         v-auth="'add'" 相匹配，则显示该按钮</p
       >
       <el-row>
-        <el-button v-auth="'add'" type="primary" size="default">新增</el-button>
-        <el-button v-auth="'edit'" type="default" size="default">编辑</el-button>
-        <el-button v-auth="'delete'" type="danger" size="default">删除</el-button>
+        <el-button type="primary" size="default">新增</el-button>
+        <el-button type="default" size="default">编辑</el-button>
+        <el-button type="danger" size="default">删除</el-button>
       </el-row>
 
       <b>代码示例：</b>
