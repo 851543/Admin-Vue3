@@ -26,10 +26,17 @@ export type MenuListType = {
 }
 
 // 基础接口返回的数据结构
-export interface BaseResult<T = any> {
+export interface BaseArrayResult<T = any> {
   code: number // 状态码
   msg: string // 消息
   data: T[] // 数据
+}
+
+// 基础接口返回的数据结构
+export interface BaseObjectResult<T = any> {
+  code: number // 状态码
+  msg: string // 消息
+  data: T // 数据
 }
 
 export interface MenuResult {

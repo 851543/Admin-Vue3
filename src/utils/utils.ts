@@ -1,3 +1,5 @@
+import type { FormInstance } from 'element-plus'
+
 /**
  * 常用 JavaScript 函数片段
  * author chen tao
@@ -250,4 +252,11 @@ export const base64ToBlob = (base64Data: string, mimeType: string = 'image/png')
 
   const byteArray = new Uint8Array(byteNumbers)
   return new Blob([byteArray], { type: mimeType })
+}
+
+// 表单重置
+export function resetForm(formRef: FormInstance | undefined) {
+  if (formRef) {
+    formRef.resetFields()
+  }
 }

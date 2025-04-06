@@ -124,7 +124,7 @@
   import { FormInstance } from 'element-plus'
   import { ElMessageBox, ElMessage } from 'element-plus'
   import type { FormRules } from 'element-plus'
-
+  import { resetForm } from '@/utils/utils'
   const dialogType = ref('add')
   const dialogVisible = ref(false)
 
@@ -175,11 +175,6 @@
     sex: '',
     level: ''
   })
-
-  const resetForm = (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    formEl.resetFields()
-  }
 
   const tableData = ACCOUNT_TABLE_DATA
 

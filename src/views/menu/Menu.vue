@@ -10,8 +10,13 @@
       <template #top>
         <el-form :model="searchForm" ref="searchFormRef" label-width="82px">
           <el-row :gutter="20">
-            <form-input label="菜单名称" v-model="searchForm.menuName" />
-            <form-select label="状态" v-model="searchForm.status" :options="statusOptions" />
+            <form-input label="菜单名称" prop="menuName" v-model="searchForm.menuName" />
+            <form-select
+              label="状态"
+              prop="status"
+              v-model="searchForm.status"
+              :options="statusOptions"
+            />
           </el-row>
         </el-form>
       </template>
@@ -22,22 +27,22 @@
 
     <art-table :data="tableData">
       <template #default>
-        <el-table-column label="菜单名称" v-if="columns[0].show">
+        <el-table-column label="菜单名称" prop="menuName" v-if="columns[0].show">
           <template #default="scope">
             {{ formatMenuTitle(scope.row.meta?.title) }}
           </template>
         </el-table-column>
-        <el-table-column label="图标" v-if="columns[1].show">
+        <el-table-column label="图标" prop="icon" v-if="columns[1].show">
           <template #default="scope">
             <i class="menu-icon iconfont-sys">{{ scope.row.meta?.icon }}</i>
           </template>
         </el-table-column>
-        <el-table-column label="排序" v-if="columns[2].show">
+        <el-table-column label="排序" prop="sort" v-if="columns[2].show">
           <template #default="scope">
             <i class="menu-icon iconfont-sys">{{ scope.row.meta?.sort }}</i>
           </template>
         </el-table-column>
-        <el-table-column label="权限标识" v-if="columns[3].show">
+        <el-table-column label="权限标识" prop="name" v-if="columns[3].show">
           <template #default="scope">
             <template v-if="scope.row.meta?.authList && scope.row.meta.authList.length > 0">
               <div v-for="(auth, index) in scope.row.meta.authList" :key="index">{{
@@ -46,15 +51,15 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column label="组件路径" v-if="columns[4].show" />
-        <el-table-column label="状态" width="80" v-if="columns[5].show">
+        <el-table-column label="组件路径" prop="component" v-if="columns[4].show" />
+        <el-table-column label="状态" width="80" prop="status" v-if="columns[5].show">
           <template #default="scope">
             <el-tag :type="scope.row.meta?.status === '0' ? 'success' : 'danger'" size="small">
               {{ scope.row.meta?.status === '0' ? '正常' : '停用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" v-if="columns[6].show">
+        <el-table-column label="创建时间" prop="createTime" v-if="columns[6].show">
           <template #default="scope">
             {{ scope.row.meta?.createTime }}
           </template>
@@ -81,7 +86,7 @@
 
         <el-form-item label="上级菜单">
           <el-tree-select
-            v-model="form.menuId"
+            v-model="form.parentId"
             :data="[{ id: 0, label: '主类目', children: menuOptions }]"
             :props="{
               value: 'id',
@@ -168,17 +173,12 @@
                   </span>
                 </template>
                 <el-radio-group v-model="form.isFrame">
-                  <el-radio :label="'0'">是</el-radio>
-                  <el-radio :label="'1'">否</el-radio>
+                  <el-radio :value="'0'">是</el-radio>
+                  <el-radio :value="'1'">否</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
           </el-row>
-
-          <!-- 目录特有属性 -->
-          <template v-if="form.menuType === 'M'">
-            <!-- 移除了这里的菜单图标，因为已经移到了共有属性中 -->
-          </template>
 
           <!-- 菜单特有属性 -->
           <template v-if="form.menuType === 'C'">
@@ -252,8 +252,8 @@
                     </span>
                   </template>
                   <el-radio-group v-model="form.isCache">
-                    <el-radio :label="'0'">缓存</el-radio>
-                    <el-radio :label="'1'">不缓存</el-radio>
+                    <el-radio :value="'0'">缓存</el-radio>
+                    <el-radio :value="'1'">不缓存</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>
@@ -300,8 +300,8 @@
                 </span>
               </template>
               <el-radio-group v-model="form.visible">
-                <el-radio :label="'0'">显示</el-radio>
-                <el-radio :label="'1'">隐藏</el-radio>
+                <el-radio :value="'0'">显示</el-radio>
+                <el-radio :value="'1'">隐藏</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -319,8 +319,8 @@
                 </span>
               </template>
               <el-radio-group v-model="form.status">
-                <el-radio :label="'0'">正常</el-radio>
-                <el-radio :label="'1'">停用</el-radio>
+                <el-radio :value="'0'">正常</el-radio>
+                <el-radio :value="'1'">停用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -350,14 +350,16 @@
   import type { MenuListType, MenuOptionType } from '@/types/menu'
   import { vRipple } from '@/directives/ripple'
   import { QuestionFilled } from '@element-plus/icons-vue'
-
+  import { resetForm } from '@/utils/utils'
   const dialogVisible = ref(false)
-  // 清空表单数据并设置默认值
-  const defaultForm = {
-    menuId: '',
+  const searchFormRef = ref<FormInstance>()
+
+  // 定义初始表单状态
+  const initialFormState = {
+    menuId: '' as string | number,
     menuName: '',
-    parentName: '',
-    parentId: '',
+    parentName: '' as string | null,
+    parentId: '' as string | number,
     orderNum: 0,
     path: '',
     component: '',
@@ -372,7 +374,8 @@
     status: '0',
     remark: ''
   }
-  const form = reactive(defaultForm)
+
+  const form = reactive({ ...initialFormState })
 
   const iconType = ref(IconTypeEnum.UNICODE)
 
@@ -428,55 +431,59 @@
     })
   }
 
-  const showModel = (type: string, row?: any) => {
+  const showModel = async (type: string, row?: any) => {
     dialogVisible.value = true
-    isEdit.value = false
+    isEdit.value = type === 'edit'
 
-    // 使用类型安全的方式设置表单数据
-    Object.assign(form, defaultForm)
-    form.menuId = row.id
+    // 重置表单数据到初始状态
+    Object.assign(form, initialFormState)
+
+    form.parentId = row.id
     if (type === 'edit' && row) {
-      isEdit.value = true
-      // 回显数据
-      form.menuName = formatMenuTitle(row.meta.title)
-      form.path = row.path
-      form.perms = row.name
-      form.icon = row.meta.icon
-      form.orderNum = row.meta.sort || 1
-      form.menuType = row.meta.isMenu ? 'C' : 'M'
-      form.visible = row.meta.isHidden ? '1' : '0'
-      form.status = row.meta.isEnable ? '0' : '1'
-      form.query = row.meta.link
-      form.isFrame = row.meta.isIframe ? '0' : '1'
-      form.isCache = row.meta.keepAlive ? '0' : '1'
-      form.routeName = row.meta.title
-      form.component = row.meta.component
+      const res = await getMenuInfo(row.id)
+      if (res) {
+        form.menuId = res.menuId
+        form.menuName = res.menuName
+        form.parentName = res.parentName
+        form.parentId = res.parentId
+        form.orderNum = res.orderNum
+        form.path = res.path
+        form.component = res.component
+        form.query = res.query
+        form.routeName = res.routeName
+        form.isFrame = res.isFrame
+        form.isCache = res.isCache
+        form.menuType = res.menuType
+        form.visible = res.visible
+        form.status = res.status
+        form.perms = res.perms
+        form.icon = res.icon
+      }
     }
   }
 
-  const resetForm = (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    formEl.resetFields()
-    searchForm.menuName = ''
-    searchForm.status = ''
-  }
-
   const deleteMenu = async (row: any) => {
-    await ElMessageBox.confirm('是否确认删除名称为"' + row.meta.title + '"的菜单项?', '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
+    try {
+      await ElMessageBox.confirm('是否确认删除名称为"' + row.meta.title + '"的菜单项?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
 
-    await MenuService.deleteMenu(row.id)
-    getMenuList()
+      await MenuService.deleteMenu(row.id)
+      ElMessage.success('删除成功')
+      getMenuList()
+    } catch (error) {
+      if (error !== 'cancel') {
+        console.error('删除菜单失败:', error)
+      }
+    }
   }
 
   const search = () => {
     getMenuList()
   }
 
-  const searchFormRef = ref<FormInstance>()
   const searchForm = reactive({
     menuName: '',
     status: ''
@@ -510,6 +517,13 @@
     const res = await MenuService.getMenuTreeSelect({})
     if (res.code === 200) {
       menuOptions.value = res.data
+    }
+  }
+
+  const getMenuInfo = async (id: number) => {
+    const res = await MenuService.getMenuInfo(id)
+    if (res.code === 200) {
+      return res.data
     }
   }
 
