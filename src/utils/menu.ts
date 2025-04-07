@@ -1,6 +1,6 @@
 import { $t } from '@/language'
-import { MenuListType, MenuResult } from '@/types/menu'
-
+import { MenuListType } from '@/types/menu'
+import { MenuResult } from '@/types/system/menu'
 // 创建递归函数处理嵌套路由
 /**
  * 处理路由配置,转换为菜单数据结构

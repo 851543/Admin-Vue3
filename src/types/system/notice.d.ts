@@ -1,4 +1,4 @@
-import { BaseArrayResult, BaseObjectResult } from '../axios'
+import { BaseArrayResult, BaseObjectResult, BasePageResult } from '../axios'
 
 export interface NoticeResult {
   noticeId: number
@@ -13,5 +13,6 @@ export interface NoticeResult {
   status: string
 }
 
+export type NoticeListPageResult = BasePageResult<NoticeResult>
 export type NoticeListResult = BaseArrayResult<NoticeResult>
 export type NoticeInfoResult = BaseObjectResult<NoticeResult>
