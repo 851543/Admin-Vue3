@@ -1,5 +1,6 @@
 <template>
   <div class="menu-top">
+    <!-- bug: 菜单项过长时，菜单项会超出容器 -->
     <el-menu
       :ellipsis="true"
       class="el-menu-popper-demo"
@@ -7,7 +8,7 @@
       :default-active="routerPath"
       text-color="var(--art-text-gray-700)"
       :popper-offset="16"
-      :style="{ width: width + 'px' }"
+      :style="{ width: width - 300 + 'px' }"
       background-color="transparent"
     >
       <MenuTopSubmenu
@@ -54,13 +55,23 @@
   .menu-top {
     .el-menu {
       border: none;
+
+      :deep(.el-sub-menu) {
+        .el-sub-menu__title {
+          padding: 0 20px;
+        }
+      }
+
+      :deep(.el-menu-item) {
+        padding: 0 20px;
+      }
     }
   }
 
   @media only screen and (max-width: $device-notebook) {
     .menu-top {
       .el-menu {
-        width: 38vw !important;
+        width: 28vw !important;
       }
     }
   }
