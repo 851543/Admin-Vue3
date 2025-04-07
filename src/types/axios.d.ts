@@ -38,90 +38,22 @@ export interface PaginationResult<T> extends BaseResult {
   data: T
 }
 
-// 验证码返回数据结构
-export interface CaptchaResult {
-  captchaEnabled: boolean
-  uuid: string
-  img: string
+// 基础数组返回数据结构
+export interface BaseArrayResult<T = any> {
+  code: number // 状态码
+  msg: string // 消息
+  data: T[] // 数据
 }
 
-// 登录功能开关返回数据结构
-export interface loginFunctionEnabledResult {
-  sliderEnabled: boolean
-  forgetPasswordEnabled: boolean
-  registerUserEnabled: boolean
+// 基础对象返回数据结构
+export interface BaseObjectResult<T = any> {
+  code: number // 状态码
+  msg: string // 消息
+  data: T // 数据
 }
 
-// 登录返回数据结构
-export interface LoginResult<T> {
-  msg: string
+// code msg 返回数据结构
+export interface CodeMsgResult {
   code: number
-  permissions: string[]
-  roles: string[]
-  user: T
-}
-
-// 个人信息返回数据结构
-export interface ProfileResult extends BaseResult {
-  postGroup: string
-  roleGroup: string
-}
-
-// 用户信息返回数据结构
-export interface UserInfoResult {
-  createBy: string
-  createTime: string
-  updateBy: string
-  updateTime: string
-  remark: string
-  params: {
-    '@type': 'java.util.HashMap'
-  }
-  userId: number
-  deptId: number
-  userName: string
-  nickName: string
-  email: string
-  phonenumber: string
-  sex: string
-  avatar: string
-  password: string
-  status: string
-  delFlag: string
-  loginIp: string
-  loginDate: string
-  dept: DeptResult
-  roles: []
-  roleIds: []
-  postIds: []
-  roleId: number
-  admin: boolean
-}
-
-export interface DeptResult {
-  deptId: number
-  parentId: number
-  ancestors: string
-  deptName: string
-  orderNum: number
-  leader: string
-  phone: string
-  email: string
-  status: string
-  delFlag: string
-  parentName: string
-  children: []
-}
-
-export interface NoticeResult {
-  noticeId: number
-  noticeTitle: string
-  noticeType: string
-  noticeContent: string
-  createBy: string
-  createTime: string
-  updateBy: string
-  updateTime: string
-  remark: string
-  status: string
+  msg: string
 }

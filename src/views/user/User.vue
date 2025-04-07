@@ -351,8 +351,9 @@
     data.append('avatarfile', blob, 'avatar')
     const res = await UserService.editProfileAvatar(data)
     if (res.code === 200) {
-      userStore.setAvatar((res as { imgUrl: string }).imgUrl)
+      userStore.setAvatar(res.imgUrl)
       avatarUrl.value = userStore.info.avatar || defaultAvatar
+      ElMessage.success(res.msg)
     }
   }
 

@@ -1,17 +1,12 @@
 import request from '@/utils/http'
-import { LoginType, RegisterType } from './model/loginModel'
-import {
-  BaseResult,
-  CaptchaResult,
-  loginFunctionEnabledResult,
-  LoginResult,
-  UserInfoResult
-} from '@/types/axios'
+import { BaseResult } from '@/types/axios'
+import { CaptchaResult, loginFunctionEnabledResult, LoginResult } from '@/types/login'
+import { UserResult } from '@/types/system/user'
 
 // 登陆
 export class LoginService {
   // 登录方法
-  static login(data: LoginType) {
+  static login(data: any) {
     return request.post<BaseResult>({
       url: '/login',
       data
@@ -24,7 +19,7 @@ export class LoginService {
     })
   }
   // 注册方法
-  static register(data: RegisterType) {
+  static register(data: any) {
     return request.post<BaseResult>({
       url: '/register',
       data
@@ -32,7 +27,7 @@ export class LoginService {
   }
   // 获取用户信息
   static getInfo() {
-    return request.get<LoginResult<UserInfoResult>>({
+    return request.get<LoginResult<UserResult>>({
       url: '/getInfo'
     })
   }
