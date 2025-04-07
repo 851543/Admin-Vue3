@@ -22,10 +22,13 @@
       </template>
       <template #bottom>
         <el-button @click="showModel('add')" v-ripple>添加菜单</el-button>
+        <el-button @click="toggleExpand" v-ripple>
+          {{ isExpandAll ? '折叠' : '展开' }}
+        </el-button>
       </template>
     </table-bar>
 
-    <art-table :data="tableData">
+    <art-table :data="tableData" ref="tableRef">
       <template #default>
         <el-table-column label="菜单名称" prop="menuName" v-if="columns[0].show">
           <template #default="scope">
@@ -431,12 +434,13 @@
 
     await formRef.value.validate(async (valid) => {
       if (valid) {
+        let res = null
         if (isEdit.value) {
-          await MenuService.updateMenu(form)
+          res = await MenuService.updateMenu(form)
         } else {
-          await MenuService.addMenu(form)
+          res = await MenuService.addMenu(form)
         }
-        ElMessage.success(`${isEdit.value ? '修改' : '新增'}成功`)
+        ElMessage.success(res.msg)
         dialogVisible.value = false
         getMenuList()
       }
@@ -482,8 +486,8 @@
         type: 'warning'
       })
 
-      await MenuService.deleteMenu(row.id)
-      ElMessage.success('删除成功')
+      const res = await MenuService.deleteMenu(row.id)
+      ElMessage.success(res.msg)
       getMenuList()
     } catch (error) {
       if (error !== 'cancel') {
@@ -510,6 +514,7 @@
     { name: '状态', show: true },
     { name: '创建时间', show: true }
   ])
+
   const changeColumn = (list: any) => {
     columns.values = list
   }
@@ -536,6 +541,26 @@
     const res = await MenuService.getMenuInfo(id)
     if (res.code === 200) {
       return res.data
+    }
+  }
+
+  const tableRef = ref()
+  const isExpandAll = ref(false)
+
+  const toggleExpand = () => {
+    isExpandAll.value = !isExpandAll.value
+    if (tableRef.value) {
+      const table = tableRef.value.$el.querySelector('.el-table__body-wrapper')
+      const rows = table.querySelectorAll('.el-table__row')
+      rows.forEach((row: HTMLElement) => {
+        const expandBtn = row.querySelector('.el-table__expand-icon') as HTMLElement
+        if (
+          expandBtn &&
+          expandBtn.classList.contains('el-table__expand-icon--expanded') !== isExpandAll.value
+        ) {
+          expandBtn.click()
+        }
+      })
     }
   }
 
