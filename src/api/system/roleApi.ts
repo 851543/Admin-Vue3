@@ -1,11 +1,12 @@
-import { RoleListResult, RoleInfoResult } from '@/types/system/role'
+import { RoleListResult, RoleInfoResult, RoleResult } from '@/types/system/role'
+import { BasePageResult } from '@/types/axios'
 import request from '@/utils/http'
 
-// 角色服务
+// 角色
 export class RoleService {
   // 查询角色列表
   static listRole(query: object) {
-    return request.get<RoleListResult>({
+    return request.get<BasePageResult<RoleResult>>({
       url: '/system/role/list',
       params: query
     })
@@ -46,6 +47,7 @@ export class RoleService {
   static changeRoleStatus(data: object) {
     return request.put<RoleInfoResult>({
       url: '/system/role/changeStatus',
+      headers: { 'Content-Type': 'application/json' },
       data: data
     })
   }
@@ -114,6 +116,18 @@ export class RoleService {
   static deptTree(roleId: number) {
     return request.get<RoleInfoResult>({
       url: '/system/role/deptTree/' + roleId
+    })
+  }
+
+  // 导出角色
+  static exportExcel(data: object) {
+    return request.post<RoleInfoResult>({
+      url: '/system/role/export',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      responseType: 'blob',
+      data: data
     })
   }
 }

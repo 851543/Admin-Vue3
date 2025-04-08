@@ -6,11 +6,17 @@
       @reset="resetForm(searchFormRef)"
       @changeColumn="changeColumn"
       :columns="columns"
+      :topButtons="10"
     >
       <template #top>
         <el-form :model="searchForm" ref="searchFormRef" label-width="82px">
           <el-row :gutter="20">
-            <form-input label="菜单名称" prop="menuName" v-model="searchForm.menuName" />
+            <form-input
+              label="菜单名称"
+              prop="menuName"
+              v-model="searchForm.menuName"
+              @keyup.enter="search"
+            />
             <form-select
               label="状态"
               prop="status"
@@ -362,7 +368,8 @@
   import { IconTypeEnum } from '@/enums/appEnum'
   import { formatMenuTitle } from '@/utils/menu'
   import { MenuService } from '@/api/system/menuApi'
-  import type { MenuListType, MenuOptionType } from '@/types/menu'
+  import type { MenuListType } from '@/types/menu'
+  import type { MenuOptionType } from '@/types/system/menu'
   import { vRipple } from '@/directives/ripple'
   import { QuestionFilled } from '@element-plus/icons-vue'
   import { resetForm } from '@/utils/utils'
@@ -417,6 +424,7 @@
   const menuOptions = ref<MenuOptionType[]>([])
 
   import { processMenu } from '@/utils/menu'
+  import { el } from 'element-plus/es/locale'
   const getMenuList = async () => {
     const res = await MenuService.getMenuList(searchForm)
     if (res.code === 200) {

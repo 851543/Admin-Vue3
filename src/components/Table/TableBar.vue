@@ -2,7 +2,7 @@
   <div class="table-bar">
     <div class="top-wrap" v-show="showSearchWrap">
       <slot name="top"> </slot>
-      <div class="buttons">
+      <div class="buttons" :style="{ bottom: topButtons + 'px' }">
         <el-button type="primary" @click="search" v-ripple>搜索</el-button>
         <el-button @click="reset" v-ripple>重置</el-button>
       </div>
@@ -71,6 +71,10 @@
     layout: {
       type: String,
       default: 'search, refresh, column'
+    },
+    topButtons: {
+      type: Number,
+      default: 20
     }
   })
 
@@ -141,7 +145,6 @@
       .buttons {
         position: absolute;
         right: 0;
-        bottom: 20px;
       }
     }
 
