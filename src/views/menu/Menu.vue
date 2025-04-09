@@ -424,7 +424,6 @@
   const menuOptions = ref<MenuOptionType[]>([])
 
   import { processMenu } from '@/utils/menu'
-  import { el } from 'element-plus/es/locale'
   const getMenuList = async () => {
     const res = await MenuService.getMenuList(searchForm)
     if (res.code === 200) {

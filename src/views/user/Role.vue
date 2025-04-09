@@ -1,8 +1,8 @@
 <template>
   <div class="page-content">
-    <el-form :model="queryParams" ref="searchFormRef" label-width="82px">
-      <el-row type="flex" :gutter="20">
-        <el-col :span="5">
+    <el-form :model="queryParams" ref="searchFormRef">
+      <el-row :gutter="20">
+        <el-col :xs="24" :sm="12" :lg="6">
           <el-form-item label="角色名称" prop="roleName" @keyup.enter="handleQuery">
             <el-input
               v-model="queryParams.roleName"
@@ -11,7 +11,7 @@
             ></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="5">
+        <el-col :xs="24" :sm="12" :lg="6">
           <el-form-item label="权限字符" prop="roleKey" @keyup.enter="handleQuery">
             <el-input
               v-model="queryParams.roleKey"
@@ -20,11 +20,11 @@
             ></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="5">
+        <el-col :xs="24" :sm="12" :lg="6">
           <el-form-item label="状态" prop="status">
             <el-select
               v-model="queryParams.status"
-              placeholder="请选择状态"
+              placeholder="请选择"
               clearable
               style="width: 100%"
             >
@@ -37,13 +37,11 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="9">
-          <el-form-item style="float: right">
-            <el-button @click="handleQuery" v-ripple>搜索</el-button>
-            <el-button @click="resetForm(searchFormRef)" v-ripple>重置</el-button>
-            <el-button @click="exportExcel" v-ripple>导出</el-button>
-            <el-button @click="showDialog('add')" v-ripple>新增角色</el-button>
-          </el-form-item>
+        <el-col :xs="24" :sm="12" :lg="6">
+          <el-button @click="handleQuery" v-ripple>搜索</el-button>
+          <el-button @click="resetForm(searchFormRef)" v-ripple>重置</el-button>
+          <el-button @click="exportExcel" v-ripple>导出</el-button>
+          <el-button @click="showDialog('add')" v-ripple>新增角色</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -361,33 +359,12 @@
 
 <style lang="scss" scoped>
   .page-content {
-    :deep(.el-form-item) {
-      margin-bottom: 18px;
-      .el-form-item__content {
-        width: 100%;
-      }
-    }
-    :deep(.el-input),
-    :deep(.el-select) {
-      width: 100%;
-    }
-    :deep(.el-form-item:last-child) {
-      margin-bottom: 18px;
-      text-align: right;
-    }
     .svg-icon {
       width: 1.8em;
       height: 1.8em;
       overflow: hidden;
       vertical-align: -8px;
       fill: currentcolor;
-    }
-    .order-permissions {
-      display: flex;
-      gap: 20px;
-      .el-checkbox {
-        margin-right: 0;
-      }
     }
   }
 </style>
