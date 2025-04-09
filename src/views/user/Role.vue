@@ -77,8 +77,8 @@
               />
               <button-more
                 :list="[
-                  { key: 'permission', label: '数据权限' },
-                  { key: 'edit', label: '分配用户' }
+                  { key: 'dataScope', label: '数据权限' },
+                  { key: 'allocation', label: '分配用户' }
                 ]"
                 @click="buttonMoreClick($event, scope.row)"
               />
@@ -91,11 +91,7 @@
     <el-dialog
       v-model="dialogVisible"
       :title="
-        dialogType === 'add'
-          ? '新增角色'
-          : dialogType === 'permission'
-            ? '分配数据权限'
-            : '编辑角色'
+        dialogType === 'add' ? '新增角色' : dialogType === 'dataScope' ? '分配数据权限' : '编辑角色'
       "
       width="500px"
       append-to-body
@@ -105,7 +101,7 @@
         :model="form"
         :rules="rules"
         label-width="100px"
-        v-if="dialogType !== 'permission'"
+        v-if="dialogType !== 'dataScope'"
       >
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" />
@@ -132,7 +128,7 @@
             placeholder="请输入角色顺序"
           />
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
             <el-radio v-for="dict in statusOptions" :key="dict.value" :label="dict.value">{{
               dict.label
@@ -162,15 +158,15 @@
             :props="{ label: 'label', children: 'children' }"
           ></el-tree>
         </el-form-item>
-        <el-form-item label="备注">
+        <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
-      <el-form ref="permissionFormRef" :model="form" label-width="100px" v-else>
-        <el-form-item label="角色名称">
+      <el-form ref="dataScopeFormRef" :model="form" label-width="100px" v-else>
+        <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" disabled />
         </el-form-item>
-        <el-form-item label="权限字符">
+        <el-form-item label="权限字符" prop="roleKey">
           <el-input v-model="form.roleKey" disabled />
         </el-form-item>
         <el-form-item label="权限范围">
@@ -210,7 +206,11 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSubmit(formRef)">提交</el-button>
+          <el-button
+            type="primary"
+            @click="handleSubmit(dialogType === 'dataScope' ? dataScopeFormRef : formRef)"
+            >提交</el-button
+          >
         </div>
       </template>
     </el-dialog>
@@ -224,7 +224,7 @@
   import type { FormInstance, FormRules, CheckboxValueType } from 'element-plus'
   import { RoleService } from '@/api/system/roleApi'
   import { MenuService } from '@/api/system/menuApi'
-  import type { RoleResult } from '@/types/system/role'
+  import type { RoleResult, RoleOptionType } from '@/types/system/role'
   import { resetForm } from '@/utils/utils'
   import type { MenuOptionType } from '@/types/system/menu'
 
@@ -243,6 +243,7 @@
   const searchFormRef = ref<FormInstance>()
 
   const formRef = ref<FormInstance>()
+  const dataScopeFormRef = ref<FormInstance>()
 
   const rules = reactive<FormRules>({
     roleName: [
@@ -253,7 +254,7 @@
     roleSort: [{ required: true, message: '角色顺序不能为空', trigger: 'blur' }]
   })
 
-  const form = reactive({
+  const initialFormState = {
     roleId: 0,
     roleName: '',
     roleKey: '',
@@ -268,7 +269,9 @@
     deptIds: [],
     permissions: [],
     admin: false
-  })
+  }
+
+  const form = reactive({ ...initialFormState })
 
   const dataScopeOptions = ref([
     { label: '全部数据权限', value: '1' },
@@ -311,8 +314,17 @@
     return res
   }
 
+  /** 根据角色ID查询部门树结构 */
+  const getDeptTree = async (roleId: any) => {
+    const res = await RoleService.deptTree(roleId)
+    if (res.code === 200) {
+      deptOptions.value = res.depts
+    }
+    return res
+  }
+
   // 修改角色
-  const updateRole = async (roleId: number) => {
+  const handleUpdateRole = async (roleId: number) => {
     const roleMenu = getRoleMenuTreeselect(roleId)
     RoleService.getRole(roleId).then((response) => {
       Object.assign(form, response.data)
@@ -329,19 +341,55 @@
     })
   }
 
+  // 分配数据权限
+  const handleDataScope = async (roleId: number) => {
+    const deptTreeSelect = getDeptTree(roleId)
+    RoleService.getRole(roleId).then((response) => {
+      Object.assign(form, response.data)
+      nextTick(() => {
+        deptTreeSelect.then((res) => {
+          let checkedKeys = res.checkedKeys
+          checkedKeys.forEach((v) => {
+            nextTick(() => {
+              deptRef.value.setChecked(v, true, false)
+            })
+          })
+        })
+      })
+    })
+  }
   // 显示对话框
   const showDialog = async (type: string, row?: RoleResult) => {
     dialogType.value = type
     dialogVisible.value = true
     if (type === 'add') {
+      // 重置表单
+      Object.assign(form, initialFormState)
       return await getMenuTreeselect()
     }
     if (type === 'edit' && row) {
-      return await updateRole(row.roleId)
+      return await handleUpdateRole(row.roleId)
     }
-    if (type === 'permission' && row) {
-      return await updateRole(row.roleId)
-    }
+  }
+
+  /** 所有菜单节点数据 */
+  function getMenuAllCheckedKeys() {
+    // 目前被选中的菜单节点
+    let checkedKeys = menuRef.value.getCheckedKeys()
+    // 半选中的菜单节点
+    let halfCheckedKeys = menuRef.value.getHalfCheckedKeys()
+    checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys)
+    return checkedKeys
+  }
+
+  /** 所有部门节点数据 */
+  function getDeptAllCheckedKeys() {
+    // 目前被选中的部门节点
+    let checkedKeys = deptRef.value.getCheckedKeys()
+    // 半选中的部门节点
+    let halfCheckedKeys = deptRef.value.getHalfCheckedKeys()
+    checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys)
+    return checkedKeys
   }
 
   // 提交按钮
@@ -350,17 +398,22 @@
 
     await formEl.validate(async (valid) => {
       if (valid) {
-        let res = null
+        let res = null // 定义一个变量来存储请求的结果
         if (dialogType.value === 'add') {
+          form.menuIds = getMenuAllCheckedKeys()
           res = await RoleService.addRole(form)
-        } else if (dialogType.value === 'permission') {
-          res = await RoleService.dataScope(form)
-        } else {
+        } else if (dialogType.value === 'edit') {
+          form.menuIds = getMenuAllCheckedKeys()
           res = await RoleService.updateRole(form)
+        } else if (dialogType.value === 'dataScope') {
+          form.deptIds = getDeptAllCheckedKeys()
+          res = await RoleService.dataScope(form)
         }
-        ElMessage.success(res.msg)
-        dialogVisible.value = false
-        getList()
+        if (res) {
+          ElMessage.success(res.msg)
+          dialogVisible.value = false
+          getList()
+        }
       }
     })
   }
@@ -396,11 +449,10 @@
 
   // 更多按钮操作
   const buttonMoreClick = async (item: ButtonMoreItem, row: RoleResult) => {
-    if (item.key === 'permission') {
-      dialogType.value = 'permission'
-      dialogVisible.value = true
-      const res = await RoleService.getRole(row.roleId)
-      Object.assign(form, res.data)
+    dialogVisible.value = true
+    dialogType.value = item.key as string
+    if (item.key === 'dataScope') {
+      await handleDataScope(row.roleId)
     }
   }
 
@@ -422,7 +474,7 @@
   const deptExpand = ref(false)
   const deptNodeAll = ref(false)
   const deptRef = ref()
-  const deptOptions = ref([])
+  const deptOptions = ref<RoleOptionType[]>([])
 
   // 树形控件展开/折叠
   const handleCheckedTreeExpand = (value: CheckboxValueType, type: string) => {

@@ -49,9 +49,6 @@ export class MenuService {
   static updateMenu(data: object) {
     return request.put<MenuInfoResult>({
       url: '/system/menu',
-      headers: {
-        'Content-Type': 'application/json'
-      },
       data: data
     })
   }

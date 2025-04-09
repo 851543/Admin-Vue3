@@ -1,4 +1,4 @@
-import { BaseArrayResult, BaseObjectResult } from '../axios'
+import { BaseArrayResult, BaseObjectResult, CodeMsgResult } from '../axios'
 
 export interface RoleResult {
   createBy: string | null
@@ -20,6 +20,17 @@ export interface RoleResult {
   deptIds: number[]
   permissions: string[]
   admin: boolean
+}
+
+export interface roleDeptTreeselectResult extends CodeMsgResult {
+  depts: RoleOptionType[]
+  checkedKeys: number[]
+}
+
+export interface RoleOptionType {
+  id: number
+  label: string
+  children?: RoleOptionType[]
 }
 
 export type RoleListResult = BaseArrayResult<RoleResult>

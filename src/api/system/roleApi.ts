@@ -1,4 +1,9 @@
-import { RoleListResult, RoleInfoResult, RoleResult } from '@/types/system/role'
+import {
+  RoleListResult,
+  RoleInfoResult,
+  RoleResult,
+  roleDeptTreeselectResult
+} from '@/types/system/role'
 import { BasePageResult } from '@/types/axios'
 import request from '@/utils/http'
 
@@ -31,7 +36,6 @@ export class RoleService {
   static updateRole(data: object) {
     return request.put<RoleInfoResult>({
       url: '/system/role',
-      headers: { 'Content-Type': 'application/json' },
       data: data
     })
   }
@@ -48,7 +52,6 @@ export class RoleService {
   static changeRoleStatus(data: object) {
     return request.put<RoleInfoResult>({
       url: '/system/role/changeStatus',
-      headers: { 'Content-Type': 'application/json' },
       data: data
     })
   }
@@ -115,7 +118,7 @@ export class RoleService {
 
   // 获取角色部门树列表
   static deptTree(roleId: number) {
-    return request.get<RoleInfoResult>({
+    return request.get<roleDeptTreeselectResult>({
       url: '/system/role/deptTree/' + roleId
     })
   }

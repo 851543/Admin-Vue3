@@ -24,7 +24,8 @@ const axiosInstance = axios.create({
   validateStatus: (status) => status >= 200 && status < 300, // 只接受 2xx 的状态码
   headers: {
     get: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
-    post: { 'Content-Type': 'application/json;charset=utf-8' }
+    post: { 'Content-Type': 'application/json;charset=utf-8' },
+    put: { 'Content-Type': 'application/json;charset=utf-8' }
   },
   transformResponse: [
     (data, headers) => {

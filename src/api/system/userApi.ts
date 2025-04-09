@@ -23,7 +23,6 @@ export class UserService {
   static editProfile(data: object) {
     return request.put<BaseResult>({
       url: '/system/user/profile',
-      headers: { 'Content-Type': 'application/json' },
       data
     })
   }
