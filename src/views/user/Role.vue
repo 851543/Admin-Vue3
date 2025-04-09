@@ -62,18 +62,25 @@
           </template>
         </el-table-column>
         <el-table-column label="创建时间" prop="createTime" />
-        <el-table-column fixed="right" label="操作" width="100px">
+        <el-table-column fixed="right" label="操作" width="200px">
           <template #default="scope">
-            <el-row>
-              <button-more
-                :list="[
-                  { key: 'permission', label: '菜单权限' },
-                  { key: 'edit', label: '编辑角色' },
-                  { key: 'delete', label: '删除角色' }
-                ]"
-                @click="buttonMoreClick($event, scope.row)"
-              />
-            </el-row>
+            <button-table
+              type="edit"
+              v-auth="['system:menu:edit']"
+              @click="showDialog('edit', scope.row)"
+            />
+            <button-table
+              type="delete"
+              v-auth="['system:menu:remove']"
+              @click="deleteRole(scope.row)"
+            />
+            <button-more
+              :list="[
+                { key: 'permission', label: '数据权限' },
+                { key: 'edit', label: '分配用户' }
+              ]"
+              @click="buttonMoreClick($event, scope.row)"
+            />
           </template>
         </el-table-column>
       </template>
@@ -82,13 +89,25 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogType === 'add' ? '新增角色' : '编辑角色'"
-      width="30%"
+      width="500px"
+      append-to-body
     >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" />
         </el-form-item>
-        <el-form-item label="权限字符" prop="roleKey">
+        <el-form-item prop="roleKey">
+          <template #label>
+            <span>
+              <el-tooltip
+                content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasRole('admin')`))"
+                placement="top"
+              >
+                <el-icon><question-filled /></el-icon>
+              </el-tooltip>
+              权限字符
+            </span>
+          </template>
           <el-input v-model="form.roleKey" placeholder="请输入权限字符" />
         </el-form-item>
         <el-form-item label="角色顺序" prop="roleSort">
@@ -101,16 +120,33 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
-            <el-radio label="0">正常</el-radio>
-            <el-radio label="1">停用</el-radio>
+            <el-radio v-for="dict in statusOptions" :key="dict.value" :label="dict.value">{{
+              dict.label
+            }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="录单权限">
-          <div class="order-permissions">
-            <el-checkbox v-model="form.expandCollapse">展开/折叠</el-checkbox>
-            <el-checkbox v-model="form.selectAll">全选/全不选</el-checkbox>
-            <el-checkbox v-model="form.parentChild">父子联动</el-checkbox>
-          </div>
+        <el-form-item label="菜单权限">
+          <el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event, 'menu')"
+            >展开/折叠</el-checkbox
+          >
+          <el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event, 'menu')"
+            >全选/全不选</el-checkbox
+          >
+          <el-checkbox
+            v-model="form.menuCheckStrictly"
+            @change="handleCheckedTreeConnect($event, 'menu')"
+            >父子联动</el-checkbox
+          >
+          <el-tree
+            class="tree-border"
+            :data="menuOptions"
+            show-checkbox
+            ref="menuRef"
+            node-key="id"
+            :check-strictly="!form.menuCheckStrictly"
+            empty-text="加载中，请稍候"
+            :props="{ label: 'label', children: 'children' }"
+          ></el-tree>
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
@@ -123,44 +159,25 @@
         </div>
       </template>
     </el-dialog>
-
-    <el-dialog v-model="permissionDialog" title="菜单权限" width="30%">
-      <div :style="{ maxHeight: '500px', overflowY: 'scroll' }">
-        <el-tree
-          ref="menuTreeRef"
-          :data="menuOptions"
-          show-checkbox
-          node-key="id"
-          empty-text="加载中，请稍候"
-          :props="defaultProps"
-        />
-      </div>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="handlePermissionSubmit">确 定</el-button>
-          <el-button @click="permissionDialog = false">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
   import { ButtonMoreItem } from '@/components/Form/ButtonMore.vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import { QuestionFilled } from '@element-plus/icons-vue'
   import type { FormInstance, FormRules } from 'element-plus'
-  import { formatMenuTitle } from '@/utils/menu'
   import { RoleService } from '@/api/system/roleApi'
   import { MenuService } from '@/api/system/menuApi'
   import type { RoleResult } from '@/types/system/role'
   import { resetForm } from '@/utils/utils'
+  import type { MenuOptionType } from '@/types/system/menu'
 
   const loading = ref(false)
   const dialogVisible = ref(false)
-  const permissionDialog = ref(false)
   const dialogType = ref('add')
   const roleList = ref<RoleResult[]>([])
-  const menuOptions = ref([])
+  const menuOptions = ref<MenuOptionType[]>([])
   const menuTreeRef = ref()
 
   const queryParams = reactive({
@@ -183,27 +200,26 @@
   })
 
   const form = reactive({
-    roleId: undefined,
+    roleId: 0,
     roleName: '',
     roleKey: '',
     roleSort: 0,
+    dataScope: '1',
+    menuCheckStrictly: true,
+    deptCheckStrictly: true,
     status: '0',
-    menuIds: [],
+    delFlag: '0',
     remark: '',
-    expandCollapse: false,
-    selectAll: false,
-    parentChild: false
+    menuIds: [],
+    deptIds: [],
+    permissions: [],
+    admin: false
   })
 
   const statusOptions = ref([
     { label: '正常', value: '0' },
     { label: '停用', value: '1' }
   ])
-
-  const defaultProps = {
-    children: 'children',
-    label: (data: any) => formatMenuTitle(data.meta?.title) || ''
-  }
 
   // 查询角色列表
   const getList = async () => {
@@ -213,11 +229,9 @@
 
   // 查询菜单树结构
   const getMenuTreeselect = async () => {
-    try {
-      const res = await MenuService.getMenuTreeSelect({})
+    const res = await MenuService.getMenuTreeSelect({})
+    if (res.code === 200) {
       menuOptions.value = res.data
-    } catch (error) {
-      console.error('获取菜单树失败:', error)
     }
   }
 
@@ -226,42 +240,38 @@
     getList()
   }
 
+  /** 根据角色ID查询菜单树结构 */
+  const getRoleMenuTreeselect = async (roleId: any) => {
+    const res = await MenuService.getRoleMenuTreeSelect(roleId)
+    if (res.code === 200) {
+      menuOptions.value = res.menus
+    }
+    return res
+  }
+
   // 显示对话框
   const showDialog = async (type: string, row?: RoleResult) => {
-    if (type === 'permission') {
-      permissionDialog.value = true
-      await getMenuTreeselect()
-      if (row) {
-        const res = await MenuService.getRoleMenuTreeSelect(row.roleId)
-        menuTreeRef.value.setCheckedKeys(res.checkedKeys)
-      }
-      return
-    }
-
-    dialogVisible.value = true
     dialogType.value = type
-
+    dialogVisible.value = true
+    if (type === 'add') {
+      return await getMenuTreeselect()
+    }
     if (type === 'edit' && row) {
-      form.roleId = row.roleId
-      form.roleName = row.roleName
-      form.roleKey = row.roleKey
-      form.roleSort = row.roleSort
-      form.status = row.status
-      form.remark = row.remark || ''
-      form.expandCollapse = row.expandCollapse
-      form.selectAll = row.selectAll
-      form.parentChild = row.parentChild
-    } else {
-      form.roleId = undefined
-      form.roleName = ''
-      form.roleKey = ''
-      form.roleSort = 0
-      form.status = '0'
-      form.menuIds = []
-      form.remark = ''
-      form.expandCollapse = false
-      form.selectAll = false
-      form.parentChild = false
+      const roleId = row.roleId
+      const roleMenu = getRoleMenuTreeselect(roleId)
+      RoleService.getRole(roleId).then((response) => {
+        Object.assign(form, response.data)
+        nextTick(() => {
+          roleMenu.then((res) => {
+            let checkedKeys = res.checkedKeys
+            checkedKeys.forEach((v) => {
+              nextTick(() => {
+                menuRef.value.setChecked(v, true, false)
+              })
+            })
+          })
+        })
+      })
     }
   }
 
@@ -271,52 +281,31 @@
 
     await formEl.validate(async (valid) => {
       if (valid) {
-        try {
-          if (dialogType.value === 'add') {
-            await RoleService.addRole(form)
-            ElMessage.success('新增成功')
-          } else {
-            await RoleService.updateRole(form)
-            ElMessage.success('修改成功')
-          }
-          dialogVisible.value = false
-          getList()
-        } catch (error) {
-          console.error('提交失败:', error)
+        let res = null
+        if (dialogType.value === 'add') {
+          res = await RoleService.addRole(form)
+        } else {
+          res = await RoleService.updateRole(form)
         }
+        ElMessage.success(res.msg)
+        dialogVisible.value = false
+        getList()
       }
     })
   }
 
-  // 权限分配提交
-  const handlePermissionSubmit = async () => {
-    const checkedKeys = menuTreeRef.value.getCheckedKeys()
-    const halfCheckedKeys = menuTreeRef.value.getHalfCheckedKeys()
-    form.menuIds = [...checkedKeys, ...halfCheckedKeys]
-
-    try {
-      await RoleService.updateRole(form)
-      ElMessage.success('权限分配成功')
-      permissionDialog.value = false
-    } catch (error) {
-      console.error('权限分配失败:', error)
-    }
-  }
-
   // 删除按钮操作
   const deleteRole = async (row: RoleResult) => {
-    try {
-      await ElMessageBox.confirm('是否确认删除名称为"' + row.roleName + '"的数据项?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-      await RoleService.delRole(row.roleId)
-      ElMessage.success('删除成功')
-      getList()
-    } catch (error) {
-      console.error('删除失败:', error)
+    await ElMessageBox.confirm('是否确认删除名称为"' + row.roleName + '"的数据项?', '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    const res = await RoleService.delRole(row.roleId)
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
     }
+    getList()
   }
 
   // 角色状态修改
@@ -338,10 +327,6 @@
   const buttonMoreClick = (item: ButtonMoreItem, row: RoleResult) => {
     if (item.key === 'permission') {
       showDialog('permission', row)
-    } else if (item.key === 'edit') {
-      showDialog('edit', row)
-    } else if (item.key === 'delete') {
-      deleteRole(row)
     }
   }
 
@@ -355,6 +340,28 @@
   onMounted(() => {
     getList()
   })
+
+  const menuExpand = ref(false)
+  const menuNodeAll = ref(false)
+  const menuRef = ref()
+
+  // 树形控件展开/折叠
+  const handleCheckedTreeExpand = (value: boolean) => {
+    const treeList = menuOptions.value
+    for (let i = 0; i < treeList.length; i++) {
+      menuRef.value.store.nodesMap[treeList[i].id].expanded = value
+    }
+  }
+
+  // 树形控件全选/全不选
+  const handleCheckedTreeNodeAll = (value: boolean) => {
+    menuRef.value.setCheckedNodes(value ? menuOptions.value : [])
+  }
+
+  // 树形控件父子联动
+  const handleCheckedTreeConnect = (value: boolean) => {
+    form.menuCheckStrictly = value
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -365,6 +372,43 @@
       overflow: hidden;
       vertical-align: -8px;
       fill: currentcolor;
+    }
+  }
+  .el-icon {
+    margin-right: 4px;
+    font-size: 14px;
+    vertical-align: -2px;
+  }
+  .tree-border {
+    margin-top: 5px;
+    border: 1px solid #e5e6e7;
+    background: #fff;
+    border-radius: 4px;
+    padding: 10px;
+    width: 100%;
+    max-height: 100px;
+    overflow-y: auto;
+
+    :deep(.el-tree-node) {
+      padding: 4px 0;
+    }
+
+    :deep(.el-tree-node__content) {
+      height: auto;
+      padding: 4px 0;
+    }
+  }
+
+  :deep(.el-table) {
+    .cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .button-table,
+      .button-more {
+        margin: 0;
+      }
     }
   }
 </style>

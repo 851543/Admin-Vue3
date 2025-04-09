@@ -31,6 +31,7 @@ export class RoleService {
   static updateRole(data: object) {
     return request.put<RoleInfoResult>({
       url: '/system/role',
+      headers: { 'Content-Type': 'application/json' },
       data: data
     })
   }

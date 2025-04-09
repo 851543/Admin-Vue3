@@ -1,4 +1,4 @@
-import { BaseArrayResult, BaseObjectResult } from '../axios'
+import { BaseArrayResult, BaseObjectResult, CodeMsgResult } from '../axios'
 
 export interface MenuResult {
   createBy: string | null
@@ -25,11 +25,17 @@ export interface MenuResult {
   children: MenuResult[]
 }
 
-export type MenuListResult = BaseArrayResult<MenuResult>
-export type MenuInfoResult = BaseObjectResult<MenuResult>
+export interface roleMenuTreeselectResult extends CodeMsgResult {
+  menus: MenuOptionType[]
+  checkedKeys: number[]
+}
 
 export interface MenuOptionType {
-  menuId: number
-  menuName: string
+  id: number
+  label: string
   children?: MenuOptionType[]
 }
+
+export type MenuOptionListResult = BaseArrayResult<MenuOptionType>
+export type MenuListResult = BaseArrayResult<MenuResult>
+export type MenuInfoResult = BaseObjectResult<MenuResult>

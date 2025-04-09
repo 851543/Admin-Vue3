@@ -1,4 +1,9 @@
-import { MenuListResult, MenuInfoResult } from '@/types/system/menu'
+import {
+  MenuListResult,
+  MenuInfoResult,
+  roleMenuTreeselectResult,
+  MenuOptionListResult
+} from '@/types/system/menu'
 import request from '@/utils/http'
 // 菜单
 export class MenuService {
@@ -19,7 +24,7 @@ export class MenuService {
 
   // 获取菜单下拉树列表
   static getMenuTreeSelect(queryParams: object) {
-    return request.get<MenuListResult>({
+    return request.get<MenuOptionListResult>({
       url: '/system/menu/treeselect',
       params: queryParams
     })
@@ -27,7 +32,7 @@ export class MenuService {
 
   // 加载对应角色菜单列表树
   static getRoleMenuTreeSelect(roleId: number) {
-    return request.get<MenuListResult>({
+    return request.get<roleMenuTreeselectResult>({
       url: `/system/menu/roleMenuTreeselect/${roleId}`
     })
   }
