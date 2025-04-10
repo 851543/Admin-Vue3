@@ -111,6 +111,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     ScatterChart: typeof import('./../components/Widgets/Charts/ScatterChart.vue')['default']
     Search: typeof import('./../components/Layout/Search/index.vue')['default']
+    SelectUser: typeof import('./../components/Form/SelectUser.vue')['default']
     Setting: typeof import('./../components/Layout/Setting/index.vue')['default']
     StatsCard: typeof import('./../components/Widgets/Cards/StatsCard.vue')['default']
     Submenu: typeof import('./../components/Layout/Submenu/submenu.vue')['default']

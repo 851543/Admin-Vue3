@@ -2,7 +2,8 @@ import {
   RoleListResult,
   RoleInfoResult,
   RoleResult,
-  roleDeptTreeselectResult
+  roleDeptTreeselectResult,
+  UserListResult
 } from '@/types/system/role'
 import { BasePageResult } from '@/types/axios'
 import request from '@/utils/http'
@@ -65,15 +66,18 @@ export class RoleService {
 
   // 查询角色已授权用户列表
   static allocatedUserList(query: object) {
-    return request.get<RoleListResult>({
+    return request.get<UserListResult>({
       url: '/system/role/authUser/allocatedList',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
       params: query
     })
   }
 
   // 查询角色未授权用户列表
   static unallocatedUserList(query: object) {
-    return request.get<RoleListResult>({
+    return request.get<UserListResult>({
       url: '/system/role/authUser/unallocatedList',
       params: query
     })
@@ -102,6 +106,9 @@ export class RoleService {
   static authUserSelectAll(roleId: number, userIds: number[]) {
     return request.put<RoleInfoResult>({
       url: '/system/role/authUser/selectAll',
+      headers: {
+        'Content-Type': ''
+      },
       params: {
         roleId,
         userIds: userIds.join(',')

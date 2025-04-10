@@ -214,11 +214,14 @@
         </div>
       </template>
     </el-dialog>
+
+    <allocation-user ref="allocationUserRef" :roleId="form.roleId" />
   </div>
 </template>
 
 <script setup lang="ts">
   import { ButtonMoreItem } from '@/components/Form/ButtonMore.vue'
+  import AllocationUser from './allocationUser.vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { QuestionFilled } from '@element-plus/icons-vue'
   import type { FormInstance, FormRules, CheckboxValueType } from 'element-plus'
@@ -233,6 +236,7 @@
   const dialogType = ref('add')
   const roleList = ref<RoleResult[]>([])
   const menuOptions = ref<MenuOptionType[]>([])
+  const allocationUserRef = ref()
 
   const queryParams = reactive({
     roleName: '',
@@ -449,10 +453,13 @@
 
   // 更多按钮操作
   const buttonMoreClick = async (item: ButtonMoreItem, row: RoleResult) => {
-    dialogVisible.value = true
-    dialogType.value = item.key as string
     if (item.key === 'dataScope') {
+      dialogVisible.value = true
+      dialogType.value = item.key as string
       await handleDataScope(row.roleId)
+    } else if (item.key === 'allocation') {
+      form.roleId = row.roleId
+      allocationUserRef.value.show()
     }
   }
 
