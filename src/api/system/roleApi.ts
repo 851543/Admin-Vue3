@@ -92,18 +92,21 @@ export class RoleService {
   }
 
   // 批量取消用户授权角色
-  static authUserCancelAll(roleId: number, userIds: number[]) {
+  static authUserCancelAll(roleId: any, userIds: string) {
     return request.put<RoleInfoResult>({
       url: '/system/role/authUser/cancelAll',
+      headers: {
+        'Content-Type': ''
+      },
       params: {
         roleId,
-        userIds: userIds.join(',')
+        userIds
       }
     })
   }
 
-  // 授权用户选择
-  static authUserSelectAll(roleId: number, userIds: number[]) {
+  // 批量授权用户选择
+  static authUserSelectAll(roleId: any, userIds: string) {
     return request.put<RoleInfoResult>({
       url: '/system/role/authUser/selectAll',
       headers: {
@@ -111,7 +114,7 @@ export class RoleService {
       },
       params: {
         roleId,
-        userIds: userIds.join(',')
+        userIds
       }
     })
   }

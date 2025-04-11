@@ -221,7 +221,7 @@
 
 <script setup lang="ts">
   import { ButtonMoreItem } from '@/components/Form/ButtonMore.vue'
-  import AllocationUser from './allocationUser.vue'
+  import AllocationUser from './AllocationUser.vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { QuestionFilled } from '@element-plus/icons-vue'
   import type { FormInstance, FormRules, CheckboxValueType } from 'element-plus'

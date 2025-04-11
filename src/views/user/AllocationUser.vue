@@ -1,6 +1,11 @@
 <template>
   <!-- 分配用户弹窗 -->
-  <el-dialog v-model="allocationDialogVisible" title="分配用户" width="1200px" append-to-body>
+  <el-dialog
+    v-model="allocationDialogVisible"
+    :title="`分配用户_${!isAuthorized ? '取消授权' : '授权'}`"
+    width="1200px"
+    append-to-body
+  >
     <el-form :model="queryParams" ref="allocatedSearchFormRef">
       <el-row :gutter="20">
         <el-col :xs="24" :sm="12" :lg="6">
@@ -33,6 +38,7 @@
       :page-size="queryParams.pageSize"
       :total="total"
       @size-change="handleSizeChange"
+      :row-key="(row: UserType) => String(row.userId)"
     >
       <template #default>
         <el-table-column type="selection" width="55" />
@@ -52,15 +58,18 @@
           <template #default="scope">
             <el-button
               type="text"
-              icon="CircleClose"
+              :icon="!isAuthorized ? 'CircleClose' : 'CircleCheck'"
               @click="handleSelectUser(scope.row)"
-              v-if="scope.row.flag"
-              >取消授权</el-button
+              >{{ isAuthorized ? '授权' : '取消授权' }}</el-button
             >
           </template>
         </el-table-column>
       </template>
     </art-table>
+    <div style="text-align: right; margin-top: 20px">
+      <el-button @click="allocationDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="handleConfirm">确定</el-button>
+    </div>
   </el-dialog>
 </template>
 
@@ -85,6 +94,7 @@
   const allocatedSearchFormRef = ref<FormInstance>()
 
   const queryParams = reactive({
+    roleId: props.roleId,
     userName: '',
     phonenumber: '',
     pageNum: 1,
@@ -95,105 +105,70 @@
   const selectedUserIds = ref<number[]>([])
   const isAuthorized = ref(false)
 
+  // 统一处理列表获取逻辑
+  const getTableData = async () => {
+    const service = isAuthorized.value
+      ? RoleService.unallocatedUserList
+      : RoleService.allocatedUserList
+    const res = await service({
+      ...queryParams,
+      roleId: props.roleId
+    })
+    if (res.code === 200) {
+      userList.value = res.rows
+      total.value = res.total
+    }
+  }
+
+  // 统一处理分页和搜索
+  const handleQuery = () => {
+    queryParams.pageNum = 1
+    getTableData()
+  }
+
+  const handleCurrentChange = (page: number) => {
+    queryParams.pageNum = page
+    getTableData()
+  }
+
+  const handleSizeChange = (size: number) => {
+    queryParams.pageSize = size
+    getTableData()
+  }
+
+  // 统一处理授权操作
+  const handleAuthorize = async () => {
+    userList.value = []
+    total.value = 0
+    isAuthorized.value = !isAuthorized.value
+    await getTableData()
+  }
+
+  // 统一处理用户授权
+  const handleUserAuthorization = async (userIds: number[]) => {
+    const userIdsStr = userIds.join(',')
+    const res = isAuthorized.value
+      ? await RoleService.authUserSelectAll(props.roleId, userIdsStr)
+      : await RoleService.authUserCancelAll(props.roleId, userIdsStr)
+
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
+      await getTableData()
+    }
+  }
+
+  const handleConfirm = () => handleUserAuthorization(selectedUserIds.value)
+  const handleSelectUser = (row: UserType) => handleUserAuthorization([row.userId])
+
   // 显示弹框
   const show = () => {
     allocationDialogVisible.value = true
-    if (isAuthorized.value) {
-      getUnallocatedUserList()
-    } else {
-      getList()
-    }
+    getTableData()
   }
 
   // 多选框选中数据
   const handleSelectionChange = (selection: UserType[]) => {
     selectedUserIds.value = selection.map((item) => item.userId)
-  }
-
-  // 处理分页变化
-  const handleCurrentChange = (page: number) => {
-    queryParams.pageNum = page
-    if (isAuthorized.value) {
-      getUnallocatedUserList()
-    } else {
-      getList()
-    }
-  }
-
-  /** 处理每页显示数量变化 */
-  const handleSizeChange = (size: number) => {
-    queryParams.pageSize = size
-    if (isAuthorized.value) {
-      getUnallocatedUserList()
-    } else {
-      getList()
-    }
-  }
-
-  // 查询表授权数据
-  const getList = async () => {
-    const res = await RoleService.allocatedUserList({
-      ...queryParams,
-      roleId: props.roleId
-    })
-    if (res.code === 200) {
-      userList.value = res.rows
-      total.value = res.total
-    }
-  }
-
-  // 查询表未授权数据
-  const getUnallocatedUserList = async () => {
-    const res = await RoleService.unallocatedUserList({
-      ...queryParams,
-      roleId: props.roleId
-    })
-    if (res.code === 200) {
-      userList.value = res.rows
-      total.value = res.total
-    }
-  }
-
-  /** 搜索按钮操作 */
-  const handleQuery = () => {
-    queryParams.pageNum = 1
-    if (isAuthorized.value) {
-      getUnallocatedUserList()
-    } else {
-      getList()
-    }
-  }
-
-  /** 选择授权用户操作 */
-  const handleAuthorize = async () => {
-    userList.value = []
-    total.value = 0
-    isAuthorized.value = !isAuthorized.value
-    if (isAuthorized.value) {
-      await getUnallocatedUserList()
-    } else {
-      await getList()
-    }
-  }
-
-  const handleConfirm = async () => {
-    // 提交用户分配操作
-    const res = await RoleService.authUserSelectAll(Number(props.roleId), selectedUserIds.value)
-    if (res.code === 200) {
-      ElMessage.success(res.msg)
-      getUnallocatedUserList()
-    }
-  }
-
-  const handleSelectUser = async (row: UserType) => {
-    // 取消授权
-    const res = await RoleService.authUserCancel({
-      roleId: props.roleId,
-      userId: row.userId
-    })
-    if (res.code === 200) {
-      ElMessage.success(res.msg)
-    }
   }
 
   defineExpose({
