@@ -95,9 +95,6 @@ export class RoleService {
   static authUserCancelAll(roleId: any, userIds: string) {
     return request.put<RoleInfoResult>({
       url: '/system/role/authUser/cancelAll',
-      headers: {
-        'Content-Type': ''
-      },
       params: {
         roleId,
         userIds
@@ -109,9 +106,6 @@ export class RoleService {
   static authUserSelectAll(roleId: any, userIds: string) {
     return request.put<RoleInfoResult>({
       url: '/system/role/authUser/selectAll',
-      headers: {
-        'Content-Type': ''
-      },
       params: {
         roleId,
         userIds

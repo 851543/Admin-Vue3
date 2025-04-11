@@ -118,15 +118,6 @@ axiosInstance.interceptors.response.use(
 
 // 请求
 async function request<T = any>(config: AxiosRequestConfig): Promise<T> {
-  // 对 POST | PUT 请求特殊处理
-  if (config.method?.toUpperCase() === 'POST' || config.method?.toUpperCase() === 'PUT') {
-    // 如果已经有 data，则保留原有的 data
-    if (config.params && !config.data) {
-      config.data = config.params
-      config.params = undefined // 使用 undefined 而不是空对象
-    }
-  }
-
   try {
     const res = await axiosInstance.request<T>({ ...config })
     return res.data

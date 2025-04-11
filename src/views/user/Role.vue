@@ -215,7 +215,7 @@
       </template>
     </el-dialog>
 
-    <allocation-user ref="allocationUserRef" :roleId="form.roleId" />
+    <allocation-user ref="allocationUserRef" />
   </div>
 </template>
 
@@ -458,8 +458,7 @@
       dialogType.value = item.key as string
       await handleDataScope(row.roleId)
     } else if (item.key === 'allocation') {
-      form.roleId = row.roleId
-      allocationUserRef.value.show()
+      allocationUserRef.value.show(row.roleId)
     }
   }
 

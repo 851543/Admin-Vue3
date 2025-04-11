@@ -32,16 +32,16 @@
       ref="refTable"
       :data="userList"
       selection
+      v-loading="loading"
       @selection-change="handleSelectionChange"
       @current-change="handleCurrentChange"
       :current-page="queryParams.pageNum"
       :page-size="queryParams.pageSize"
       :total="total"
       @size-change="handleSizeChange"
-      :row-key="(row: UserType) => String(row.userId)"
+      row-key="userId"
     >
       <template #default>
-        <el-table-column type="selection" width="55" />
         <el-table-column label="用户名称" prop="userName" />
         <el-table-column label="用户昵称" prop="nickName" />
         <el-table-column label="邮箱" prop="email" />
@@ -57,7 +57,7 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button
-              type="text"
+              link
               :icon="!isAuthorized ? 'CircleClose' : 'CircleCheck'"
               @click="handleSelectUser(scope.row)"
               >{{ isAuthorized ? '授权' : '取消授权' }}</el-button
@@ -78,23 +78,18 @@
   import { RoleService } from '@/api/system/roleApi'
   import type { FormInstance } from 'element-plus'
   import type { UserType } from '@/types/system/role'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import { resetForm } from '@/utils/utils'
-
-  const props = defineProps({
-    roleId: {
-      type: [Number, String]
-    }
-  })
 
   const allocationDialogVisible = ref(false)
   const userList = ref<UserType[]>([])
   const total = ref(0)
   const refTable = ref()
   const allocatedSearchFormRef = ref<FormInstance>()
+  const loading = ref(false)
 
   const queryParams = reactive({
-    roleId: props.roleId,
+    roleId: 0,
     userName: '',
     phonenumber: '',
     pageNum: 1,
@@ -107,17 +102,19 @@
 
   // 统一处理列表获取逻辑
   const getTableData = async () => {
+    loading.value = true
     const service = isAuthorized.value
       ? RoleService.unallocatedUserList
       : RoleService.allocatedUserList
     const res = await service({
       ...queryParams,
-      roleId: props.roleId
+      roleId: queryParams.roleId
     })
     if (res.code === 200) {
       userList.value = res.rows
       total.value = res.total
     }
+    loading.value = false
   }
 
   // 统一处理分页和搜索
@@ -138,18 +135,32 @@
 
   // 统一处理授权操作
   const handleAuthorize = async () => {
-    userList.value = []
-    total.value = 0
+    loading.value = true
     isAuthorized.value = !isAuthorized.value
     await getTableData()
+    loading.value = false
   }
 
   // 统一处理用户授权
   const handleUserAuthorization = async (userIds: number[]) => {
+    if (userIds.length === 0) {
+      ElMessage.warning('请选择需要操作的数据')
+      return
+    }
+
+    if (!isAuthorized.value) {
+      const confirmResult = await ElMessageBox.confirm('确定要取消授权吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      if (!confirmResult) return
+    }
+
     const userIdsStr = userIds.join(',')
     const res = isAuthorized.value
-      ? await RoleService.authUserSelectAll(props.roleId, userIdsStr)
-      : await RoleService.authUserCancelAll(props.roleId, userIdsStr)
+      ? await RoleService.authUserSelectAll(queryParams.roleId, userIdsStr)
+      : await RoleService.authUserCancelAll(queryParams.roleId, userIdsStr)
 
     if (res.code === 200) {
       ElMessage.success(res.msg)
@@ -161,7 +172,8 @@
   const handleSelectUser = (row: UserType) => handleUserAuthorization([row.userId])
 
   // 显示弹框
-  const show = () => {
+  const show = (id: any) => {
+    queryParams.roleId = id
     allocationDialogVisible.value = true
     getTableData()
   }
