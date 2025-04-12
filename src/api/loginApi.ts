@@ -61,4 +61,11 @@ export class LoginService {
       data
     })
   }
+
+  // 获取路由信息
+  static getRouters() {
+    return request.get<BaseResult>({
+      url: '/getRouters'
+    })
+  }
 }

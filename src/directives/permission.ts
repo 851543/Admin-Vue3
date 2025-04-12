@@ -3,7 +3,7 @@ import { useUserStore } from '@/store/modules/user'
 /**
  * 权限指令
  * 用法：
- * <el-button v-auth="'add'">按钮</el-button>
+ * <el-button v-auth="['system:menu:add']">按钮</el-button>
  */
 const authDirective: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding) {

@@ -202,7 +202,6 @@ async function getMenuData(): Promise<void> {
       useUserStore().logOut()
       throw new Error('获取菜单列表失败，请重新登录！')
     }
-
     // 设置菜单列表
     useMenuStore().setMenuList(menuList as [])
     // 注册异步路由

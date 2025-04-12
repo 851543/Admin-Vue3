@@ -186,9 +186,8 @@
         validator: (rule: any, value: string, callback: any) => {
           // 验证是否为邮箱格式
           const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
-          // 验证是否为账号格式（字母开头，允许3-12字节，允许字母数字下划线）
-          const accountRegex = /^[a-zA-Z][a-zA-Z0-9_]{2,11}$/
-
+          // 验证是否为账号格式（允许3-12字符，允许字母数字下划线）
+          const accountRegex = /^[a-zA-Z0-9_]{3,12}$/
           if (emailRegex.test(value) || accountRegex.test(value)) {
             callback()
           } else {

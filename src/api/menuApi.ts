@@ -3,15 +3,23 @@ import { asyncRoutes } from '@/router/modules/asyncRoutes'
 import { MenuListType } from '@/types/menu'
 import { processRoute } from '@/utils/menu'
 import { ElLoading } from 'element-plus'
+import { LoginService } from './loginApi'
 
 // 本地菜单接口
 export const menuService = {
   // 获取菜单列表，模拟网络请求
-  getMenuList(
+  async getMenuList(
     delay: number = 300
   ): Promise<{ menuList: MenuListType[]; closeLoading: () => void }> {
     // 获取到的菜单数据
     const menuList = asyncRoutes
+
+    // server路由信息
+    const res = await LoginService.getRouters()
+    if (res.code === 200) {
+      menuList.push(...res.data)
+    }
+
     // 处理后的菜单数据
     const processedMenuList: MenuListType[] = menuList.map((route) => processRoute(route))
 

@@ -164,7 +164,7 @@
     "rule": [
       "Please enter your password again",
       "The two passwords do not match!",
-      "Length should be between 3 and 20 characters",
+      "Length should be between 3 and 12 characters",
       "Password must be at least 6 characters",
       "Please agree to the privacy policy"
     ],

@@ -55,7 +55,6 @@ interface ConvertedRoute extends Omit<RouteRecordRaw, 'children'> {
 
 function convertRouteComponent(route: MenuListType, iframeRoutes: MenuListType[]): ConvertedRoute {
   const { component, children, ...routeConfig } = route
-
   // 基础路由配置
   const converted: ConvertedRoute = {
     ...routeConfig,
@@ -76,7 +75,6 @@ function convertRouteComponent(route: MenuListType, iframeRoutes: MenuListType[]
     if (children?.length) {
       converted.children = children.map((child) => convertRouteComponent(child, iframeRoutes))
     }
-
     return converted
   } catch (error) {
     console.error(`路由转换失败: ${route.name}`, error)

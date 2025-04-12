@@ -1,6 +1,8 @@
 import { $t } from '@/language'
 import { MenuListType } from '@/types/menu'
 import { MenuResult } from '@/types/system/menu'
+import { RoutesAlias } from '@/router/modules/routesAlias'
+
 // 创建递归函数处理嵌套路由
 /**
  * 处理路由配置,转换为菜单数据结构
@@ -22,12 +24,24 @@ export const processRoute = (route: MenuListType, parentPath = ''): MenuListType
     id: route.id ?? Math.random(), // 使用空值合并运算符
     name: route.name,
     path: currentPath,
-    component: route.component,
+    component: processComponent(route.component as string),
     meta: route.meta ?? {}, // 使用空值合并运算符
     children: Array.isArray(route.children)
       ? route.children.map((child) => processRoute(child, currentPath))
       : []
   }
+}
+
+/**
+ *
+ */
+export const processComponent = (component: string): string => {
+  // 如果组件为Layout则返回index组件
+  if (component === 'Layout' || component === 'Index') {
+    return RoutesAlias.Home
+  }
+  // 如果组件为空或以斜杠开头，则直接返回
+  return component !== '' && !component?.startsWith('/') ? '/' + component : component
 }
 
 /**
