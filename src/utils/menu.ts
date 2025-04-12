@@ -11,6 +11,11 @@ import { RoutesAlias } from '@/router/modules/routesAlias'
  * @returns 处理后的菜单项
  */
 export const processRoute = (route: MenuListType, parentPath = ''): MenuListType => {
+  if (route.path.startsWith('http')) {
+    route.path = ''
+    route.component = RoutesAlias.Home
+  }
+
   // 构建完整路径
   const currentPath = route.path
     ? route.meta?.isIframe

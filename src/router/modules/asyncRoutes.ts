@@ -1,7 +1,5 @@
-import { upgradeLogList } from '@/mock/upgradeLog'
 import { RoutesAlias } from './routesAlias'
 import { MenuListType } from '@/types/menu'
-import { WEB_LINKS } from '@/utils/links'
 
 /**
  * 菜单列表、异步路由
@@ -736,43 +734,5 @@ export const asyncRoutes: MenuListType[] = [
         }
       }
     ]
-  },
-  {
-    id: 12,
-    name: '',
-    path: '',
-    component: RoutesAlias.Home,
-    meta: {
-      title: 'menus.help.title',
-      icon: '&#xe719;',
-      keepAlive: false
-    },
-    children: [
-      {
-        id: 1101,
-        path: '',
-        name: 'Document',
-        meta: {
-          title: 'menus.help.document',
-          link: WEB_LINKS.DOCS,
-          isIframe: false,
-          keepAlive: false
-        }
-      }
-    ]
-  },
-  // 一级菜单
-  {
-    id: 11912,
-    name: 'ChangeLog',
-    path: '/log/changeLog',
-    component: '/log/ChangeLog',
-    meta: {
-      title: 'menus.plan.log',
-      showTextBadge: `${upgradeLogList.value[0].version}`,
-      icon: '&#xe712;',
-      keepAlive: false,
-      isInMainContainer: true
-    }
   }
 ]

@@ -108,13 +108,11 @@
         <el-form-item label="上级菜单">
           <el-tree-select
             v-model="form.parentId"
-            :data="[{ id: 0, label: '主类目', children: menuOptions }]"
-            :props="{
-              value: 'id',
-              label: 'label',
-              children: 'children'
-            }"
-            style="width: 100%"
+            :data="menuOptions"
+            :props="{ value: 'id', label: 'label', children: 'children' }"
+            value-key="id"
+            placeholder="选择上级菜单"
+            check-strictly
           />
         </el-form-item>
 
@@ -540,7 +538,9 @@
   const getMenuTreeselect = async () => {
     const res = await MenuService.getMenuTreeSelect({})
     if (res.code === 200) {
-      menuOptions.value = res.data
+      const menu = { id: 0, label: '主类目', children: [] as MenuOptionType[] }
+      menu.children = res.data
+      menuOptions.value.push(menu)
     }
   }
 

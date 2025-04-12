@@ -49,6 +49,5 @@ export enum RoutesAlias {
   Setting = '/system/Setting', // 设置
   Api = '/system/Api', // API
   Log = '/system/Log', // 日志
-  Server = '/safeguard/Server', // 服务器
-  ChangeLog = '/log/ChangeLog' // 更新日志
+  Server = '/safeguard/Server' // 服务器
 }
