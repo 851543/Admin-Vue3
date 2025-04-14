@@ -162,16 +162,11 @@ router.beforeEach(async (to, from, next) => {
 
   // 如果用户已登录且动态路由未注册，则注册动态路由
   if (!isRouteRegistered.value && userStore.isLogin) {
-    try {
-      await getMenuData()
-      if (to.name === 'Exception404') {
-        return next({ path: to.path, query: to.query, replace: true })
-      } else {
-        return next({ ...to, replace: true })
-      }
-    } catch (error) {
-      console.error('Failed to register routes:', error)
-      return next('/exception/500')
+    await getMenuData()
+    if (to.name === 'Exception404') {
+      return next({ path: to.path, query: to.query, replace: true })
+    } else {
+      return next({ ...to, replace: true })
     }
   }
 
@@ -192,28 +187,22 @@ router.beforeEach(async (to, from, next) => {
  * @throws 若菜单列表为空或获取失败则抛出错误
  */
 async function getMenuData(): Promise<void> {
-  try {
-    // 获取菜单列表
-    const { menuList, closeLoading } = await menuService.getMenuList()
+  // 获取菜单列表
+  const { menuList, closeLoading } = await menuService.getMenuList()
 
-    // 如果菜单列表为空，执行登出操作并跳转到登录页
-    if (!Array.isArray(menuList) || menuList.length === 0) {
-      closeLoading()
-      useUserStore().logOut()
-      throw new Error('获取菜单列表失败，请重新登录！')
-    }
-    // 设置菜单列表
-    useMenuStore().setMenuList(menuList as [])
-    // 注册异步路由
-    registerAsyncRoutes(router, menuList)
-    // 标记路由已注册
-    isRouteRegistered.value = true
-    // 关闭加载动画
+  // 如果菜单列表为空，执行登出操作并跳转到登录页
+  if (!Array.isArray(menuList) || menuList.length === 0) {
     closeLoading()
-  } catch (error) {
-    console.error('获取菜单列表失败:', error)
-    throw error
+    useUserStore().logOut()
   }
+  // 设置菜单列表
+  useMenuStore().setMenuList(menuList as [])
+  // 注册异步路由
+  registerAsyncRoutes(router, menuList)
+  // 标记路由已注册
+  isRouteRegistered.value = true
+  // 关闭加载动画
+  closeLoading()
 }
 
 /* ============================
