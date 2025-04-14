@@ -1,7 +1,6 @@
 import request from '@/utils/http'
-import { GenTableModel, GenTableModelList } from '@/types/generator'
+import { GenTableModel, GenTableDbPageList } from '@/types/tool/generator'
 import { BaseResult } from '@/types/axios'
-import { da } from 'element-plus/es/locale'
 
 // 代码生成
 export class GeneratorApi {
@@ -9,14 +8,14 @@ export class GeneratorApi {
    * 查询代码生成列表
    */
   static genList(data: any) {
-    return request.get<GenTableModelList>({ url: '/tool/gen/list', params: data })
+    return request.get<GenTableDbPageList>({ url: '/tool/gen/list', params: data })
   }
 
   /**
    * 查询数据库列表
    */
-  static dbList(genTable: Partial<GenTableModel>) {
-    return request.get({ url: '/tool/gen/db/list', params: genTable })
+  static dbList(data: any) {
+    return request.get<GenTableDbPageList>({ url: '/tool/gen/db/list', params: data })
   }
 
   /**

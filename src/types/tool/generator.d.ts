@@ -1,6 +1,6 @@
 import { GenTableColumn } from './system/genTableColumn'
 import { GenTable } from './system/genTable'
-import { BaseArrayResult } from './axios'
+import { BaseArrayResult } from '../axios'
 /** 代码生成业务字段 */
 export interface GenTableModel {
   /** 编号 */
@@ -77,3 +77,4 @@ export interface GenTableModel {
 }
 
 export type GenTableModelList = BaseArrayResult<GenTableModel>
+export type GenTableDbPageList = BasePageResult<GenTableDb>

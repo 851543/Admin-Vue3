@@ -1,5 +1,6 @@
 <template>
   <div class="page-content">
+    <!-- 代码生成 -->
     <table-bar
       :showTop="false"
       @search="search"
@@ -33,18 +34,21 @@
       </template>
     </table-bar>
 
-    <art-table :data="tableData" selection :currentPage="1" :pageSize="10" :total="50">
+    <!-- 代码生成列表 -->
+    <art-table :data="tableData" selection @selection-change="handleSelectionChange">
       <template #default>
-        <el-table-column label="序号" prop="id" />
         <el-table-column label="表名称" prop="tableName" />
         <el-table-column label="表描述" prop="tableComment" />
         <el-table-column label="实体" prop="entityName" />
         <el-table-column label="创建时间" sortable prop="createTime" />
         <el-table-column label="更新时间" prop="updateTime" />
-        <el-table-column label="操作" prop="action">
+        <el-table-column label="操作" prop="action" width="350px">
           <template #default="scope">
-            <el-button type="primary" plain icon="Edit" v-ripple>修改</el-button>
-            <el-button type="danger" plain icon="Delete" v-ripple>删除</el-button>
+            <button-table text="预览" v-ripple />
+            <button-table type="edit" @click="handleEditTable(scope.row)" v-ripple />
+            <button-table type="delete" v-ripple />
+            <button-table text="同步" v-ripple />
+            <button-table text="生成代码" v-ripple />
           </template>
         </el-table-column>
       </template>
@@ -60,8 +64,11 @@
   import createTable from './components/createTable.vue'
   import importTable from './components/importTable.vue'
   import { GeneratorApi } from '@/api/tool/generatorApi'
-  import { GenTableModel } from '@/types/generator'
+  import { GenTableModel } from '@/types/tool/generator'
+  import { useRouter } from 'vue-router'
 
+  const router = useRouter()
+  const total = ref(0)
   const tableData = ref<GenTableModel[]>([])
 
   const multiple = ref(true)
@@ -89,6 +96,11 @@
     columns.values = list
   }
 
+  const ids = ref<string[]>([])
+  const handleSelectionChange = (selection: any) => {
+    ids.value = selection.map((item: any) => item.tableId)
+  }
+
   const createTableRef = ref<InstanceType<typeof createTable>>()
   const importTableRef = ref<InstanceType<typeof importTable>>()
 
@@ -110,8 +122,18 @@
   const getList = async () => {
     const res = await GeneratorApi.genList(searchForm)
     if (res.code === 200) {
-      tableData.value = res.data
+      tableData.value = res.rows
+      total.value = res.total
     }
+  }
+
+  /** 修改按钮操作 */
+  const handleEditTable = (row: any) => {
+    const tableId = row.tableId || ids.value[0]
+    router.push({
+      path: '/tool/gen-edit/index/' + tableId,
+      query: { pageNum: searchForm.pageNum }
+    })
   }
 
   onMounted(() => {

@@ -1,57 +1,40 @@
 <template>
   <div class="page-content">
-    <el-form :model="queryParams" ref="searchFormRef">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :lg="6">
-          <el-form-item label="角色名称" prop="roleName" @keyup.enter="handleQuery">
-            <el-input
-              v-model="queryParams.roleName"
-              placeholder="请输入角色名称"
-              clearable
-            ></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :lg="6">
-          <el-form-item label="权限字符" prop="roleKey" @keyup.enter="handleQuery">
-            <el-input
-              v-model="queryParams.roleKey"
-              placeholder="请输入权限字符"
-              clearable
-            ></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :lg="6">
-          <el-form-item label="状态" prop="status">
-            <el-select
+    <!-- 角色管理 -->
+    <table-bar
+      :showTop="false"
+      @search="search"
+      @reset="resetForm(searchFormRef)"
+      @changeColumn="changeColumn"
+      :columns="columns"
+    >
+      <template #top>
+        <el-form :model="queryParams" ref="searchFormRef" label-width="82px">
+          <el-row :gutter="20">
+            <form-input label="角色名称" prop="roleName" v-model="queryParams.roleName" />
+            <form-input label="权限字符" prop="roleKey" v-model="queryParams.roleKey" />
+            <form-select
+              label="状态"
+              prop="status"
               v-model="queryParams.status"
-              placeholder="请选择"
-              clearable
-              style="width: 100%"
-            >
-              <el-option
-                v-for="dict in statusOptions"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :lg="6">
-          <el-button @click="handleQuery" v-ripple>搜索</el-button>
-          <el-button @click="resetForm(searchFormRef)" v-ripple>重置</el-button>
-          <el-button @click="exportExcel" v-ripple>导出</el-button>
-          <el-button @click="showDialog('add')" v-ripple>新增角色</el-button>
-        </el-col>
-      </el-row>
-    </el-form>
+              :options="statusOptions"
+            />
+          </el-row>
+        </el-form>
+      </template>
+      <template #bottom>
+        <el-button @click="showDialog('add')" v-ripple>添加角色</el-button>
+        <el-button @click="exportExcel" v-ripple>导出</el-button>
+      </template>
+    </table-bar>
 
-    <art-table :data="roleList" v-loading="loading">
+    <!-- 角色列表 -->
+    <art-table :data="roleList">
       <template #default>
-        <el-table-column label="角色名称" prop="roleName" />
-        <el-table-column label="权限字符" prop="roleKey" />
-        <el-table-column label="描述" prop="remark" />
-        <el-table-column label="状态" prop="status">
+        <el-table-column label="角色名称" prop="roleName" v-if="columns[0].show" />
+        <el-table-column label="权限字符" prop="roleKey" v-if="columns[1].show" />
+        <el-table-column label="描述" prop="remark" v-if="columns[2].show" />
+        <el-table-column label="状态" prop="status" v-if="columns[3].show">
           <template #default="scope">
             <el-switch
               v-model="scope.row.status"
@@ -61,7 +44,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" prop="createTime" />
+        <el-table-column label="创建时间" prop="createTime" v-if="columns[4].show" />
         <el-table-column fixed="right" label="操作" width="200px">
           <template #default="scope">
             <div v-if="scope.row.roleId !== 1">
@@ -88,6 +71,7 @@
       </template>
     </art-table>
 
+    <!-- 新增/编辑/分配数据权限 -->
     <el-dialog
       v-model="dialogVisible"
       :title="
@@ -205,12 +189,12 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
           <el-button
             type="primary"
             @click="handleSubmit(dialogType === 'dataScope' ? dataScopeFormRef : formRef)"
             >提交</el-button
           >
+          <el-button @click="dialogVisible = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -231,7 +215,6 @@
   import { resetForm } from '@/utils/utils'
   import type { MenuOptionType } from '@/types/system/menu'
 
-  const loading = ref(false)
   const dialogVisible = ref(false)
   const dialogType = ref('add')
   const roleList = ref<RoleResult[]>([])
@@ -275,6 +258,18 @@
     admin: false
   }
 
+  const columns = reactive([
+    { name: '角色名称', show: true },
+    { name: '权限字符', show: true },
+    { name: '描述', show: true },
+    { name: '状态', show: true },
+    { name: '创建时间', show: true }
+  ])
+
+  const changeColumn = (list: any) => {
+    columns.values = list
+  }
+
   const form = reactive({ ...initialFormState })
 
   const dataScopeOptions = ref([
@@ -305,7 +300,7 @@
   }
 
   // 搜索按钮操作
-  const handleQuery = () => {
+  const search = () => {
     getList()
   }
 

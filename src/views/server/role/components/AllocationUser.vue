@@ -1,11 +1,11 @@
 <template>
-  <!-- 分配用户弹窗 -->
   <el-dialog
     v-model="allocationDialogVisible"
     :title="`分配用户_${!isAuthorized ? '取消授权' : '授权'}`"
     width="1200px"
     append-to-body
   >
+    <!-- 分配用户弹窗 -->
     <el-form :model="queryParams" ref="allocatedSearchFormRef">
       <el-row :gutter="20">
         <el-col :xs="24" :sm="12" :lg="6">
@@ -29,7 +29,6 @@
     </el-form>
 
     <art-table
-      ref="refTable"
       :data="userList"
       selection
       v-loading="loading"
@@ -67,8 +66,8 @@
       </template>
     </art-table>
     <div style="text-align: right; margin-top: 20px">
-      <el-button @click="allocationDialogVisible = false">取消</el-button>
       <el-button type="primary" @click="handleConfirm">确定</el-button>
+      <el-button @click="allocationDialogVisible = false">取消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -84,7 +83,6 @@
   const allocationDialogVisible = ref(false)
   const userList = ref<UserType[]>([])
   const total = ref(0)
-  const refTable = ref()
   const allocatedSearchFormRef = ref<FormInstance>()
   const loading = ref(false)
 

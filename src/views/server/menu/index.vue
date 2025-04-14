@@ -1,12 +1,12 @@
 <template>
   <div class="page-content">
+    <!-- 菜单管理 -->
     <table-bar
       :showTop="false"
       @search="search"
       @reset="resetForm(searchFormRef)"
       @changeColumn="changeColumn"
       :columns="columns"
-      :topButtons="10"
     >
       <template #top>
         <el-form :model="searchForm" ref="searchFormRef" label-width="82px">
@@ -34,6 +34,7 @@
       </template>
     </table-bar>
 
+    <!-- 菜单列表 -->
     <art-table :data="tableData" ref="tableRef">
       <template #default>
         <el-table-column label="菜单名称" prop="menuName" v-if="columns[0].show">
@@ -95,6 +96,7 @@
       </template>
     </art-table>
 
+    <!-- 新增/编辑菜单 -->
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="700px" align-center>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="菜单类型">
@@ -356,8 +358,8 @@
 
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="submitForm()">确 定</el-button>
+          <el-button @click="dialogVisible = false">取 消</el-button>
         </span>
       </template>
     </el-dialog>
