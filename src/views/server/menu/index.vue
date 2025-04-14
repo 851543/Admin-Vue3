@@ -51,7 +51,7 @@
             {{ scope.row.meta?.sort }}
           </template>
         </el-table-column>
-        <el-table-column label="权限标识" prop="name" v-if="columns[3].show">
+        <el-table-column label="权限标识" v-if="columns[3].show">
           <template #default="scope">
             <template v-if="scope.row.meta?.authList && scope.row.meta.authList.length > 0">
               <div v-for="(auth, index) in scope.row.meta.authList" :key="index">{{
@@ -140,7 +140,11 @@
           <el-row :gutter="24">
             <el-col :span="12">
               <el-form-item label="菜单图标">
-                <icon-selector :iconType="iconType" @getIcon="(icon) => (form.icon = icon)" />
+                <icon-selector
+                  :iconType="iconType"
+                  @getIcon="(icon) => (form.icon = icon)"
+                  :defaultIcon="form.icon"
+                />
               </el-form-item>
             </el-col>
             <el-col :span="12">
