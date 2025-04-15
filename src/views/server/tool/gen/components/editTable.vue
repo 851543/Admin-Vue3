@@ -139,11 +139,13 @@
 
 <script setup name="GenEdit">
   import { GeneratorApi } from '@/api/tool/generatorApi'
-  // import { optionselect as getDictOptionselect } from '@/api/system/dict/type'
-  import basicInfoForm from './basicInfoForm'
-  import genInfoForm from './genInfoForm'
+  import { useRoute, useRouter } from 'vue-router'
+  import { getCurrentInstance, ref } from 'vue'
+  // import basicInfoForm from './basicInfoForm.vue'
+  // import genInfoForm from './genInfoForm.vue'
 
   const route = useRoute()
+  const router = useRouter()
   const { proxy } = getCurrentInstance()
 
   const activeName = ref('columnInfo')
@@ -157,7 +159,7 @@
   function submitForm() {
     const basicForm = proxy.$refs.basicInfo.$refs.basicInfoForm
     const genForm = proxy.$refs.genInfo.$refs.genInfoForm
-    Promise.all([basicForm, genForm].map(getFormPromise)).then((res) => {
+    Promise.all([basicForm, genForm].map(getFormPromise)).then(async (res) => {
       const validateResult = res.every((item) => !!item)
       if (validateResult) {
         const genTable = Object.assign({}, info.value)
@@ -168,14 +170,13 @@
           treeParentCode: info.value.treeParentCode,
           parentMenuId: info.value.parentMenuId
         }
-        updateGenTable(genTable).then((res) => {
-          proxy.$modal.msgSuccess(res.msg)
-          if (res.code === 200) {
-            close()
-          }
-        })
+        const res = await GeneratorApi.updateGenTable(genTable)
+        if (res.code === 200) {
+          ElMessage.success(res.msg)
+          close()
+        }
       } else {
-        proxy.$modal.msgError('表单校验未通过，请重新检查提交内容')
+        ElMessage.error('表单校验未通过，请重新检查提交内容')
       }
     })
   }
@@ -189,23 +190,24 @@
   }
 
   function close() {
-    const obj = { path: '/tool/gen', query: { t: Date.now(), pageNum: route.query.pageNum } }
-    proxy.$tab.closeOpenPage(obj)
+    router.push({ path: '/dao/dao-gen', query: { t: Date.now() } })
   }
 
-  ;(() => {
+  ;(async () => {
     const tableId = route.params && route.params.tableId
     if (tableId) {
       // 获取表详细信息
-      getGenTable(tableId).then((res) => {
-        columns.value = res.data.rows
-        info.value = res.data.info
-        tables.value = res.data.tables
-      })
+      const res = await GeneratorApi.getGenTable(tableId)
+      if (res.code === 200) {
+        columns.value = res.rows
+        info.value = res.info
+        tables.value = res.tables
+      }
       /** 查询字典下拉列表 */
-      getDictOptionselect().then((response) => {
-        dictOptions.value = response.data
-      })
+      const dictRes = await GeneratorApi.getDictOptionselect()
+      if (dictRes.code === 200) {
+        dictOptions.value = dictRes.data
+      }
     }
   })()
 </script>

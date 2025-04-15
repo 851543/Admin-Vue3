@@ -734,5 +734,25 @@ export const asyncRoutes: MenuListType[] = [
         }
       }
     ]
+  },
+  {
+    id: 11,
+    path: '/tool/gen-edit',
+    name: 'GenEdit',
+    component: RoutesAlias.Home,
+    meta: {
+      title: '修改生成配置',
+      keepAlive: false,
+      isHide: true
+    },
+    children: [
+      {
+        id: 1011,
+        path: 'index/:tableId(\\d+)',
+        component: RoutesAlias.GenEdit,
+        name: 'GenEditIndex',
+        meta: { title: '修改生成配置', keepAlive: false }
+      }
+    ]
   }
 ]
