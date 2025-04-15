@@ -2,7 +2,7 @@
   <el-card>
     <el-tabs v-model="activeName">
       <el-tab-pane label="基本信息" name="basic">
-        <basic-info-form ref="basicInfo" :info="info" />
+        <basic-info-form ref="basicInfo" v-model:info="info" />
       </el-tab-pane>
       <el-tab-pane label="字段信息" name="columnInfo">
         <el-table ref="dragTable" :data="columns" row-key="columnId" :max-height="tableHeight">
@@ -46,25 +46,25 @@
           <el-table-column label="插入" min-width="5%">
             <template #default="scope">
               <el-checkbox
-                true-label="1"
-                false-label="0"
+                true-value="1"
+                false-value="0"
                 v-model="scope.row.isInsert"
               ></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="编辑" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isEdit"></el-checkbox>
+              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isEdit"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="列表" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isList"></el-checkbox>
+              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isList"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isQuery"></el-checkbox>
+              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isQuery"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询方式" min-width="10%">
@@ -84,8 +84,8 @@
           <el-table-column label="必填" min-width="5%">
             <template #default="scope">
               <el-checkbox
-                true-label="1"
-                false-label="0"
+                true-value="1"
+                false-value="0"
                 v-model="scope.row.isRequired"
               ></el-checkbox>
             </template>
@@ -125,7 +125,7 @@
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="生成信息" name="genInfo">
-        <gen-info-form ref="genInfo" :info="info" :tables="tables" />
+        <gen-info-form ref="genInfo" v-model:info="info" :tables="tables" />
       </el-tab-pane>
     </el-tabs>
     <el-form label-width="100px">
@@ -139,14 +139,15 @@
 
 <script setup name="GenEdit">
   import { GeneratorApi } from '@/api/tool/generatorApi'
+  import { DictTypeApi } from '@/api/system/dict/typeApi'
   import { useRoute, useRouter } from 'vue-router'
-  import { getCurrentInstance, ref } from 'vue'
-  // import basicInfoForm from './basicInfoForm.vue'
-  // import genInfoForm from './genInfoForm.vue'
+  import { ref, getCurrentInstance } from 'vue'
+  import basicInfoForm from './basicInfoForm.vue'
+  import genInfoForm from './genInfoForm.vue'
 
+  const { proxy } = getCurrentInstance()
   const route = useRoute()
   const router = useRouter()
-  const { proxy } = getCurrentInstance()
 
   const activeName = ref('columnInfo')
   const tableHeight = ref(document.documentElement.scrollHeight - 245 + 'px')
@@ -156,20 +157,33 @@
   const info = ref({})
 
   /** 提交按钮 */
-  function submitForm() {
+  async function submitForm() {
     const basicForm = proxy.$refs.basicInfo.$refs.basicInfoForm
     const genForm = proxy.$refs.genInfo.$refs.genInfoForm
-    Promise.all([basicForm, genForm].map(getFormPromise)).then(async (res) => {
-      const validateResult = res.every((item) => !!item)
-      if (validateResult) {
-        const genTable = Object.assign({}, info.value)
-        genTable.columns = columns.value
-        genTable.params = {
-          treeCode: info.value.treeCode,
-          treeName: info.value.treeName,
-          treeParentCode: info.value.treeParentCode,
-          parentMenuId: info.value.parentMenuId
+
+    try {
+      const [basicValid, genValid] = await Promise.all([
+        new Promise((resolve) => basicForm.validate(resolve)),
+        new Promise((resolve) => genForm.validate(resolve))
+      ])
+
+      if (basicValid && genValid) {
+        // 获取表单数据
+        const basicData = proxy.$refs.basicInfo.getFormData()
+        const genData = proxy.$refs.genInfo.getFormData()
+        console.log(basicData, genData)
+        const genTable = {
+          ...basicData,
+          ...genData,
+          columns: columns.value,
+          params: {
+            treeCode: genData.treeCode,
+            treeName: genData.treeName,
+            treeParentCode: genData.treeParentCode,
+            parentMenuId: genData.parentMenuId
+          }
         }
+        console.log(genTable)
         const res = await GeneratorApi.updateGenTable(genTable)
         if (res.code === 200) {
           ElMessage.success(res.msg)
@@ -178,15 +192,10 @@
       } else {
         ElMessage.error('表单校验未通过，请重新检查提交内容')
       }
-    })
-  }
-
-  function getFormPromise(form) {
-    return new Promise((resolve) => {
-      form.validate((res) => {
-        resolve(res)
-      })
-    })
+    } catch (error) {
+      console.error('表单提交错误:', error)
+      ElMessage.error('表单提交失败，请重试')
+    }
   }
 
   function close() {
@@ -199,12 +208,12 @@
       // 获取表详细信息
       const res = await GeneratorApi.getGenTable(tableId)
       if (res.code === 200) {
-        columns.value = res.rows
-        info.value = res.info
-        tables.value = res.tables
+        columns.value = res.data.rows
+        info.value = res.data.info
+        tables.value = res.data.tables
       }
       /** 查询字典下拉列表 */
-      const dictRes = await GeneratorApi.getDictOptionselect()
+      const dictRes = await DictTypeApi.optionselect()
       if (dictRes.code === 200) {
         dictOptions.value = dictRes.data
       }

@@ -25,6 +25,16 @@ export class GeneratorApi {
     return request.get({ url: `/tool/gen/column/${tableId}` })
   }
 
+  // 查询表详细信息
+  static getGenTable(tableId: number) {
+    return request.get({ url: `/tool/gen/${tableId}` })
+  }
+
+  // 修改代码生成信息
+  static updateGenTable(data: any) {
+    return request.put({ url: '/tool/gen', data })
+  }
+
   /**
    * 导入表结构（保存）
    */
