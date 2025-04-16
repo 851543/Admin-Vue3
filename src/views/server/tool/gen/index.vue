@@ -27,10 +27,10 @@
         </el-form>
       </template>
       <template #bottom>
-        <el-button :disabled="multiple" v-ripple>生成</el-button>
+        <el-button :disabled="multiple" @click="handleGenTable" v-ripple>生成</el-button>
         <el-button @click="openCreateTable" v-ripple>创建</el-button>
         <el-button @click="openImportTable" v-ripple>导入</el-button>
-        <el-button :disabled="multiple" v-ripple>删除</el-button>
+        <el-button :disabled="multiple" @click="handleDelete" v-ripple>删除</el-button>
       </template>
     </table-bar>
 
@@ -42,13 +42,13 @@
         <el-table-column label="实体" prop="entityName" />
         <el-table-column label="创建时间" sortable prop="createTime" />
         <el-table-column label="更新时间" prop="updateTime" />
-        <el-table-column label="操作" prop="action" width="350px">
+        <el-table-column label="操作" prop="action" width="350px" align="center">
           <template #default="scope">
-            <button-table text="预览" @click="handlePreview(scope.row)" v-ripple />
+            <button-table icon="&#xe689;" type="add" @click="handlePreview(scope.row)" v-ripple />
             <button-table type="edit" @click="handleEditTable(scope.row)" v-ripple />
-            <button-table type="delete" v-ripple />
-            <button-table text="同步" v-ripple />
-            <button-table text="生成代码" v-ripple />
+            <button-table type="delete" @click="handleDelete(scope.row)" v-ripple />
+            <button-table icon="&#xe615;" type="add" @click="handleSynchDb(scope.row)" v-ripple />
+            <button-table icon="&#xe89f;" type="add" @click="handleGenTable(scope.row)" v-ripple />
           </template>
         </el-table-column>
       </template>
@@ -59,10 +59,11 @@
       :title="preview.title"
       v-model="preview.open"
       width="80%"
+      top="5vh"
       append-to-body
       class="preview-dialog"
     >
-      <el-tabs v-model="preview.activeName" class="preview-tabs">
+      <el-tabs v-model="preview.activeName">
         <el-tab-pane
           v-for="(value, key) in preview.data"
           :label="key.substring(key.lastIndexOf('/') + 1, key.indexOf('.vm'))"
@@ -77,9 +78,7 @@
             style="float: right"
             >&nbsp;复制</el-link
           >
-          <div class="code-wrapper">
-            <pre class="preview-code">{{ value }}</pre>
-          </div>
+          <pre>{{ value }}</pre>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
@@ -96,6 +95,7 @@
   import { GeneratorApi } from '@/api/tool/generatorApi'
   import { GenTableModel } from '@/types/tool/generator'
   import { useRouter } from 'vue-router'
+  import { downloadZip } from '@/utils/utils'
 
   const router = useRouter()
   const total = ref(0)
@@ -133,8 +133,11 @@
   }
 
   const ids = ref<string[]>([])
+  const tableNames = ref([])
   const handleSelectionChange = (selection: any) => {
     ids.value = selection.map((item: any) => item.tableId)
+    tableNames.value = selection.map((item: any) => item.tableName)
+    multiple.value = !selection.length
   }
 
   const createTableRef = ref<InstanceType<typeof createTable>>()
@@ -186,65 +189,57 @@
     ElMessage.success('复制成功')
   }
 
+  /** 删除按钮操作 */
+  const handleDelete = async (row: any) => {
+    const tableIds = row.tableId || ids.value
+    const Tr = await ElMessageBox.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？')
+    if (Tr) {
+      const res = await GeneratorApi.remove(tableIds)
+      if (res.code === 200) {
+        ElMessage.success(res.msg)
+        getList()
+      }
+    }
+  }
+
+  /** 同步数据库操作 */
+  const handleSynchDb = async (row: any) => {
+    const tableName = row.tableName
+    const Tr = await ElMessageBox.confirm('是否确认同步表编号为"' + tableName + '"的数据项？')
+    if (Tr) {
+      const res = await GeneratorApi.synchDb(tableName)
+      if (res.code === 200) {
+        ElMessage.success(res.msg)
+      }
+    }
+  }
+
+  /** 生成代码操作 */
+  const handleGenTable = async (row: any) => {
+    const tbNames = row.tableName || tableNames.value
+    if (tbNames == '') {
+      ElMessage.error('请选择要生成的数据')
+      return
+    }
+    if (row.genType === '1') {
+      const res = await GeneratorApi.genCode(tbNames)
+      if (res.code === 200) {
+        ElMessage.success()
+      }
+    } else {
+      downloadZip(GeneratorApi.batchGenCode(tbNames))
+    }
+  }
+
   onMounted(() => {
     getList()
   })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .page-content {
     width: 100%;
     height: 100%;
-
-    :deep(.preview-dialog) {
-      .el-dialog {
-        height: 90vh;
-        margin-top: 5vh !important;
-        display: flex;
-        flex-direction: column;
-
-        .el-dialog__body {
-          flex: 1;
-          overflow: hidden;
-          padding: 0;
-        }
-
-        .preview-tabs {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-
-          .el-tabs__content {
-            flex: 1;
-            overflow: hidden;
-            padding: 10px;
-
-            .el-tab-pane {
-              height: 100%;
-            }
-          }
-        }
-
-        .code-wrapper {
-          height: calc(100% - 30px);
-          margin-top: 10px;
-          overflow: hidden;
-        }
-
-        .preview-code {
-          height: 100%;
-          overflow: auto;
-          margin: 0;
-          padding: 15px;
-          background-color: #f5f7fa;
-          border-radius: 4px;
-          font-family: Consolas, Monaco, 'Andale Mono', monospace;
-          white-space: pre;
-          word-break: normal;
-          word-wrap: normal;
-        }
-      }
-    }
 
     .user {
       .avatar {
@@ -261,6 +256,23 @@
           color: var(--art-text-gray-800);
         }
       }
+    }
+  }
+
+  .preview-dialog {
+    overflow: auto;
+    overflow-x: hidden;
+    max-height: 70vh;
+    padding: 10px 20px 0;
+
+    :deep(pre) {
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      font-size: 14px;
+      line-height: 1.5;
+      background-color: #f6f8fa;
+      border-radius: 6px;
     }
   }
 </style>

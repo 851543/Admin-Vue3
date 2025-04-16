@@ -110,6 +110,7 @@
     const res = await GeneratorApi.importTable({ tables: tableNames })
     if (res.code === 200) {
       visible.value = false
+      ElMessage.success(res.msg)
       emit('ok')
     }
   }

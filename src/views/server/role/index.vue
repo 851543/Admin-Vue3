@@ -457,10 +457,10 @@
     }
   }
 
-  import { download } from '@/utils/utils'
+  import { downloadExcel } from '@/utils/utils'
   // 导出按钮操作
   const exportExcel = () => {
-    download(RoleService.exportExcel(queryParams))
+    downloadExcel(RoleService.exportExcel(queryParams))
   }
 
   // 初始化
