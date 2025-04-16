@@ -70,7 +70,7 @@ export class GeneratorApi {
    * 预览代码
    */
   static preview(tableId: number) {
-    return request.get({ url: `/tool/gen/preview/${tableId}` })
+    return request.get<BaseResult>({ url: `/tool/gen/preview/${tableId}` })
   }
 
   /**

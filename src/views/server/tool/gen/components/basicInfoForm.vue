@@ -60,7 +60,14 @@
 
   // 暴露方法给父组件
   defineExpose({
-    form,
-    getFormData: () => form.value
+    getFormData: () => {
+      return {
+        tableName: form.value.tableName,
+        tableComment: form.value.tableComment,
+        className: form.value.className,
+        functionAuthor: form.value.functionAuthor,
+        remark: form.value.remark
+      }
+    }
   })
 </script>

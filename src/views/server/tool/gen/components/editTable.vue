@@ -171,10 +171,10 @@
         // 获取表单数据
         const basicData = proxy.$refs.basicInfo.getFormData()
         const genData = proxy.$refs.genInfo.getFormData()
-        console.log(basicData, genData)
+        // basicData genData的解构顺序不能颠倒
         const genTable = {
-          ...basicData,
           ...genData,
+          ...basicData,
           columns: columns.value,
           params: {
             treeCode: genData.treeCode,

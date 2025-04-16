@@ -274,7 +274,6 @@
 
   // 暴露方法给父组件
   defineExpose({
-    form,
     getFormData: () => form.value
   })
 
