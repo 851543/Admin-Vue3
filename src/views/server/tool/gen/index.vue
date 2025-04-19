@@ -45,7 +45,17 @@
     </table-bar>
 
     <!-- 代码生成列表 -->
-    <art-table :data="tableData" selection @selection-change="handleSelectionChange">
+    <art-table
+      :data="tableData"
+      selection
+      @selection-change="handleSelectionChange"
+      :total="total"
+      :current-page="searchForm.pageNum"
+      :page-size="searchForm.pageSize"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      row-key="tableId"
+    >
       <template #default>
         <el-table-column label="表名称" prop="tableName" v-if="columns[0].show" />
         <el-table-column label="表描述" prop="tableComment" v-if="columns[1].show" />
@@ -137,6 +147,18 @@
     data: {} as Record<string, string>
   })
   const search = () => {}
+
+  /** 每页条数改变 */
+  const handleSizeChange = (size: number) => {
+    searchForm.pageSize = size
+    getList()
+  }
+
+  /** 当前页改变 */
+  const handleCurrentChange = (page: number) => {
+    searchForm.pageNum = page
+    getList()
+  }
 
   const changeColumn = (list: any) => {
     columns.values = list

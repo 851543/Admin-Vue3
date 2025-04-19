@@ -1,6 +1,6 @@
 import { BaseArrayResult, BaseObjectResult, BasePageResult } from '../axios'
 
-export interface ConfigResult {
+export interface SysConfigResult {
   configId: string
   configName: string
   configKey: string
@@ -13,6 +13,6 @@ export interface ConfigResult {
   remark: string
 }
 
-export type ConfigListPageResult = BasePageResult<ConfigResult>
-export type ConfigListResult = BaseArrayResult<ConfigResult>
-export type ConfigInfoResult = BaseObjectResult<ConfigResult>
+export type SysConfigListPageResult = BasePageResult<SysConfigResult>
+export type SysConfigListResult = BaseArrayResult<SysConfigResult>
+export type SysConfigInfoResult = BaseObjectResult<SysConfigResult>

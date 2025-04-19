@@ -1,12 +1,12 @@
 import request from '@/utils/http'
-import { ConfigInfoResult, ConfigListPageResult } from '@/types/system/config'
+import { SysConfigInfoResult, SysConfigListPageResult } from '@/types/system/config'
 import { CodeMsgResult } from '@/types/axios'
 
 // 参数配置
-export class ConfigService {
+export class SysConfigService {
   // 查询参数配置列表
   static listConfig(query: any) {
-    return request.get<ConfigListPageResult>({
+    return request.get<SysConfigListPageResult>({
       url: '/system/config/list',
       params: query
     })
@@ -14,7 +14,7 @@ export class ConfigService {
 
   // 查询参数配置详细
   static getConfig(configId: any) {
-    return request.get<ConfigInfoResult>({
+    return request.get<SysConfigInfoResult>({
       url: '/system/config/' + configId
     })
   }

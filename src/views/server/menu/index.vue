@@ -27,7 +27,7 @@
         </el-form>
       </template>
       <template #bottom>
-        <el-button @click="showModel('add')" v-ripple>添加菜单</el-button>
+        <el-button @click="showModel('add')" v-ripple>新增</el-button>
         <el-button @click="toggleExpand" v-ripple>
           {{ isExpandAll ? '折叠' : '展开' }}
         </el-button>

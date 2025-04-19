@@ -11,109 +11,80 @@
         <el-form :model="queryParams" ref="queryRef" label-width="82px">
           <el-row :gutter="20">
             <form-input
-              label="参数名称"
-              prop="configName"
-              v-model="queryParams.configName"
+              label="字典名称"
+              prop="dictName"
+              v-model="queryParams.dictName"
               @keyup.enter="handleQuery"
-            />
-            <form-input
-              label="参数键名"
-              prop="configKey"
-              v-model="queryParams.configKey"
-              @keyup.enter="handleQuery"
-            />
-            <form-select
-              label="系统内置"
-              prop="status"
-              v-model="queryParams.configType"
-              :options="statusOptions"
             />
           </el-row>
         </el-form>
       </template>
       <template #bottom>
-        <el-button @click="handleAdd" v-auth="['system:config:add']" v-ripple>新增</el-button>
+        <el-button @click="handleAdd" v-auth="['system:type:add']" v-ripple>新增</el-button>
         <el-button
           @click="handleDelete"
           :disabled="multiple"
-          v-auth="['system:config:remove']"
+          v-auth="['system:type:remove']"
           v-ripple
           >删除
         </el-button>
-        <el-button @click="handleExport" v-auth="['system:config:export']" v-ripple
-          >导出
-        </el-button>
+        <el-button @click="handleExport" v-auth="['system:type:export']" v-ripple>导出</el-button>
       </template>
     </table-bar>
 
     <art-table
       v-loading="loading"
-      :data="configList"
+      :data="typeList"
       selection
       :total="total"
       :current-page="queryParams.pageNum"
       :page-size="queryParams.pageSize"
+      @pagination="getList"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       @selection-change="handleSelectionChange"
-      row-key="configId"
+      row-key="dictId"
     >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="参数主键" align="center" prop="configId" v-if="columns[0].show" />
-      <el-table-column label="参数名称" align="center" prop="configName" v-if="columns[1].show" />
-      <el-table-column label="参数键名" align="center" prop="configKey" v-if="columns[2].show" />
-      <el-table-column label="参数键值" align="center" prop="configValue" v-if="columns[3].show" />
-      <el-table-column label="系统内置" align="center" prop="configType" v-if="columns[4].show">
-        <template #default="scope">
-          <el-tag :type="scope.row.configType === 'Y' ? 'success' : 'danger'" size="small">
-            {{ scope.row.configType === 'Y' ? '是' : '否' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="备注"
-        align="center"
-        prop="remark"
-        :show-overflow-tooltip="true"
-        v-if="columns[5].show"
-      />
+      <el-table-column label="字典主键" align="center" prop="dictId" v-if="columns[0].show" />
+      <el-table-column label="字典名称" align="center" prop="dictName" v-if="columns[1].show" />
+      <el-table-column label="字典类型" align="center" prop="dictType" v-if="columns[2].show" />
+      <el-table-column label="状态" align="center" prop="status" v-if="columns[3].show" />
+      <el-table-column label="备注" align="center" prop="remark" v-if="columns[4].show" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <button-table
             type="edit"
-            v-auth="['system:config:edit']"
+            v-auth="['system:type:edit']"
             @click="handleUpdate(scope.row)"
           />
           <button-table
             type="delete"
-            v-auth="['system:config:remove']"
+            v-auth="['system:type:remove']"
             @click="handleDelete(scope.row)"
           />
         </template>
       </el-table-column>
     </art-table>
 
-    <!-- 添加或修改参数配置对话框 -->
+    <!-- 添加或修改字典类型对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="configRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="参数名称" prop="configName">
-          <el-input v-model="form.configName" placeholder="请输入参数名称" />
+      <el-form ref="typeRef" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="字典名称" prop="dictName">
+          <el-input v-model="form.dictName" placeholder="请输入字典名称" />
         </el-form-item>
-        <el-form-item label="参数键名" prop="configKey">
-          <el-input v-model="form.configKey" placeholder="请输入参数键名" />
+        <el-form-item label="字典类型" prop="dictType">
+          <el-input v-model="form.dictType" placeholder="请输入字典类型" />
         </el-form-item>
-        <el-form-item label="参数键值" prop="configValue">
-          <el-input v-model="form.configValue" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="系统内置" prop="configType">
-          <el-radio-group v-model="form.configType">
-            <el-radio v-for="dict in statusOptions" :key="dict.value" :label="dict.value">{{
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">{{
               dict.label
             }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -127,13 +98,13 @@
 </template>
 
 <script setup lang="ts">
-  import { SysConfigService } from '@/api/system/configApi'
+  import { DictTypeService } from '@/api/system/dict/typeApi'
   import { ref, reactive } from 'vue'
   import { resetForm } from '@/utils/utils'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { FormInstance } from 'element-plus'
-  import { SysConfigResult } from '@/types/system/config'
-  const configList = ref<SysConfigResult[]>([])
+  import { DictTypeResult } from '@/types/system/dict'
+  const typeList = ref<DictTypeResult[]>([])
   const open = ref(false)
   const loading = ref(true)
   const ids = ref([])
@@ -141,14 +112,13 @@
   const total = ref(0)
   const title = ref('')
   const queryRef = ref()
-  const configRef = ref<FormInstance>()
+  const typeRef = ref<FormInstance>()
   // 定义初始表单状态
   const initialFormState = {
-    configId: null,
-    configName: null,
-    configKey: null,
-    configValue: null,
-    configType: 'Y',
+    dictId: null,
+    dictName: null,
+    dictType: null,
+    status: '0',
     createBy: null,
     createTime: null,
     updateBy: null,
@@ -159,39 +129,28 @@
   const queryParams = reactive({
     pageNum: 1,
     pageSize: 10,
-    configName: '',
-    configKey: '',
-    configValue: '',
-    configType: ''
+    dictName: '',
+    dictType: '',
+    status: ''
   })
-  const rules = reactive({
-    configName: [{ required: true, message: '参数名称不能为空', trigger: 'blur' }],
-    configKey: [{ required: true, message: '参数键名不能为空', trigger: 'blur' }],
-    configValue: [{ required: true, message: '参数键值不能为空', trigger: 'blur' }]
-  })
+  const rules = reactive({})
 
-  const statusOptions = ref([
-    { label: '是', value: 'Y' },
-    { label: '否', value: 'N' }
-  ])
-
-  /** 查询参数配置列表 */
+  /** 查询字典类型列表 */
   const getList = async () => {
     loading.value = true
-    const res = await SysConfigService.listConfig(queryParams)
+    const res = await DictTypeService.listType(queryParams)
     if (res.code === 200) {
-      configList.value = res.rows
+      typeList.value = res.rows
       total.value = res.total
       loading.value = false
     }
   }
 
   const columns = reactive([
-    { name: '参数主键', show: true },
-    { name: '参数名称', show: true },
-    { name: '参数键名', show: true },
-    { name: '参数键值', show: true },
-    { name: '系统内置', show: true },
+    { name: '字典主键', show: true },
+    { name: '字典名称', show: true },
+    { name: '字典类型', show: true },
+    { name: '状态', show: true },
     { name: '备注', show: true }
   ])
 
@@ -231,7 +190,7 @@
 
   // 多选框选中数据
   const handleSelectionChange = (selection: any) => {
-    ids.value = selection.map((item: any) => item.configId)
+    ids.value = selection.map((item: any) => item.dictId)
     multiple.value = !selection.length
   }
 
@@ -239,35 +198,35 @@
   const handleAdd = () => {
     reset()
     open.value = true
-    title.value = '添加参数配置'
+    title.value = '添加字典类型'
   }
 
   /** 修改按钮操作 */
   const handleUpdate = async (row: any) => {
     reset()
-    const _configId = row.configId || ids.value
-    const res = await SysConfigService.getConfig(_configId)
+    const _dictId = row.dictId || ids.value
+    const res = await DictTypeService.getType(_dictId)
     if (res.code === 200) {
       Object.assign(form, res.data)
       open.value = true
-      title.value = '修改参数配置'
+      title.value = '修改字典类型'
     }
   }
 
   /** 提交按钮 */
   const submitForm = async () => {
-    if (!configRef.value) return
-    await configRef.value.validate(async (valid) => {
+    if (!typeRef.value) return
+    await typeRef.value.validate(async (valid) => {
       if (valid) {
-        if (form.configId != null) {
-          const res = await SysConfigService.updateConfig(form)
+        if (form.dictId != null) {
+          const res = await DictTypeService.updateType(form)
           if (res.code === 200) {
             ElMessage.success(res.msg)
             open.value = false
             getList()
           }
         } else {
-          const res = await SysConfigService.addConfig(form)
+          const res = await DictTypeService.addType(form)
           if (res.code === 200) {
             ElMessage.success(res.msg)
             open.value = false
@@ -280,12 +239,10 @@
 
   /** 删除按钮操作 */
   const handleDelete = async (row: any) => {
-    const _configIds = row.configId || ids.value
-    const Tr = await ElMessageBox.confirm(
-      '是否确认删除参数配置编号为"' + _configIds + '"的数据项？'
-    )
+    const _dictIds = row.dictId || ids.value
+    const Tr = await ElMessageBox.confirm('是否确认删除字典类型编号为"' + _dictIds + '"的数据项？')
     if (Tr) {
-      const res = await SysConfigService.deleteConfig(_configIds)
+      const res = await DictTypeService.deleteType(_dictIds)
       if (res.code === 200) {
         getList()
         ElMessage.success(res.msg)
@@ -297,7 +254,7 @@
 
   /** 导出按钮操作 */
   const handleExport = () => {
-    downloadExcel(SysConfigService.exportExcel(queryParams))
+    downloadExcel(DictTypeService.exportExcel(queryParams))
   }
 
   // 初始化

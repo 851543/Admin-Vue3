@@ -33,7 +33,7 @@
         </el-form>
       </template>
       <template #bottom>
-        <el-button @click="showDialog('add')" v-ripple>添加角色</el-button>
+        <el-button @click="showDialog('add')" v-ripple>新增</el-button>
         <el-button @click="exportExcel" v-ripple>导出</el-button>
       </template>
     </table-bar>
