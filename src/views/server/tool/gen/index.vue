@@ -11,8 +11,18 @@
       <template #top>
         <el-form :model="searchForm" ref="searchFormRef" label-width="82px">
           <el-row :gutter="20">
-            <form-input label="表名称" prop="tableName" v-model="searchForm.tableName" />
-            <form-input label="表描述" prop="tableComment" v-model="searchForm.tableComment" />
+            <form-input
+              label="表名称"
+              prop="tableName"
+              @keyup.enter="search"
+              v-model="searchForm.tableName"
+            />
+            <form-input
+              label="表描述"
+              prop="tableComment"
+              @keyup.enter="search"
+              v-model="searchForm.tableComment"
+            />
             <el-form-item label="创建时间">
               <el-date-picker
                 v-model="searchForm.createTime"
@@ -37,11 +47,11 @@
     <!-- 代码生成列表 -->
     <art-table :data="tableData" selection @selection-change="handleSelectionChange">
       <template #default>
-        <el-table-column label="表名称" prop="tableName" />
-        <el-table-column label="表描述" prop="tableComment" />
-        <el-table-column label="实体" prop="entityName" />
-        <el-table-column label="创建时间" sortable prop="createTime" />
-        <el-table-column label="更新时间" prop="updateTime" />
+        <el-table-column label="表名称" prop="tableName" v-if="columns[0].show" />
+        <el-table-column label="表描述" prop="tableComment" v-if="columns[1].show" />
+        <el-table-column label="实体" prop="entityName" v-if="columns[2].show" />
+        <el-table-column label="创建时间" sortable prop="createTime" v-if="columns[3].show" />
+        <el-table-column label="更新时间" prop="updateTime" v-if="columns[4].show" />
         <el-table-column label="操作" prop="action" width="350px" align="center">
           <template #default="scope">
             <button-table icon="&#xe689;" type="add" @click="handlePreview(scope.row)" v-ripple />
@@ -216,7 +226,7 @@
 
   /** 生成代码操作 */
   const handleGenTable = async (row: any) => {
-    const tbNames = row.tableName || tableNames.value
+    const tbNames = row.tableName || tableNames.value.join(',')
     if (tbNames == '') {
       ElMessage.error('请选择要生成的数据')
       return
@@ -224,7 +234,7 @@
     if (row.genType === '1') {
       const res = await GeneratorApi.genCode(tbNames)
       if (res.code === 200) {
-        ElMessage.success()
+        ElMessage.success('成功生成到自定义路径：' + row.genPath)
       }
     } else {
       downloadZip(GeneratorApi.batchGenCode(tbNames))

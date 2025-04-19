@@ -16,7 +16,6 @@
         <el-form-item prop="tplWebType">
           <template #label>前端类型</template>
           <el-select v-model="form.tplWebType">
-            <el-option label="Vue2 Element UI 模版" value="element-ui" />
             <el-option label="Vue3 Element Plus 模版" value="element-plus" />
           </el-select>
         </el-form-item>

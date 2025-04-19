@@ -11,8 +11,18 @@
       <template #top>
         <el-form :model="queryParams" ref="searchFormRef" label-width="82px">
           <el-row :gutter="20">
-            <form-input label="角色名称" prop="roleName" v-model="queryParams.roleName" />
-            <form-input label="权限字符" prop="roleKey" v-model="queryParams.roleKey" />
+            <form-input
+              label="角色名称"
+              prop="roleName"
+              @keyup.enter="search"
+              v-model="queryParams.roleName"
+            />
+            <form-input
+              label="权限字符"
+              prop="roleKey"
+              @keyup.enter="search"
+              v-model="queryParams.roleKey"
+            />
             <form-select
               label="状态"
               prop="status"
