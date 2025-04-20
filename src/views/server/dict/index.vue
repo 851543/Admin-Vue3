@@ -42,6 +42,7 @@
           >删除
         </el-button>
         <el-button @click="handleExport" v-auth="['system:type:export']" v-ripple>导出</el-button>
+        <el-button @click="handlerefreshCache" v-ripple>刷新缓存 </el-button>
       </template>
     </table-bar>
 
@@ -288,6 +289,13 @@
   const getuseDict = async () => {
     const { sys_normal_disable } = await useDict('sys_normal_disable')
     sysNormalDisable.value = sys_normal_disable
+  }
+
+  const handlerefreshCache = async () => {
+    const res = await DictTypeService.refreshCache()
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
+    }
   }
 
   // 初始化

@@ -53,4 +53,18 @@ export class DictTypeService {
       data: data
     })
   }
+
+  // 获取字典选择框列表
+  static optionSelect() {
+    return request.get<DictTypeInfoResult[]>({
+      url: '/system/dict/type/optionselect'
+    })
+  }
+
+  // 刷新字典缓存
+  static refreshCache() {
+    return request.del<CodeMsgResult>({
+      url: '/system/dict/type/refreshCache'
+    })
+  }
 }

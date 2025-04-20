@@ -53,4 +53,11 @@ export class SysConfigService {
       data: data
     })
   }
+
+  // 刷新参数缓存
+  static refreshCache() {
+    return request.del<CodeMsgResult>({
+      url: '/system/config/refreshCache'
+    })
+  }
 }

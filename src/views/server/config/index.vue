@@ -43,6 +43,7 @@
         <el-button @click="handleExport" v-auth="['system:config:export']" v-ripple
           >导出
         </el-button>
+        <el-button @click="handlerefreshCache" v-ripple>刷新缓存 </el-button>
       </template>
     </table-bar>
 
@@ -298,6 +299,14 @@
   const getuseDict = async () => {
     const { sys_yes_no } = await useDict('sys_yes_no')
     sysYesNo.value = sys_yes_no
+  }
+
+  // 刷新缓存
+  const handlerefreshCache = async () => {
+    const res = await SysConfigService.refreshCache()
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
+    }
   }
 
   // 初始化

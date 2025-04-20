@@ -139,7 +139,7 @@
 
 <script setup name="GenEdit">
   import { GeneratorApi } from '@/api/tool/generatorApi'
-  import { DictTypeApi } from '@/api/system/dict/typeApi'
+  import { DictTypeService } from '@/api/system/dict/typeApi'
   import { useRoute, useRouter } from 'vue-router'
   import { ref, getCurrentInstance } from 'vue'
   import basicInfoForm from './basicInfoForm.vue'
@@ -213,7 +213,7 @@
         tables.value = res.data.tables
       }
       /** 查询字典下拉列表 */
-      const dictRes = await DictTypeApi.optionselect()
+      const dictRes = await DictTypeService.optionSelect()
       if (dictRes.code === 200) {
         dictOptions.value = dictRes.data
       }
