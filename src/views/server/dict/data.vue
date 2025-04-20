@@ -11,9 +11,9 @@
         <el-form :model="queryParams" ref="queryRef" label-width="82px">
           <el-row :gutter="20">
             <form-input
-              label="字典排序"
-              prop="dictSort"
-              v-model="queryParams.dictSort"
+              label="字典名称"
+              prop="dictName"
+              v-model="queryParams.dictName"
               @keyup.enter="handleQuery"
             />
             <form-input
@@ -22,28 +22,11 @@
               v-model="queryParams.dictLabel"
               @keyup.enter="handleQuery"
             />
-            <form-input
-              label="字典键值"
-              prop="dictValue"
-              v-model="queryParams.dictValue"
-              @keyup.enter="handleQuery"
-            />
-            <form-input
-              label="样式属性"
-              prop="cssClass"
-              v-model="queryParams.cssClass"
-              @keyup.enter="handleQuery"
-            />
-            <form-input
-              label="表格回显样式"
-              prop="listClass"
-              v-model="queryParams.listClass"
-              @keyup.enter="handleQuery"
-            />
-            <form-input
-              label="是否默认"
-              prop="isDefault"
-              v-model="queryParams.isDefault"
+            <form-select
+              label="状态"
+              prop="status"
+              v-model="queryParams.status"
+              :options="sysNormalDisable"
               @keyup.enter="handleQuery"
             />
           </el-row>
@@ -59,6 +42,7 @@
           >删除
         </el-button>
         <el-button @click="handleExport" v-auth="['system:data:export']" v-ripple>导出</el-button>
+        <el-button @click="handleClose" v-ripple>关闭</el-button>
       </template>
     </table-bar>
 
@@ -80,17 +64,19 @@
       <el-table-column label="字典排序" align="center" prop="dictSort" v-if="columns[1].show" />
       <el-table-column label="字典标签" align="center" prop="dictLabel" v-if="columns[2].show" />
       <el-table-column label="字典键值" align="center" prop="dictValue" v-if="columns[3].show" />
-      <el-table-column label="字典类型" align="center" prop="dictType" v-if="columns[4].show" />
-      <el-table-column label="样式属性" align="center" prop="cssClass" v-if="columns[5].show" />
       <el-table-column
         label="表格回显样式"
         align="center"
         prop="listClass"
-        v-if="columns[6].show"
+        v-if="columns[4].show"
       />
-      <el-table-column label="是否默认" align="center" prop="isDefault" v-if="columns[7].show" />
-      <el-table-column label="状态" align="center" prop="status" v-if="columns[8].show" />
-      <el-table-column label="备注" align="center" prop="remark" v-if="columns[9].show" />
+      <el-table-column label="是否默认" align="center" prop="isDefault" v-if="columns[5].show" />
+      <el-table-column label="状态" align="center" prop="status" v-if="columns[6].show">
+        <template #default="scope">
+          <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" align="center" prop="remark" v-if="columns[7].show" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <button-table
@@ -110,26 +96,40 @@
     <!-- 添加或修改字典数据对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="dataRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="字典排序" prop="dictSort">
-          <el-input v-model="form.dictSort" placeholder="请输入字典排序" />
+        <el-form-item label="字典类型">
+          <el-input v-model="form.dictType" :disabled="true" />
         </el-form-item>
-        <el-form-item label="字典标签" prop="dictLabel">
-          <el-input v-model="form.dictLabel" placeholder="请输入字典标签" />
+        <el-form-item label="数据标签" prop="dictLabel">
+          <el-input v-model="form.dictLabel" placeholder="请输入数据标签" />
         </el-form-item>
-        <el-form-item label="字典键值" prop="dictValue">
-          <el-input v-model="form.dictValue" placeholder="请输入字典键值" />
+        <el-form-item label="数据键值" prop="dictValue">
+          <el-input v-model="form.dictValue" placeholder="请输入数据键值" />
         </el-form-item>
         <el-form-item label="样式属性" prop="cssClass">
           <el-input v-model="form.cssClass" placeholder="请输入样式属性" />
         </el-form-item>
-        <el-form-item label="表格回显样式" prop="listClass">
-          <el-input v-model="form.listClass" placeholder="请输入表格回显样式" />
+        <el-form-item label="显示排序" prop="dictSort">
+          <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
         </el-form-item>
-        <el-form-item label="是否默认" prop="isDefault">
-          <el-input v-model="form.isDefault" placeholder="请输入是否默认" />
+        <el-form-item label="回显样式" prop="listClass">
+          <el-select v-model="form.listClass">
+            <el-option
+              v-for="item in listClassOptions"
+              :key="item.value"
+              :label="item.label + '(' + item.value + ')'"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio v-for="dict in sysNormalDisable" :key="dict.value" :value="dict.value">{{
+              dict.label
+            }}</el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -144,6 +144,7 @@
 
 <script setup lang="ts">
   import { DictDataService } from '@/api/system/dict/dataApi'
+  import { DictTypeService } from '@/api/system/dict/typeApi'
   import { ref, reactive } from 'vue'
   import { resetForm } from '@/utils/utils'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -158,37 +159,55 @@
   const title = ref('')
   const queryRef = ref()
   const dataRef = ref<FormInstance>()
+  // 数据标签回显样式
+  const listClassOptions = ref([
+    { value: 'default', label: '默认' },
+    { value: 'primary', label: '主要' },
+    { value: 'success', label: '成功' },
+    { value: 'info', label: '信息' },
+    { value: 'warning', label: '警告' },
+    { value: 'danger', label: '危险' }
+  ])
   // 定义初始表单状态
   const initialFormState = {
     dictCode: null,
-    dictSort: null,
+    dictSort: 0,
     dictLabel: null,
     dictValue: null,
-    dictType: null,
     cssClass: null,
-    listClass: null,
+    listClass: 'default',
     isDefault: null,
-    status: null,
+    status: '0',
     createBy: null,
     createTime: null,
     updateBy: null,
     updateTime: null,
     remark: null
   }
-  const form = reactive({ ...initialFormState })
+  const form = reactive({ ...initialFormState, dictType: '' })
   const queryParams = reactive({
     pageNum: 1,
     pageSize: 10,
-    dictSort: '',
-    dictLabel: '',
-    dictValue: '',
     dictType: '',
-    cssClass: '',
-    listClass: '',
-    isDefault: '',
+    dictName: '',
+    dictLabel: '',
     status: ''
   })
-  const rules = reactive({})
+  const rules = reactive({
+    dictLabel: [{ required: true, message: '数据标签不能为空', trigger: 'blur' }],
+    dictValue: [{ required: true, message: '数据键值不能为空', trigger: 'blur' }],
+    dictSort: [{ required: true, message: '数据顺序不能为空', trigger: 'blur' }]
+  })
+
+  /** 查询字典类型详细 */
+  const getTypes = async (dictId: any) => {
+    const res = await DictTypeService.getType(dictId)
+    if (res.code === 200) {
+      queryParams.dictType = res.data.dictType
+      form.dictType = res.data.dictType
+      getList()
+    }
+  }
 
   /** 查询字典数据列表 */
   const getList = async () => {
@@ -206,8 +225,6 @@
     { name: '字典排序', show: true },
     { name: '字典标签', show: true },
     { name: '字典键值', show: true },
-    { name: '字典类型', show: true },
-    { name: '样式属性', show: true },
     { name: '表格回显样式', show: true },
     { name: '是否默认', show: true },
     { name: '状态', show: true },
@@ -318,9 +335,24 @@
   const handleExport = () => {
     downloadExcel(DictDataService.exportExcel(queryParams))
   }
+  import { useDict, DictType } from '@/utils/dict'
+  const sysNormalDisable = ref<DictType[]>([]) // 状态字典数据
+  const getuseDict = async () => {
+    const { sys_normal_disable } = await useDict('sys_normal_disable')
+    sysNormalDisable.value = sys_normal_disable
+  }
 
+  import { useRoute, useRouter } from 'vue-router'
+  const router = useRouter()
+  // 关闭按钮
+  const handleClose = () => {
+    router.push({ path: '/test/test-dict', query: { t: Date.now() } })
+  }
+
+  const route = useRoute()
   // 初始化
   onMounted(() => {
-    getList()
+    getuseDict()
+    getTypes(route.params && route.params.dictId)
   })
 </script>

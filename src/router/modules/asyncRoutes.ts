@@ -754,5 +754,25 @@ export const asyncRoutes: MenuListType[] = [
         meta: { title: '修改生成配置', keepAlive: false }
       }
     ]
+  },
+  {
+    id: 12,
+    path: '/system/dict-data',
+    name: 'DictData',
+    component: RoutesAlias.Home,
+    meta: {
+      title: '字典数据',
+      keepAlive: false,
+      isHide: true
+    },
+    children: [
+      {
+        id: 1012,
+        path: 'index/:dictId(\\d+)',
+        component: RoutesAlias.DictData,
+        name: 'DictDataIndex',
+        meta: { title: '字典数据', keepAlive: false }
+      }
+    ]
   }
 ]

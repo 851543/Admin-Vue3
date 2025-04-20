@@ -134,3 +134,10 @@ body {
   touch-action: none; /* 禁用触摸事件 */
   overflow-x: hidden; /* 禁用横向滚动 */
 }
+
+.link-type{
+  color: #409eff;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.3s;
+}

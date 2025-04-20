@@ -21,6 +21,7 @@ declare module 'vue' {
     CommentWidget: typeof import('./../components/Pages/CommentWidget/index.vue')['default']
     CutterImg: typeof import('./../components/Widgets/CutterImg.vue')['default']
     DataListCard: typeof import('./../components/Widgets/Cards/DataListCard.vue')['default']
+    DictTag: typeof import('./../components/Tag/DictTag.vue')['default']
     DonutChartCard: typeof import('./../components/Widgets/Cards/DonutChartCard.vue')['default']
     DragVerify: typeof import('./../components/Form/DragVerify.vue')['default']
     DualBarCompareChart: typeof import('./../components/Widgets/Charts/DualBarCompareChart.vue')['default']

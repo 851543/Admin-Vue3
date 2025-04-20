@@ -16,6 +16,19 @@
               v-model="queryParams.dictName"
               @keyup.enter="handleQuery"
             />
+            <form-input
+              label="字典类型"
+              prop="dictType"
+              v-model="queryParams.dictType"
+              @keyup.enter="handleQuery"
+            />
+            <form-select
+              label="状态"
+              prop="status"
+              v-model="queryParams.status"
+              :options="sysNormalDisable"
+              @keyup.enter="handleQuery"
+            />
           </el-row>
         </el-form>
       </template>
@@ -48,8 +61,18 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="字典主键" align="center" prop="dictId" v-if="columns[0].show" />
       <el-table-column label="字典名称" align="center" prop="dictName" v-if="columns[1].show" />
-      <el-table-column label="字典类型" align="center" prop="dictType" v-if="columns[2].show" />
-      <el-table-column label="状态" align="center" prop="status" v-if="columns[3].show" />
+      <el-table-column label="字典类型" align="center" prop="dictType" v-if="columns[2].show">
+        <template #default="scope">
+          <router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
+            <span>{{ scope.row.dictType }}</span>
+          </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center" prop="status" v-if="columns[3].show">
+        <template #default="scope">
+          <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" v-if="columns[4].show" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
@@ -78,7 +101,7 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">{{
+            <el-radio v-for="dict in sysNormalDisable" :key="dict.value" :value="dict.value">{{
               dict.label
             }}</el-radio>
           </el-radio-group>
@@ -104,6 +127,8 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { FormInstance } from 'element-plus'
   import { DictTypeResult } from '@/types/system/dict'
+  import { useDict, DictType } from '@/utils/dict'
+  const sysNormalDisable = ref<DictType[]>([])
   const typeList = ref<DictTypeResult[]>([])
   const open = ref(false)
   const loading = ref(true)
@@ -133,7 +158,10 @@
     dictType: '',
     status: ''
   })
-  const rules = reactive({})
+  const rules = reactive({
+    dictName: [{ required: true, message: '字典名称不能为空', trigger: 'blur' }],
+    dictType: [{ required: true, message: '字典类型不能为空', trigger: 'blur' }]
+  })
 
   /** 查询字典类型列表 */
   const getList = async () => {
@@ -257,8 +285,14 @@
     downloadExcel(DictTypeService.exportExcel(queryParams))
   }
 
+  const getuseDict = async () => {
+    const { sys_normal_disable } = await useDict('sys_normal_disable')
+    sysNormalDisable.value = sys_normal_disable
+  }
+
   // 初始化
-  onMounted(() => {
+  onMounted(async () => {
+    getuseDict()
     getList()
   })
 </script>
