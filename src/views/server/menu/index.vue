@@ -452,6 +452,7 @@
         ElMessage.success(res.msg)
         dialogVisible.value = false
         getMenuList()
+        getMenuTreeselect()
       }
     })
   }

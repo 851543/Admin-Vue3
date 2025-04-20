@@ -45,7 +45,7 @@
       row-key="noticeId"
     >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="公告ID" align="center" prop="noticeId" v-if="columns[0].show" />
+      <el-table-column label="公告编号" align="center" prop="noticeId" v-if="columns[0].show" />
       <el-table-column
         label="公告标题"
         align="center"

@@ -333,3 +333,69 @@ export function downloadZip(response: Promise<any>, fileName: string = getCurren
       loading.close()
     })
 }
+
+// 时间格式化
+export function parseTime(time: string, format: string): string {
+  const date = new Date(time)
+  const formatObj: Record<string, number> = {
+    y: date.getFullYear(),
+    m: date.getMonth() + 1,
+    d: date.getDate(),
+    h: date.getHours(),
+    i: date.getMinutes(),
+    s: date.getSeconds(),
+    a: date.getDay()
+  }
+  const timeStr = format.replace(/{([ymdhisa])+}/g, (result, key) => {
+    const value = formatObj[key]
+    if (key === 'a') {
+      return ['日', '一', '二', '三', '四', '五', '六'][value]
+    }
+    return value.toString().padStart(2, '0')
+  })
+  return timeStr
+}
+
+// 添加日期范围
+export function addDateRange(params: any, dateRange: any, propName?: any) {
+  const search = params
+  search.params =
+    typeof search.params === 'object' && search.params !== null && !Array.isArray(search.params)
+      ? search.params
+      : {}
+  dateRange = Array.isArray(dateRange) ? dateRange : []
+  if (typeof propName === 'undefined') {
+    search.params['beginTime'] = dateRange[0]
+    search.params['endTime'] = dateRange[1]
+  } else {
+    search.params['begin' + propName] = dateRange[0]
+    search.params['end' + propName] = dateRange[1]
+  }
+  return search
+}
+
+/**
+ * 参数处理
+ * @param {*} params  参数
+ */
+export function tansParams(params: any) {
+  let result = ''
+  for (const propName of Object.keys(params)) {
+    const value = params[propName]
+    const part = encodeURIComponent(propName) + '='
+    if (value !== null && value !== '' && typeof value !== 'undefined') {
+      if (typeof value === 'object') {
+        for (const key of Object.keys(value)) {
+          if (value[key] !== null && value[key] !== '' && typeof value[key] !== 'undefined') {
+            const params = propName + '[' + key + ']'
+            const subPart = encodeURIComponent(params) + '='
+            result += subPart + encodeURIComponent(value[key]) + '&'
+          }
+        }
+      } else {
+        result += part + encodeURIComponent(value) + '&'
+      }
+    }
+  }
+  return result
+}

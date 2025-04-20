@@ -4,6 +4,7 @@ import { useUserStore } from '@/store/modules/user'
 import EmojiText from '../emojo'
 import errorCode from '@/utils/errorCode'
 import { ApiStatus } from '@/utils/http/status'
+import { tansParams } from '@/utils/utils'
 const axiosInstance = axios.create({
   timeout: 15000, // 请求超时时间(毫秒)
   baseURL: import.meta.env.VITE_API_BASE_URL, // API地址
@@ -118,6 +119,13 @@ axiosInstance.interceptors.response.use(
 
 // 请求
 async function request<T = any>(config: AxiosRequestConfig): Promise<T> {
+  // get请求映射params参数
+  if (config.method === 'GET' && config.params) {
+    let url = config.url + '?' + tansParams(config.params)
+    url = url.slice(0, -1)
+    config.params = {}
+    config.url = url
+  }
   try {
     const res = await axiosInstance.request<T>({ ...config })
     return res.data
