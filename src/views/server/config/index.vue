@@ -26,7 +26,7 @@
               label="系统内置"
               prop="status"
               v-model="queryParams.configType"
-              :options="statusOptions"
+              :options="sysYesNo"
             />
           </el-row>
         </el-form>
@@ -65,9 +65,7 @@
       <el-table-column label="参数键值" align="center" prop="configValue" v-if="columns[3].show" />
       <el-table-column label="系统内置" align="center" prop="configType" v-if="columns[4].show">
         <template #default="scope">
-          <el-tag :type="scope.row.configType === 'Y' ? 'success' : 'danger'" size="small">
-            {{ scope.row.configType === 'Y' ? '是' : '否' }}
-          </el-tag>
+          <dict-tag :options="sysYesNo" :value="scope.row.configType" />
         </template>
       </el-table-column>
       <el-table-column
@@ -107,7 +105,7 @@
         </el-form-item>
         <el-form-item label="系统内置" prop="configType">
           <el-radio-group v-model="form.configType">
-            <el-radio v-for="dict in statusOptions" :key="dict.value" :label="dict.value">{{
+            <el-radio v-for="dict in sysYesNo" :key="dict.value" :label="dict.value">{{
               dict.label
             }}</el-radio>
           </el-radio-group>
@@ -169,11 +167,6 @@
     configKey: [{ required: true, message: '参数键名不能为空', trigger: 'blur' }],
     configValue: [{ required: true, message: '参数键值不能为空', trigger: 'blur' }]
   })
-
-  const statusOptions = ref([
-    { label: '是', value: 'Y' },
-    { label: '否', value: 'N' }
-  ])
 
   /** 查询参数配置列表 */
   const getList = async () => {
@@ -300,8 +293,16 @@
     downloadExcel(SysConfigService.exportExcel(queryParams))
   }
 
+  import { useDict, DictType } from '@/utils/dict'
+  const sysYesNo = ref<DictType[]>([]) // 状态字典数据
+  const getuseDict = async () => {
+    const { sys_yes_no } = await useDict('sys_yes_no')
+    sysYesNo.value = sys_yes_no
+  }
+
   // 初始化
   onMounted(() => {
+    getuseDict()
     getList()
   })
 </script>

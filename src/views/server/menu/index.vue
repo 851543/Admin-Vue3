@@ -62,11 +62,9 @@
           </template>
         </el-table-column>
         <el-table-column label="组件路径" prop="component" v-if="columns[4].show" />
-        <el-table-column label="状态" width="80" prop="status" v-if="columns[5].show">
+        <el-table-column label="状态" prop="status" v-if="columns[5].show">
           <template #default="scope">
-            <el-tag :type="scope.row.meta?.status === '0' ? 'success' : 'danger'" size="small">
-              {{ scope.row.meta?.status === '0' ? '正常' : '停用' }}
-            </el-tag>
+            <dict-tag :options="sysNormalDisable" :value="scope.row.meta?.status" />
           </template>
         </el-table-column>
         <el-table-column label="创建时间" prop="createTime" v-if="columns[6].show">
@@ -577,7 +575,15 @@
     }
   }
 
+  import { useDict, DictType } from '@/utils/dict'
+  const sysNormalDisable = ref<DictType[]>([]) // 状态字典数据
+  const getuseDict = async () => {
+    const { sys_normal_disable } = await useDict('sys_normal_disable')
+    sysNormalDisable.value = sys_normal_disable
+  }
+
   onMounted(() => {
+    getuseDict()
     getMenuList()
     getMenuTreeselect()
   })
