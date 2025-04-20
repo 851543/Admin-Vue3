@@ -137,7 +137,7 @@
   import { NoticeService } from '@/api/system/noticeApi'
   // 获取通知公告列表
   const getNoticeList = async () => {
-    const res = await NoticeService.getNoticeList({})
+    const res = await NoticeService.listNotice({})
     noticeList.value = res.rows
   }
 
