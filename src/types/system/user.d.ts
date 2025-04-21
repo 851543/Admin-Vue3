@@ -116,3 +116,8 @@ export interface UserInfoResult extends BaseObjectResult<LoginUserResult> {
   postIds: number[]
   roleIds: number[]
 }
+
+export interface AuthRolesResult extends CodeMsgResult {
+  roles: RoleType[]
+  user: LoginUserResult
+}

@@ -76,7 +76,7 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" v-if="columns[7].show" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center">
         <template #default="scope">
           <button-table
             type="edit"

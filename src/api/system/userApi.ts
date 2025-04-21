@@ -3,7 +3,8 @@ import {
   ProfileResult,
   UserInfoResult,
   UserListPageResult,
-  DeptOptionListResult
+  DeptOptionListResult,
+  AuthRolesResult
 } from '@/types/system/user'
 import { BaseResult, CodeMsgResult } from '@/types/axios'
 import request from '@/utils/http'
@@ -119,7 +120,7 @@ export class UserService {
 
   // 查询授权角色
   static getAuthRole(userId: any) {
-    return request.get({
+    return request.get<AuthRolesResult>({
       url: '/system/user/authRole/' + userId
     })
   }
@@ -136,6 +137,15 @@ export class UserService {
   static deptTreeSelect() {
     return request.get<DeptOptionListResult>({
       url: '/system/user/deptTree'
+    })
+  }
+
+  // 下载Excel模板
+  static importTemplate() {
+    return request.post({
+      url: '/system/user/importTemplate',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      responseType: 'blob'
     })
   }
 }

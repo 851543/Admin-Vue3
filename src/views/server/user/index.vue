@@ -65,6 +65,7 @@
           v-ripple
           >删除
         </el-button>
+        <el-button @click="handleImport" v-auth="['system:user:import']" v-ripple>导入 </el-button>
         <el-button @click="handleExport" v-auth="['system:user:export']" v-ripple>导出 </el-button>
       </template>
     </table-bar>
@@ -111,7 +112,12 @@
       <el-table-column label="密码" align="center" prop="password" v-if="columns[10].show" />
       <el-table-column label="帐号状态" align="center" prop="status" v-if="columns[11].show">
         <template #default="scope">
-          <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
+          <dict-tag
+            :options="sysNormalDisable"
+            :value="scope.row.status"
+            class="cursor-pointer"
+            @click="handleStatusChange(scope.row)"
+          />
         </template>
       </el-table-column>
       <el-table-column
@@ -135,7 +141,7 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" v-if="columns[15].show" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="220px">
         <template #default="scope">
           <button-table
             type="edit"
@@ -146,6 +152,18 @@
             type="delete"
             v-auth="['system:user:remove']"
             @click="handleDelete(scope.row)"
+          />
+          <button-table
+            icon="&#xe889;"
+            type="add"
+            v-auth="['system:user:resetPwd']"
+            @click="handleResetPwd(scope.row)"
+          />
+          <button-table
+            icon="&#xe715;"
+            type="add"
+            v-auth="['system:user:edit']"
+            @click="handleAuthRole(scope.row)"
           />
         </template>
       </el-table-column>
@@ -269,6 +287,46 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 用户导入对话框 -->
+    <el-dialog :title="upload.title" v-model="upload.open" width="400px" append-to-body>
+      <el-upload
+        ref="uploadRef"
+        :limit="1"
+        accept=".xlsx, .xls"
+        :headers="upload.headers"
+        :action="upload.url + '?updateSupport=' + upload.updateSupport"
+        :disabled="upload.isUploading"
+        :on-progress="handleFileUploadProgress"
+        :on-success="handleFileSuccess"
+        :auto-upload="false"
+        drag
+      >
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <template #tip>
+          <div class="el-upload__tip text-center">
+            <div class="el-upload__tip">
+              <el-checkbox v-model="upload.updateSupport" />是否更新已经存在的用户数据
+            </div>
+            <span>仅允许导入xls、xlsx格式文件。</span>
+            <el-link
+              type="primary"
+              :underline="false"
+              style="font-size: 12px; vertical-align: baseline"
+              @click="importTemplate"
+              >下载模板</el-link
+            >
+          </div>
+        </template>
+      </el-upload>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitFileForm">确 定</el-button>
+          <el-button @click="upload.open = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -292,6 +350,7 @@
   const dateRange = ref([])
   const postOptions = ref<PostType[]>([])
   const roleOptions = ref<RoleType[]>([])
+  const uploadRef = ref()
   // 定义初始表单状态
   const initialFormState = {
     userId: null,
@@ -341,6 +400,72 @@
       }
     ]
   })
+  import { useUserStore } from '@/store/modules/user'
+  const { accessToken } = useUserStore()
+  /*** 用户导入参数 */
+  const upload = reactive({
+    // 是否显示弹出层（用户导入）
+    open: false,
+    // 弹出层标题（用户导入）
+    title: '',
+    // 是否禁用上传
+    isUploading: false,
+    // 是否更新已经存在的用户数据
+    updateSupport: 0,
+    // 设置上传的请求头部
+    headers: { Authorization: 'Bearer ' + accessToken },
+    // 上传的地址
+    url: import.meta.env.VITE_APP_BASE_API + '/system/user/importData'
+  })
+
+  /**文件上传中处理 */
+  const handleFileUploadProgress = () => {
+    upload.isUploading = true
+  }
+
+  /** 文件上传成功处理 */
+  const handleFileSuccess = (response: any, file: any) => {
+    upload.open = false
+    upload.isUploading = false
+    uploadRef.value.handleRemove(file)
+    ElMessageBox.alert(
+      "<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" +
+        response.msg +
+        '</div>',
+      '导入结果',
+      { dangerouslyUseHTMLString: true }
+    )
+    getList()
+  }
+
+  /** 下载模板操作 */
+  const importTemplate = () => {
+    downloadExcel(UserService.importTemplate(), `user_template_${new Date().getTime()}.xlsx`)
+  }
+
+  /** 重置密码按钮操作 */
+  const handleResetPwd = (row: any) => {
+    ElMessageBox.prompt('请输入"' + row.userName + '"的新密码', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      closeOnClickModal: false,
+      inputPattern: /^.{5,20}$/,
+      inputErrorMessage: '用户密码长度必须介于 5 和 20 之间'
+    }).then((value: any) => {
+      UserService.resetUserPwd({ userId: row.userId, password: value }).then((response) =>
+        ElMessage.success(response.msg)
+      )
+    })
+  }
+
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
+  /** 跳转角色分配 */
+  const handleAuthRole = (row: any) => {
+    const userId = row.userId
+    router.push('/system/user-auth/role/' + userId)
+  }
 
   /** 查询用户信息列表 */
   const getList = async () => {
@@ -370,6 +495,11 @@
       return res
     }
     return Promise.reject(res.msg)
+  }
+
+  /** 提交上传文件 */
+  const submitFileForm = () => {
+    uploadRef.value.submit()
   }
 
   const columns = reactive([
@@ -494,11 +624,33 @@
     }
   }
 
+  /** 导入按钮操作 */
+  const handleImport = () => {
+    upload.title = '用户导入'
+    upload.open = true
+  }
+
   import { downloadExcel } from '@/utils/utils'
 
   /** 导出按钮操作 */
   const handleExport = () => {
     downloadExcel(UserService.exportExcel(queryParams))
+  }
+
+  /** 修改用户状态 */
+  const handleStatusChange = async (row: any) => {
+    const text = row.status === '0' ? '停用' : '启用'
+    const Tr = await ElMessageBox.confirm(`确认要${text}${row.userName}用户吗？`)
+    if (Tr) {
+      const res = await UserService.changeUserStatus({
+        userId: row.userId,
+        status: row.status === '0' ? '1' : '0'
+      })
+      if (res.code === 200) {
+        ElMessage.success(res.msg)
+        getList()
+      }
+    }
   }
 
   import { useDict, DictType } from '@/utils/dict'
@@ -538,6 +690,10 @@
           color: var(--art-text-gray-800);
         }
       }
+    }
+
+    :deep(.cursor-pointer) {
+      cursor: pointer;
     }
   }
 </style>

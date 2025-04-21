@@ -774,5 +774,25 @@ export const asyncRoutes: MenuListType[] = [
         meta: { title: '字典数据', keepAlive: false }
       }
     ]
+  },
+  {
+    id: 13,
+    path: '/system/user-auth',
+    name: 'UserAuth',
+    component: RoutesAlias.Home,
+    meta: {
+      title: '分配角色',
+      keepAlive: false,
+      isHide: true
+    },
+    children: [
+      {
+        id: 1013,
+        path: 'role/:userId(\\d+)',
+        component: RoutesAlias.AuthRole,
+        name: 'AuthRole',
+        meta: { title: '分配角色', keepAlive: false }
+      }
+    ]
   }
 ]

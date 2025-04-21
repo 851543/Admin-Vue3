@@ -51,5 +51,6 @@ export enum RoutesAlias {
   Log = '/system/Log', // 日志
   Server = '/safeguard/Server', // 服务器
   GenEdit = '/server/tool/gen/components/editTable', // 代码生成器
-  DictData = '/server/dict/data' // 字典数据
+  DictData = '/server/dict/data', // 字典数据
+  AuthRole = '/server/user/authRole' // 用户授权角色
 }

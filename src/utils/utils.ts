@@ -276,7 +276,7 @@ export function getCurrentTime() {
 }
 
 // 通用Excel下载方法
-export function downloadExcel(response: Promise<any>) {
+export function downloadExcel(response: Promise<any>, fileName?: string) {
   //正在下载数据，请稍候
   const loading = ElLoading.service({
     lock: true,
@@ -289,7 +289,7 @@ export function downloadExcel(response: Promise<any>) {
     .then(async (data) => {
       const isBlob = blobValidate(data)
       if (isBlob) {
-        saveAs(data, getCurrentTime() + '.xlsx')
+        saveAs(data, fileName ? fileName : getCurrentTime() + '.xlsx')
       } else {
         const resText = await (data as unknown as Response).text()
         const rspObj: { code: keyof typeof errorCode; msg: string } = JSON.parse(resText)

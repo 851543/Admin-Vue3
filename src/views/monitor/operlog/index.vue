@@ -157,7 +157,7 @@
         prop="costTime"
         v-if="columns[16].show"
       />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center">
         <template #default="scope">
           <button-table icon="&#xe689;" type="add" @click="handleView(scope.row)" v-ripple />
         </template>

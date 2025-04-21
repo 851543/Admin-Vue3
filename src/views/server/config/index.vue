@@ -76,7 +76,7 @@
         :show-overflow-tooltip="true"
         v-if="columns[5].show"
       />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center">
         <template #default="scope">
           <button-table
             type="edit"
