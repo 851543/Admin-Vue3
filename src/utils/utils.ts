@@ -399,3 +399,21 @@ export function tansParams(params: any) {
   }
   return result
 }
+
+// 回显数据字典
+export function selectDictLabel(datas: any, value: any) {
+  if (value === undefined) {
+    return ''
+  }
+  const actions = []
+  Object.keys(datas).some((key) => {
+    if (datas[key].value == '' + value) {
+      actions.push(datas[key].label)
+      return true
+    }
+  })
+  if (actions.length === 0) {
+    actions.push(value)
+  }
+  return actions.join('')
+}

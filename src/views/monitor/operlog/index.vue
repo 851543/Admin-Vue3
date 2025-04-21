@@ -3,7 +3,7 @@
     <table-bar
       :showTop="false"
       @search="handleQuery"
-      @reset="resetForm(queryRef)"
+      @reset="(resetForm(queryRef), (dateRange = []))"
       @changeColumn="changeColumn"
       :columns="columns"
     >
@@ -17,34 +17,22 @@
               @keyup.enter="handleQuery"
             />
             <form-input
-              label="方法名称"
-              prop="method"
-              v-model="queryParams.method"
-              @keyup.enter="handleQuery"
-            />
-            <form-input
-              label="请求方式"
-              prop="requestMethod"
-              v-model="queryParams.requestMethod"
-              @keyup.enter="handleQuery"
-            />
-            <form-input
               label="操作人员"
               prop="operName"
               v-model="queryParams.operName"
               @keyup.enter="handleQuery"
             />
-            <form-input
-              label="部门名称"
-              prop="deptName"
-              v-model="queryParams.deptName"
-              @keyup.enter="handleQuery"
+            <form-select
+              label="业务类型"
+              prop="businessType"
+              v-model="queryParams.businessType"
+              :options="sysOperType"
             />
-            <form-input
-              label="请求URL"
-              prop="operUrl"
-              v-model="queryParams.operUrl"
-              @keyup.enter="handleQuery"
+            <form-select
+              label="操作状态"
+              prop="status"
+              v-model="queryParams.status"
+              :options="sysCommonStatus"
             />
             <form-input
               label="主机地址"
@@ -58,33 +46,32 @@
               v-model="queryParams.operLocation"
               @keyup.enter="handleQuery"
             />
-            <el-form-item label="操作时间" prop="operTime">
-              <el-date-picker
-                clearable
-                v-model="queryParams.operTime"
-                type="date"
-                value-format="YYYY-MM-DD"
-                placeholder="请选择操作时间"
-              >
-              </el-date-picker>
-            </el-form-item>
-            <form-input
-              label="消耗时间"
-              prop="costTime"
-              v-model="queryParams.costTime"
-              @keyup.enter="handleQuery"
-            />
+            <el-col :xs="24" :sm="12" :lg="6">
+              <el-form-item label="操作时间">
+                <el-date-picker
+                  v-model="dateRange"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  type="daterange"
+                  range-separator="-"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
           </el-row>
         </el-form>
       </template>
       <template #bottom>
-        <el-button @click="handleAdd" v-auth="['monitor:operlog:add']" v-ripple>新增 </el-button>
         <el-button
           @click="handleDelete"
           :disabled="multiple"
           v-auth="['monitor:operlog:remove']"
           v-ripple
           >删除
+        </el-button>
+        <el-button @click="handleClean" v-auth="['monitor:operlog:remove']" v-ripple
+          >清空
         </el-button>
         <el-button @click="handleExport" v-auth="['monitor:operlog:export']" v-ripple
           >导出
@@ -108,8 +95,18 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="日志主键" align="center" prop="operId" v-if="columns[0].show" />
       <el-table-column label="模块标题" align="center" prop="title" v-if="columns[1].show" />
-      <el-table-column label="业务类型" align="center" prop="businessType" v-if="columns[2].show" />
-      <el-table-column label="方法名称" align="center" prop="method" v-if="columns[3].show" />
+      <el-table-column label="业务类型" align="center" prop="businessType" v-if="columns[2].show">
+        <template #default="scope">
+          <dict-tag :options="sysOperType" :value="scope.row.businessType" />
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="方法名称"
+        align="center"
+        prop="method"
+        :show-overflow-tooltip="true"
+        v-if="columns[3].show"
+      />
       <el-table-column
         label="请求方式"
         align="center"
@@ -127,86 +124,89 @@
         prop="operLocation"
         v-if="columns[10].show"
       />
-      <el-table-column label="请求参数" align="center" prop="operParam" v-if="columns[11].show" />
-      <el-table-column label="返回参数" align="center" prop="jsonResult" v-if="columns[12].show" />
-      <el-table-column label="操作状态" align="center" prop="status" v-if="columns[13].show" />
-      <el-table-column label="错误消息" align="center" prop="errorMsg" v-if="columns[14].show" />
-      <el-table-column label="操作时间" align="center" prop="operTime" width="180">
+      <el-table-column
+        label="请求参数"
+        align="center"
+        prop="operParam"
+        :show-overflow-tooltip="true"
+        v-if="columns[11].show"
+      />
+      <el-table-column
+        label="返回参数"
+        align="center"
+        prop="jsonResult"
+        :show-overflow-tooltip="true"
+        v-if="columns[12].show"
+      />
+      <el-table-column label="操作状态" align="center" prop="status" v-if="columns[13].show">
         <template #default="scope">
-          <span>{{ parseTime(scope.row.operTime, '{y}-{m}-{d}') }}</span>
+          <dict-tag :options="sysCommonStatus" :value="scope.row.status" />
         </template>
       </el-table-column>
+      <el-table-column label="错误消息" align="center" prop="errorMsg" v-if="columns[14].show" />
+      <el-table-column label="操作时间" align="center" prop="operTime" width="180" />
       <el-table-column label="消耗时间" align="center" prop="costTime" v-if="columns[16].show" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <button-table
-            type="edit"
-            v-auth="['monitor:operlog:edit']"
-            @click="handleUpdate(scope.row)"
-          />
-          <button-table
-            type="delete"
-            v-auth="['monitor:operlog:remove']"
-            @click="handleDelete(scope.row)"
-          />
+          <button-table icon="&#xe689;" type="add" @click="handleView(scope.row)" v-ripple />
         </template>
       </el-table-column>
     </art-table>
 
-    <!-- 添加或修改操作日志记录对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="operlogRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="模块标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入模块标题" />
-        </el-form-item>
-        <el-form-item label="方法名称" prop="method">
-          <el-input v-model="form.method" placeholder="请输入方法名称" />
-        </el-form-item>
-        <el-form-item label="请求方式" prop="requestMethod">
-          <el-input v-model="form.requestMethod" placeholder="请输入请求方式" />
-        </el-form-item>
-        <el-form-item label="操作人员" prop="operName">
-          <el-input v-model="form.operName" placeholder="请输入操作人员" />
-        </el-form-item>
-        <el-form-item label="部门名称" prop="deptName">
-          <el-input v-model="form.deptName" placeholder="请输入部门名称" />
-        </el-form-item>
-        <el-form-item label="请求URL" prop="operUrl">
-          <el-input v-model="form.operUrl" placeholder="请输入请求URL" />
-        </el-form-item>
-        <el-form-item label="主机地址" prop="operIp">
-          <el-input v-model="form.operIp" placeholder="请输入主机地址" />
-        </el-form-item>
-        <el-form-item label="操作地点" prop="operLocation">
-          <el-input v-model="form.operLocation" placeholder="请输入操作地点" />
-        </el-form-item>
-        <el-form-item label="请求参数" prop="operParam">
-          <el-input v-model="form.operParam" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="返回参数" prop="jsonResult">
-          <el-input v-model="form.jsonResult" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="错误消息" prop="errorMsg">
-          <el-input v-model="form.errorMsg" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="操作时间" prop="operTime">
-          <el-date-picker
-            clearable
-            v-model="form.operTime"
-            type="date"
-            value-format="YYYY-MM-DD"
-            placeholder="请选择操作时间"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="消耗时间" prop="costTime">
-          <el-input v-model="form.costTime" placeholder="请输入消耗时间" />
-        </el-form-item>
+    <!-- 操作日志详细 -->
+    <el-dialog title="操作日志详细" v-model="open" width="800px" append-to-body>
+      <el-form :model="form" label-width="100px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="操作模块："
+              >{{ form.title }} / {{ typeFormat(form) }}</el-form-item
+            >
+            <el-form-item label="登录信息："
+              >{{ form.operName }} / {{ form.operIp }} / {{ form.operLocation }}</el-form-item
+            >
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="请求地址：">{{ form.operUrl }}</el-form-item>
+            <el-form-item label="请求方式：">{{ form.requestMethod }}</el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="操作方法：">{{ form.method }}</el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="请求参数：">
+              <div class="param-container">
+                <pre class="param-content">{{ form.operParam }}</pre>
+                <el-button class="copy-btn" type="primary" link @click="handleCopy(form.operParam)">
+                  复制
+                </el-button>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="返回参数：">{{ form.jsonResult }}</el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="操作状态：">
+              <div v-if="form.status === 0">正常</div>
+              <div v-else-if="form.status === 1">失败</div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="消耗时间：">{{ form.costTime }}毫秒</el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="操作时间：">{{ form.operTime }}</el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="异常信息：" v-if="form.status === 1">{{
+              form.errorMsg
+            }}</el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button @click="open = false">关 闭</el-button>
         </div>
       </template>
     </el-dialog>
@@ -214,22 +214,28 @@
 </template>
 
 <script setup lang="ts">
+  import { useClipboard } from '@vueuse/core'
+  const { copy } = useClipboard()
+
+  const handleCopy = async (text: string) => {
+    await copy(text)
+    ElMessage.success('复制成功')
+  }
+
   import { OperLogService } from '@/api/monitor/operlogApi'
   import { ref, reactive } from 'vue'
-  import { resetForm } from '@/utils/utils'
+  import { addDateRange, resetForm } from '@/utils/utils'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { FormInstance } from 'element-plus'
   import { OperLogResult } from '@/types/monitor/operlog'
-  import { parseTime } from '@/utils/utils'
+  /** 操作日志类型 */
   const operlogList = ref<OperLogResult[]>([])
   const open = ref(false)
   const loading = ref(true)
   const ids = ref([])
   const multiple = ref(true)
   const total = ref(0)
-  const title = ref('')
   const queryRef = ref()
-  const operlogRef = ref<FormInstance>()
+  const dateRange = ref([])
   // 定义初始表单状态
   const initialFormState = {
     operId: null,
@@ -243,7 +249,7 @@
     operUrl: null,
     operIp: null,
     operLocation: null,
-    operParam: null,
+    operParam: '',
     jsonResult: null,
     status: null,
     errorMsg: null,
@@ -256,27 +262,16 @@
     pageSize: 10,
     title: '',
     businessType: '',
-    method: '',
-    requestMethod: '',
-    operatorType: '',
-    operName: '',
-    deptName: '',
-    operUrl: '',
-    operIp: '',
-    operLocation: '',
-    operParam: '',
-    jsonResult: '',
     status: '',
-    errorMsg: '',
-    operTime: '',
-    costTime: ''
+    operName: '',
+    operIp: '',
+    operLocation: ''
   })
-  const rules = reactive({})
 
   /** 查询操作日志记录列表 */
   const getList = async () => {
     loading.value = true
-    const res = await OperLogService.listOperlog(queryParams)
+    const res = await OperLogService.listOperlog(addDateRange(queryParams, dateRange.value))
     if (res.code === 200) {
       operlogList.value = res.rows
       total.value = res.total
@@ -284,40 +279,34 @@
     }
   }
 
+  /** 详细按钮操作 */
+  const handleView = (row: any) => {
+    open.value = true
+    Object.assign(form, row)
+  }
+
   const columns = reactive([
     { name: '日志主键', show: true },
     { name: '模块标题', show: true },
     { name: '业务类型', show: true },
-    { name: '方法名称', show: true },
-    { name: '请求方式', show: true },
-    { name: '操作类别', show: true },
+    { name: '方法名称', show: false },
+    { name: '请求方式', show: false },
+    { name: '操作类别', show: false },
     { name: '操作人员', show: true },
-    { name: '部门名称', show: true },
-    { name: '请求URL', show: true },
+    { name: '部门名称', show: false },
+    { name: '请求URL', show: false },
     { name: '主机地址', show: true },
     { name: '操作地点', show: true },
-    { name: '请求参数', show: true },
-    { name: '返回参数', show: true },
+    { name: '请求参数', show: false },
+    { name: '返回参数', show: false },
     { name: '操作状态', show: true },
-    { name: '错误消息', show: true },
+    { name: '错误消息', show: false },
     { name: '操作时间', show: true },
     { name: '消耗时间', show: true }
   ])
 
   const changeColumn = (list: any) => {
     columns.values = list
-  }
-
-  // 取消按钮
-  const cancel = () => {
-    open.value = false
-    reset()
-  }
-
-  // 表单重置
-  const reset = () => {
-    // 重置表单数据到初始状态
-    Object.assign(form, initialFormState)
   }
 
   /** 搜索按钮操作 */
@@ -344,49 +333,6 @@
     multiple.value = !selection.length
   }
 
-  /** 新增按钮操作 */
-  const handleAdd = () => {
-    reset()
-    open.value = true
-    title.value = '添加操作日志记录'
-  }
-
-  /** 修改按钮操作 */
-  const handleUpdate = async (row: any) => {
-    reset()
-    const _operId = row.operId || ids.value
-    const res = await OperLogService.getOperlog(_operId)
-    if (res.code === 200) {
-      Object.assign(form, res.data)
-      open.value = true
-      title.value = '修改操作日志记录'
-    }
-  }
-
-  /** 提交按钮 */
-  const submitForm = async () => {
-    if (!operlogRef.value) return
-    await operlogRef.value.validate(async (valid) => {
-      if (valid) {
-        if (form.operId != null) {
-          const res = await OperLogService.updateOperlog(form)
-          if (res.code === 200) {
-            ElMessage.success(res.msg)
-            open.value = false
-            getList()
-          }
-        } else {
-          const res = await OperLogService.addOperlog(form)
-          if (res.code === 200) {
-            ElMessage.success(res.msg)
-            open.value = false
-            getList()
-          }
-        }
-      }
-    })
-  }
-
   /** 删除按钮操作 */
   const handleDelete = async (row: any) => {
     const _operIds = row.operId || ids.value
@@ -402,6 +348,18 @@
     }
   }
 
+  /** 清空按钮操作 */
+  const handleClean = async () => {
+    const Tr = await ElMessageBox.confirm('是否确认清空所有操作日志记录？')
+    if (Tr) {
+      const res = await OperLogService.cleanOperlog()
+      if (res.code === 200) {
+        getList()
+        ElMessage.success(res.msg)
+      }
+    }
+  }
+
   import { downloadExcel } from '@/utils/utils'
 
   /** 导出按钮操作 */
@@ -409,8 +367,51 @@
     downloadExcel(OperLogService.exportExcel(queryParams))
   }
 
+  import { useDict, DictType } from '@/utils/dict'
+  const sysCommonStatus = ref<DictType[]>([]) // 系统字典数据
+  const sysOperType = ref<DictType[]>([]) // 操作字典数据
+  const getuseDict = async () => {
+    const { sys_common_status } = await useDict('sys_common_status')
+    sysCommonStatus.value = sys_common_status
+    const { sys_oper_type } = await useDict('sys_oper_type')
+    sysOperType.value = sys_oper_type
+  }
+
+  import { selectDictLabel } from '@/utils/utils'
+  /** 操作日志类型字典翻译 */
+  const typeFormat = (row: any) => {
+    return selectDictLabel(sysOperType.value, row.businessType)
+  }
+
   // 初始化
   onMounted(() => {
+    getuseDict()
     getList()
   })
 </script>
+
+<style scoped>
+  .param-container {
+    position: relative;
+    background-color: var(--el-fill-color-light);
+    border-radius: 4px;
+    padding: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .param-content {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+</style>

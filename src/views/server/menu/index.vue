@@ -196,8 +196,8 @@
                   </span>
                 </template>
                 <el-radio-group v-model="form.isFrame">
-                  <el-radio :value="'0'">是</el-radio>
-                  <el-radio :value="'1'">否</el-radio>
+                  <el-radio value="0">是</el-radio>
+                  <el-radio value="1">否</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -275,8 +275,8 @@
                     </span>
                   </template>
                   <el-radio-group v-model="form.isCache">
-                    <el-radio :value="'0'">缓存</el-radio>
-                    <el-radio :value="'1'">不缓存</el-radio>
+                    <el-radio value="0">缓存</el-radio>
+                    <el-radio value="1">不缓存</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>
@@ -323,8 +323,8 @@
                 </span>
               </template>
               <el-radio-group v-model="form.visible">
-                <el-radio :value="'0'">显示</el-radio>
-                <el-radio :value="'1'">隐藏</el-radio>
+                <el-radio value="0">显示</el-radio>
+                <el-radio value="1">隐藏</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -342,8 +342,8 @@
                 </span>
               </template>
               <el-radio-group v-model="form.status">
-                <el-radio :value="'0'">正常</el-radio>
-                <el-radio :value="'1'">停用</el-radio>
+                <el-radio value="0">正常</el-radio>
+                <el-radio value="1">停用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>

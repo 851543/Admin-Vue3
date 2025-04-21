@@ -101,11 +101,15 @@
   const showPopover = () => {
     if (!columnChage.value) {
       let ops: any = []
+      let sel: any = []
       props.columns.map((item: any) => {
-        ops.push(item.name)
+        sel.push(item.name)
+        if (item.show) {
+          ops.push(item.name)
+        }
       })
       colOptions.value = ops
-      colSelect.value = ops
+      colSelect.value = sel
       columnChage.value = true
     }
   }
@@ -119,8 +123,6 @@
         item.show = show
       }
     })
-
-    console.log(columns)
 
     emit('changeColumn', columns)
   }

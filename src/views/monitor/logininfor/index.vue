@@ -63,7 +63,7 @@
         <el-button
           @click="handleUnlock"
           :disabled="single"
-          v-hasPermi="['monitor:logininfor:unlock']"
+          v-auth="['monitor:logininfor:unlock']"
           v-ripple
           >解锁</el-button
         >
@@ -110,7 +110,7 @@
         :show-overflow-tooltip="true"
         v-if="columns[7].show"
       />
-      <el-table-column label="登陆时间" align="center" prop="loginTime" width="180" />
+      <el-table-column label="登陆时间" sortable align="center" prop="loginTime" width="180" />
     </art-table>
   </div>
 </template>
