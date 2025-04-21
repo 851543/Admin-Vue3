@@ -33,10 +33,12 @@
         row-key="roleId"
         class="role-table"
       >
-        <el-table-column label="角色名称" prop="roleName" align="center" />
-        <el-table-column label="角色描述" prop="roleDesc" align="center" />
-        <el-table-column label="权限" prop="roleKey" align="center" />
-        <el-table-column label="创建时间" prop="createTime" align="center" />
+        <template #default>
+          <el-table-column label="角色名称" prop="roleName" align="center" />
+          <el-table-column label="角色描述" prop="roleDesc" align="center" />
+          <el-table-column label="权限" prop="roleKey" align="center" />
+          <el-table-column label="创建时间" prop="createTime" align="center" />
+        </template>
       </art-table>
     </div>
     <div class="button-container" style="display: flex; justify-content: center; margin-top: 20px">

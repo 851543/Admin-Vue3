@@ -43,47 +43,49 @@
       @selection-change="handleSelectionChange"
       row-key="noticeId"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="公告编号" align="center" prop="noticeId" v-if="columns[0].show" />
-      <el-table-column
-        label="公告标题"
-        align="center"
-        prop="noticeTitle"
-        :show-overflow-tooltip="true"
-        v-if="columns[1].show"
-      />
-      <el-table-column label="公告类型" align="center" prop="noticeType" v-if="columns[2].show">
-        <template #default="scope">
-          <dict-tag :options="sysNoticeType" :value="scope.row.noticeType" />
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="公告内容"
-        align="center"
-        prop="noticeContent"
-        :show-overflow-tooltip="true"
-        v-if="columns[3].show"
-      />
-      <el-table-column label="状态" align="center" prop="status" v-if="columns[4].show">
-        <template #default="scope">
-          <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" v-if="columns[5].show" />
-      <el-table-column label="操作" align="center">
-        <template #default="scope">
-          <button-table
-            type="edit"
-            v-auth="['system:notice:edit']"
-            @click="handleUpdate(scope.row)"
-          />
-          <button-table
-            type="delete"
-            v-auth="['system:notice:remove']"
-            @click="handleDelete(scope.row)"
-          />
-        </template>
-      </el-table-column>
+      <template #default>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="公告编号" align="center" prop="noticeId" v-if="columns[0].show" />
+        <el-table-column
+          label="公告标题"
+          align="center"
+          prop="noticeTitle"
+          :show-overflow-tooltip="true"
+          v-if="columns[1].show"
+        />
+        <el-table-column label="公告类型" align="center" prop="noticeType" v-if="columns[2].show">
+          <template #default="scope">
+            <dict-tag :options="sysNoticeType" :value="scope.row.noticeType" />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="公告内容"
+          align="center"
+          prop="noticeContent"
+          :show-overflow-tooltip="true"
+          v-if="columns[3].show"
+        />
+        <el-table-column label="状态" align="center" prop="status" v-if="columns[4].show">
+          <template #default="scope">
+            <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" align="center" prop="remark" v-if="columns[5].show" />
+        <el-table-column label="操作" align="center">
+          <template #default="scope">
+            <button-table
+              type="edit"
+              v-auth="['system:notice:edit']"
+              @click="handleUpdate(scope.row)"
+            />
+            <button-table
+              type="delete"
+              v-auth="['system:notice:remove']"
+              @click="handleDelete(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </template>
     </art-table>
 
     <!-- 添加或修改通知公告对话框 -->

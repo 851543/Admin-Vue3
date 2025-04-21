@@ -59,37 +59,44 @@
       @selection-change="handleSelectionChange"
       row-key="configId"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="参数主键" align="center" prop="configId" v-if="columns[0].show" />
-      <el-table-column label="参数名称" align="center" prop="configName" v-if="columns[1].show" />
-      <el-table-column label="参数键名" align="center" prop="configKey" v-if="columns[2].show" />
-      <el-table-column label="参数键值" align="center" prop="configValue" v-if="columns[3].show" />
-      <el-table-column label="系统内置" align="center" prop="configType" v-if="columns[4].show">
-        <template #default="scope">
-          <dict-tag :options="sysYesNo" :value="scope.row.configType" />
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="备注"
-        align="center"
-        prop="remark"
-        :show-overflow-tooltip="true"
-        v-if="columns[5].show"
-      />
-      <el-table-column label="操作" align="center">
-        <template #default="scope">
-          <button-table
-            type="edit"
-            v-auth="['system:config:edit']"
-            @click="handleUpdate(scope.row)"
-          />
-          <button-table
-            type="delete"
-            v-auth="['system:config:remove']"
-            @click="handleDelete(scope.row)"
-          />
-        </template>
-      </el-table-column>
+      <template #default>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="参数主键" align="center" prop="configId" v-if="columns[0].show" />
+        <el-table-column label="参数名称" align="center" prop="configName" v-if="columns[1].show" />
+        <el-table-column label="参数键名" align="center" prop="configKey" v-if="columns[2].show" />
+        <el-table-column
+          label="参数键值"
+          align="center"
+          prop="configValue"
+          v-if="columns[3].show"
+        />
+        <el-table-column label="系统内置" align="center" prop="configType" v-if="columns[4].show">
+          <template #default="scope">
+            <dict-tag :options="sysYesNo" :value="scope.row.configType" />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="备注"
+          align="center"
+          prop="remark"
+          :show-overflow-tooltip="true"
+          v-if="columns[5].show"
+        />
+        <el-table-column label="操作" align="center">
+          <template #default="scope">
+            <button-table
+              type="edit"
+              v-auth="['system:config:edit']"
+              @click="handleUpdate(scope.row)"
+            />
+            <button-table
+              type="delete"
+              v-auth="['system:config:remove']"
+              @click="handleDelete(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </template>
     </art-table>
 
     <!-- 添加或修改参数配置对话框 -->

@@ -82,91 +82,98 @@
       @selection-change="handleSelectionChange"
       row-key="userId"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="用户ID" align="center" prop="userId" v-if="columns[0].show" />
-      <el-table-column label="用户账号" align="center" prop="userName" v-if="columns[1].show" />
-      <el-table-column label="用户名" prop="avatar" #default="scope" v-if="columns[2].show">
-        <div class="user" style="display: flex; align-items: center">
-          <img class="avatar" :src="AvatarImga(scope.row.avatar) || defaultAvatar" />
-          <div>
-            <p class="user-name">{{ scope.row.nickName }}</p>
-            <p class="email">{{ scope.row.email }}</p>
+      <template #default>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="用户ID" align="center" prop="userId" v-if="columns[0].show" />
+        <el-table-column label="用户账号" align="center" prop="userName" v-if="columns[1].show" />
+        <el-table-column label="用户名" prop="avatar" #default="scope" v-if="columns[2].show">
+          <div class="user" style="display: flex; align-items: center">
+            <img class="avatar" :src="AvatarImga(scope.row.avatar) || defaultAvatar" />
+            <div>
+              <p class="user-name">{{ scope.row.nickName }}</p>
+              <p class="email">{{ scope.row.email }}</p>
+            </div>
           </div>
-        </div>
-      </el-table-column>
-      <el-table-column label="部门ID" align="center" prop="deptId" v-if="columns[3].show" />
-      <el-table-column label="用户昵称" align="center" prop="nickName" v-if="columns[4].show" />
-      <el-table-column label="用户类型" align="center" prop="userType" v-if="columns[5].show" />
-      <el-table-column label="用户邮箱" align="center" prop="email" v-if="columns[6].show" />
-      <el-table-column label="手机号码" align="center" prop="phonenumber" v-if="columns[7].show" />
-      <el-table-column label="用户性别" align="center" prop="sex" v-if="columns[8].show">
-        <template #default="scope">
-          <dict-tag :options="sysUserSex" :value="scope.row.sex" />
-        </template>
-      </el-table-column>
-      <el-table-column label="头像地址" align="center" prop="avatar" v-if="columns[9].show">
-        <template #default="scope">
-          <img :src="AvatarImga(scope.row.avatar)" alt="" width="50" />
-        </template>
-      </el-table-column>
-      <el-table-column label="密码" align="center" prop="password" v-if="columns[10].show" />
-      <el-table-column label="帐号状态" align="center" prop="status" v-if="columns[11].show">
-        <template #default="scope">
-          <dict-tag
-            :options="sysNormalDisable"
-            :value="scope.row.status"
-            class="cursor-pointer"
-            @click="handleStatusChange(scope.row)"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="创建时间"
-        sortable
-        align="center"
-        prop="createTime"
-        width="180"
-        v-if="columns[12].show"
-      />
-      <el-table-column label="最后登录IP" align="center" prop="loginIp" v-if="columns[13].show" />
-      <el-table-column
-        label="最后登录时间"
-        align="center"
-        prop="loginDate"
-        width="180"
-        v-if="columns[14].show"
-      >
-        <template #default="scope">
-          {{ parseTime(scope.row.loginDate) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" v-if="columns[15].show" />
-      <el-table-column label="操作" align="center" width="220px">
-        <template #default="scope">
-          <button-table
-            type="edit"
-            v-auth="['system:user:edit']"
-            @click="handleUpdate(scope.row)"
-          />
-          <button-table
-            type="delete"
-            v-auth="['system:user:remove']"
-            @click="handleDelete(scope.row)"
-          />
-          <button-table
-            icon="&#xe889;"
-            type="add"
-            v-auth="['system:user:resetPwd']"
-            @click="handleResetPwd(scope.row)"
-          />
-          <button-table
-            icon="&#xe715;"
-            type="add"
-            v-auth="['system:user:edit']"
-            @click="handleAuthRole(scope.row)"
-          />
-        </template>
-      </el-table-column>
+        </el-table-column>
+        <el-table-column label="部门ID" align="center" prop="deptId" v-if="columns[3].show" />
+        <el-table-column label="用户昵称" align="center" prop="nickName" v-if="columns[4].show" />
+        <el-table-column label="用户类型" align="center" prop="userType" v-if="columns[5].show" />
+        <el-table-column label="用户邮箱" align="center" prop="email" v-if="columns[6].show" />
+        <el-table-column
+          label="手机号码"
+          align="center"
+          prop="phonenumber"
+          v-if="columns[7].show"
+        />
+        <el-table-column label="用户性别" align="center" prop="sex" v-if="columns[8].show">
+          <template #default="scope">
+            <dict-tag :options="sysUserSex" :value="scope.row.sex" />
+          </template>
+        </el-table-column>
+        <el-table-column label="头像地址" align="center" prop="avatar" v-if="columns[9].show">
+          <template #default="scope">
+            <img :src="AvatarImga(scope.row.avatar)" alt="" width="50" />
+          </template>
+        </el-table-column>
+        <el-table-column label="密码" align="center" prop="password" v-if="columns[10].show" />
+        <el-table-column label="帐号状态" align="center" prop="status" v-if="columns[11].show">
+          <template #default="scope">
+            <dict-tag
+              :options="sysNormalDisable"
+              :value="scope.row.status"
+              class="cursor-pointer"
+              @click="handleStatusChange(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="创建时间"
+          sortable
+          align="center"
+          prop="createTime"
+          width="180"
+          v-if="columns[12].show"
+        />
+        <el-table-column label="最后登录IP" align="center" prop="loginIp" v-if="columns[13].show" />
+        <el-table-column
+          label="最后登录时间"
+          align="center"
+          prop="loginDate"
+          width="180"
+          v-if="columns[14].show"
+        >
+          <template #default="scope">
+            {{ parseTime(scope.row.loginDate) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" align="center" prop="remark" v-if="columns[15].show" />
+        <el-table-column label="操作" align="center" width="220px">
+          <template #default="scope">
+            <button-table
+              type="edit"
+              v-auth="['system:user:edit']"
+              @click="handleUpdate(scope.row)"
+            />
+            <button-table
+              type="delete"
+              v-auth="['system:user:remove']"
+              @click="handleDelete(scope.row)"
+            />
+            <button-table
+              icon="&#xe889;"
+              type="add"
+              v-auth="['system:user:resetPwd']"
+              @click="handleResetPwd(scope.row)"
+            />
+            <button-table
+              icon="&#xe715;"
+              type="add"
+              v-auth="['system:user:edit']"
+              @click="handleAuthRole(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </template>
     </art-table>
 
     <!-- 添加或修改用户配置对话框 -->

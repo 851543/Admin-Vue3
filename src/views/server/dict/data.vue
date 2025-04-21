@@ -58,38 +58,40 @@
       @selection-change="handleSelectionChange"
       row-key="dictCode"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="字典编码" align="center" prop="dictCode" v-if="columns[0].show" />
-      <el-table-column label="字典排序" align="center" prop="dictSort" v-if="columns[1].show" />
-      <el-table-column label="字典标签" align="center" prop="dictLabel" v-if="columns[2].show" />
-      <el-table-column label="字典键值" align="center" prop="dictValue" v-if="columns[3].show" />
-      <el-table-column
-        label="表格回显样式"
-        align="center"
-        prop="listClass"
-        v-if="columns[4].show"
-      />
-      <el-table-column label="是否默认" align="center" prop="isDefault" v-if="columns[5].show" />
-      <el-table-column label="状态" align="center" prop="status" v-if="columns[6].show">
-        <template #default="scope">
-          <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" v-if="columns[7].show" />
-      <el-table-column label="操作" align="center">
-        <template #default="scope">
-          <button-table
-            type="edit"
-            v-auth="['system:data:edit']"
-            @click="handleUpdate(scope.row)"
-          />
-          <button-table
-            type="delete"
-            v-auth="['system:data:remove']"
-            @click="handleDelete(scope.row)"
-          />
-        </template>
-      </el-table-column>
+      <template #default>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="字典编码" align="center" prop="dictCode" v-if="columns[0].show" />
+        <el-table-column label="字典排序" align="center" prop="dictSort" v-if="columns[1].show" />
+        <el-table-column label="字典标签" align="center" prop="dictLabel" v-if="columns[2].show" />
+        <el-table-column label="字典键值" align="center" prop="dictValue" v-if="columns[3].show" />
+        <el-table-column
+          label="表格回显样式"
+          align="center"
+          prop="listClass"
+          v-if="columns[4].show"
+        />
+        <el-table-column label="是否默认" align="center" prop="isDefault" v-if="columns[5].show" />
+        <el-table-column label="状态" align="center" prop="status" v-if="columns[6].show">
+          <template #default="scope">
+            <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" align="center" prop="remark" v-if="columns[7].show" />
+        <el-table-column label="操作" align="center">
+          <template #default="scope">
+            <button-table
+              type="edit"
+              v-auth="['system:data:edit']"
+              @click="handleUpdate(scope.row)"
+            />
+            <button-table
+              type="delete"
+              v-auth="['system:data:remove']"
+              @click="handleDelete(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </template>
     </art-table>
 
     <!-- 添加或修改字典数据对话框 -->

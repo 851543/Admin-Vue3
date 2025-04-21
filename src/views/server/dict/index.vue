@@ -58,36 +58,38 @@
       @selection-change="handleSelectionChange"
       row-key="dictId"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="字典主键" align="center" prop="dictId" v-if="columns[0].show" />
-      <el-table-column label="字典名称" align="center" prop="dictName" v-if="columns[1].show" />
-      <el-table-column label="字典类型" align="center" prop="dictType" v-if="columns[2].show">
-        <template #default="scope">
-          <router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
-            <span>{{ scope.row.dictType }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" align="center" prop="status" v-if="columns[3].show">
-        <template #default="scope">
-          <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" v-if="columns[4].show" />
-      <el-table-column label="操作" align="center">
-        <template #default="scope">
-          <button-table
-            type="edit"
-            v-auth="['system:type:edit']"
-            @click="handleUpdate(scope.row)"
-          />
-          <button-table
-            type="delete"
-            v-auth="['system:type:remove']"
-            @click="handleDelete(scope.row)"
-          />
-        </template>
-      </el-table-column>
+      <template #default>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="字典主键" align="center" prop="dictId" v-if="columns[0].show" />
+        <el-table-column label="字典名称" align="center" prop="dictName" v-if="columns[1].show" />
+        <el-table-column label="字典类型" align="center" prop="dictType" v-if="columns[2].show">
+          <template #default="scope">
+            <router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
+              <span>{{ scope.row.dictType }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" align="center" prop="status" v-if="columns[3].show">
+          <template #default="scope">
+            <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" align="center" prop="remark" v-if="columns[4].show" />
+        <el-table-column label="操作" align="center">
+          <template #default="scope">
+            <button-table
+              type="edit"
+              v-auth="['system:type:edit']"
+              @click="handleUpdate(scope.row)"
+            />
+            <button-table
+              type="delete"
+              v-auth="['system:type:remove']"
+              @click="handleDelete(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </template>
     </art-table>
 
     <!-- 添加或修改字典类型对话框 -->
