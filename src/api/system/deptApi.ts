@@ -14,7 +14,7 @@ export class DeptService {
 
   // 查询部门列表（排除节点）
   static listDeptExcludeChild(deptId: any) {
-    return request.get<DeptInfoResult[]>({
+    return request.get<DeptListResult>({
       url: '/system/dept/list/exclude/' + deptId
     })
   }
