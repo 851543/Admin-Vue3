@@ -53,7 +53,6 @@
       :total="total"
       :current-page="queryParams.pageNum"
       :page-size="queryParams.pageSize"
-      @pagination="getList"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       @selection-change="handleSelectionChange"

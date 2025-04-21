@@ -86,7 +86,6 @@
       :total="total"
       :current-page="queryParams.pageNum"
       :page-size="queryParams.pageSize"
-      @pagination="getList"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       @selection-change="handleSelectionChange"
@@ -114,7 +113,13 @@
         v-if="columns[4].show"
       />
       <el-table-column label="操作类别" align="center" prop="operatorType" v-if="columns[5].show" />
-      <el-table-column label="操作人员" align="center" prop="operName" v-if="columns[6].show" />
+      <el-table-column
+        label="操作人员"
+        sortable
+        align="center"
+        prop="operName"
+        v-if="columns[6].show"
+      />
       <el-table-column label="部门名称" align="center" prop="deptName" v-if="columns[7].show" />
       <el-table-column label="请求URL" align="center" prop="operUrl" v-if="columns[8].show" />
       <el-table-column label="主机地址" align="center" prop="operIp" v-if="columns[9].show" />
@@ -144,8 +149,14 @@
         </template>
       </el-table-column>
       <el-table-column label="错误消息" align="center" prop="errorMsg" v-if="columns[14].show" />
-      <el-table-column label="操作时间" align="center" prop="operTime" width="180" />
-      <el-table-column label="消耗时间" align="center" prop="costTime" v-if="columns[16].show" />
+      <el-table-column label="操作时间" sortable align="center" prop="operTime" width="180" />
+      <el-table-column
+        label="消耗时间"
+        sortable
+        align="center"
+        prop="costTime"
+        v-if="columns[16].show"
+      />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <button-table icon="&#xe689;" type="add" @click="handleView(scope.row)" v-ripple />
