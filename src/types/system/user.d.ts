@@ -1,6 +1,6 @@
-import { BaseArrayResult, BaseObjectResult, DeptResult, BaseResult，CodeMsgResult } from '../axios'
+import { BaseArrayResult, DeptResult, BaseResult, CodeMsgResult, BaseObjectResult } from '../axios'
 
-export interface UserResult {
+export interface LoginUserResult {
   createBy: string
   createTime: string
   updateBy: string
@@ -41,5 +41,78 @@ export interface EditProfileAvatarResult extends CodeMsgResult {
   imgUrl: string
 }
 
+export interface UserResult {
+  userId: string
+  deptId: string
+  userName: string
+  nickName: string
+  userType: string
+  email: string
+  phonenumber: string
+  sex: string
+  avatar: string
+  password: string
+  status: string
+  delFlag: string
+  loginIp: string
+  loginDate: string
+  createBy: string
+  createTime: string
+  updateBy: string
+  updateTime: string
+  remark: string
+}
+
+export type UserListPageResult = BasePageResult<UserResult>
 export type UserListResult = BaseArrayResult<UserResult>
-export type UserInfoResult = BaseObjectResult<UserResult>
+
+export interface DeptOptionType {
+  id: number
+  label: string
+  children?: DeptOptionType[]
+}
+
+export type DeptOptionListResult = BaseArrayResult<DeptOptionType>
+
+export interface RoleType {
+  roleId: number
+  roleName: string
+  roleKey: string
+  roleSort: number
+  dataScope: string
+  menuCheckStrictly: boolean
+  deptCheckStrictly: boolean
+  status: string
+  delFlag: string
+  flag: boolean
+  menuIds: number[]
+  deptIds: number[]
+  permissions: string[]
+  createBy: string
+  createTime: string
+  updateBy: string
+  admin: boolean
+  remark: string
+  updateTime: string
+}
+
+export interface PostType {
+  postId: number
+  postCode: string
+  postName: string
+  postSort: number
+  status: string
+  flag: boolean
+  createBy: string
+  createTime: string
+  updateBy: string
+  remark: string
+  updateTime: string
+}
+
+export interface UserInfoResult extends BaseObjectResult<LoginUserResult> {
+  roles: RoleType[]
+  posts: PostType[]
+  postIds: number[]
+  roleIds: number[]
+}

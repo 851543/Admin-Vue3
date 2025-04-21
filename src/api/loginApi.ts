@@ -1,7 +1,7 @@
 import request from '@/utils/http'
 import { BaseResult } from '@/types/axios'
 import { CaptchaResult, loginFunctionEnabledResult, LoginResult } from '@/types/login'
-import { UserResult } from '@/types/system/user'
+import { LoginUserResult } from '@/types/system/user'
 
 // 登陆
 export class LoginService {
@@ -27,7 +27,7 @@ export class LoginService {
   }
   // 获取用户信息
   static getInfo() {
-    return request.get<LoginResult<UserResult>>({
+    return request.get<LoginResult<LoginUserResult>>({
       url: '/getInfo'
     })
   }

@@ -335,7 +335,7 @@ export function downloadZip(response: Promise<any>, fileName: string = getCurren
 }
 
 // 时间格式化
-export function parseTime(time: string, format: string): string {
+export function parseTime(time: string, format: string = '{y}-{m}-{d} {h}:{i}:{s}'): string {
   const date = new Date(time)
   const formatObj: Record<string, number> = {
     y: date.getFullYear(),
@@ -416,4 +416,12 @@ export function selectDictLabel(datas: any, value: any) {
     actions.push(value)
   }
   return actions.join('')
+}
+
+// 转换字符串，undefined,null等转化为""
+export function parseStrEmpty(str: any) {
+  if (!str || str == 'undefined' || str == 'null') {
+    return ''
+  }
+  return str
 }
