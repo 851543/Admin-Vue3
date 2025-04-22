@@ -1,4 +1,4 @@
-import { BaseArrayResult } from '../axios'
+import { BaseObjectResult } from '../axios'
 export interface ServerResult {
   cpu: Cpu
   mem: Mem
@@ -54,4 +54,4 @@ export interface SysFile {
   usage: number
 }
 
-export type ServerListResult = BaseArrayResult<ServerResult>
+export type ServerInfoResult = BaseObjectResult<ServerResult>

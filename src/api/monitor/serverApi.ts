@@ -1,11 +1,11 @@
 import request from '@/utils/http'
-import { ServerListResult } from '@/types/monitor/server'
+import { ServerInfoResult } from '@/types/monitor/server'
 
 // 服务监控
 export class ServerService {
   // 获取服务信息
   static getServer() {
-    return request.get<ServerListResult>({
+    return request.get<ServerInfoResult>({
       url: '/monitor/server'
     })
   }

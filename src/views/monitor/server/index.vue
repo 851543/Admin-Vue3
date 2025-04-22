@@ -268,8 +268,44 @@
   import { ServerService } from '@/api/monitor/serverApi'
   import { ref } from 'vue'
   import { loadingAction } from '@/utils/utils'
-  import { ServerListResult } from '@/type/monitor/server'
-  const server = ref<ServerListResult>([])
+  import { ServerResult } from '@/types/monitor/server'
+  const server = ref<ServerResult>({
+    cpu: {
+      cpuNum: 0,
+      total: 0,
+      sys: 0,
+      used: 0,
+      wait: 0,
+      free: 0
+    },
+    mem: {
+      total: 0,
+      used: 0,
+      free: 0,
+      usage: 0
+    },
+    jvm: {
+      total: 0,
+      max: 0,
+      free: 0,
+      version: '',
+      home: '',
+      startTime: '',
+      usage: 0,
+      used: 0,
+      name: '',
+      inputArgs: '',
+      runTime: ''
+    },
+    sys: {
+      computerName: '',
+      computerIp: '',
+      userDir: '',
+      osName: '',
+      osArch: ''
+    },
+    sysFiles: []
+  })
 
   const getList = async () => {
     const loading = loadingAction('正在加载服务监控数据，请稍候！')
@@ -286,10 +322,13 @@
 </script>
 <style scoped lang="scss">
   .app-container {
-    padding: 20px;
+    margin: 20px 0px;
     .region,
     .art-custom-card {
       margin-bottom: 20px;
+    }
+    span {
+      margin-left: 10px;
     }
   }
 </style>
