@@ -91,77 +91,84 @@
       @selection-change="handleSelectionChange"
       row-key="operId"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="日志主键" align="center" prop="operId" v-if="columns[0].show" />
-      <el-table-column label="模块标题" align="center" prop="title" v-if="columns[1].show" />
-      <el-table-column label="业务类型" align="center" prop="businessType" v-if="columns[2].show">
-        <template #default="scope">
-          <dict-tag :options="sysOperType" :value="scope.row.businessType" />
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="方法名称"
-        align="center"
-        prop="method"
-        :show-overflow-tooltip="true"
-        v-if="columns[3].show"
-      />
-      <el-table-column
-        label="请求方式"
-        align="center"
-        prop="requestMethod"
-        v-if="columns[4].show"
-      />
-      <el-table-column label="操作类别" align="center" prop="operatorType" v-if="columns[5].show" />
-      <el-table-column
-        label="操作人员"
-        sortable
-        align="center"
-        prop="operName"
-        v-if="columns[6].show"
-      />
-      <el-table-column label="部门名称" align="center" prop="deptName" v-if="columns[7].show" />
-      <el-table-column label="请求URL" align="center" prop="operUrl" v-if="columns[8].show" />
-      <el-table-column label="主机地址" align="center" prop="operIp" v-if="columns[9].show" />
-      <el-table-column
-        label="操作地点"
-        align="center"
-        prop="operLocation"
-        v-if="columns[10].show"
-      />
-      <el-table-column
-        label="请求参数"
-        align="center"
-        prop="operParam"
-        :show-overflow-tooltip="true"
-        v-if="columns[11].show"
-      />
-      <el-table-column
-        label="返回参数"
-        align="center"
-        prop="jsonResult"
-        :show-overflow-tooltip="true"
-        v-if="columns[12].show"
-      />
-      <el-table-column label="操作状态" align="center" prop="status" v-if="columns[13].show">
-        <template #default="scope">
-          <dict-tag :options="sysCommonStatus" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="错误消息" align="center" prop="errorMsg" v-if="columns[14].show" />
-      <el-table-column label="操作时间" sortable align="center" prop="operTime" width="180" />
-      <el-table-column
-        label="消耗时间"
-        sortable
-        align="center"
-        prop="costTime"
-        v-if="columns[16].show"
-      />
-      <el-table-column label="操作" align="center">
-        <template #default="scope">
-          <button-table icon="&#xe689;" type="add" @click="handleView(scope.row)" v-ripple />
-        </template>
-      </el-table-column>
+      <template #default>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="日志主键" align="center" prop="operId" v-if="columns[0].show" />
+        <el-table-column label="模块标题" align="center" prop="title" v-if="columns[1].show" />
+        <el-table-column label="业务类型" align="center" prop="businessType" v-if="columns[2].show">
+          <template #default="scope">
+            <dict-tag :options="sysOperType" :value="scope.row.businessType" />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="方法名称"
+          align="center"
+          prop="method"
+          :show-overflow-tooltip="true"
+          v-if="columns[3].show"
+        />
+        <el-table-column
+          label="请求方式"
+          align="center"
+          prop="requestMethod"
+          v-if="columns[4].show"
+        />
+        <el-table-column
+          label="操作类别"
+          align="center"
+          prop="operatorType"
+          v-if="columns[5].show"
+        />
+        <el-table-column
+          label="操作人员"
+          sortable
+          align="center"
+          prop="operName"
+          v-if="columns[6].show"
+        />
+        <el-table-column label="部门名称" align="center" prop="deptName" v-if="columns[7].show" />
+        <el-table-column label="请求URL" align="center" prop="operUrl" v-if="columns[8].show" />
+        <el-table-column label="主机地址" align="center" prop="operIp" v-if="columns[9].show" />
+        <el-table-column
+          label="操作地点"
+          align="center"
+          prop="operLocation"
+          v-if="columns[10].show"
+        />
+        <el-table-column
+          label="请求参数"
+          align="center"
+          prop="operParam"
+          :show-overflow-tooltip="true"
+          v-if="columns[11].show"
+        />
+        <el-table-column
+          label="返回参数"
+          align="center"
+          prop="jsonResult"
+          :show-overflow-tooltip="true"
+          v-if="columns[12].show"
+        />
+        <el-table-column label="操作状态" align="center" prop="status" v-if="columns[13].show">
+          <template #default="scope">
+            <dict-tag :options="sysCommonStatus" :value="scope.row.status" />
+          </template>
+        </el-table-column>
+        <el-table-column label="错误消息" align="center" prop="errorMsg" v-if="columns[14].show" />
+        <el-table-column label="操作时间" sortable align="center" prop="operTime" width="180" />
+        <el-table-column
+          label="消耗时间"
+          sortable
+          align="center"
+          prop="costTime"
+          v-if="columns[16].show"
+        />
+        <el-table-column label="操作" align="center">
+          <template #default="scope">
+            <button-table icon="&#xe689;" type="add" @click="handleView(scope.row)" v-ripple />
+          </template>
+        </el-table-column>
+      </template>
     </art-table>
 
     <!-- 操作日志详细 -->

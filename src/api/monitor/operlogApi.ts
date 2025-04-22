@@ -2,7 +2,7 @@ import request from '@/utils/http'
 import { OperLogListPageResult } from '@/types/monitor/operlog'
 import { CodeMsgResult } from '@/types/axios'
 
-// 操作日志记录
+// 操作日志
 export class OperLogService {
   // 查询操作日志记录列表
   static listOperlog(query: any) {

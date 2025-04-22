@@ -3,6 +3,7 @@ import { fourDotsSpinnerSvg } from '@/assets/svg/loading'
 import { ElLoading } from 'element-plus'
 import { saveAs } from 'file-saver'
 import errorCode from '@/utils/errorCode'
+import type { LoadingOptions } from 'element-plus'
 
 /**
  * 常用 JavaScript 函数片段
@@ -278,13 +279,7 @@ export function getCurrentTime() {
 // 通用Excel下载方法
 export function downloadExcel(response: Promise<any>, fileName?: string) {
   //正在下载数据，请稍候
-  const loading = ElLoading.service({
-    lock: true,
-    text: '正在下载数据，请稍候',
-    background: 'rgba(0, 0, 0, 0)',
-    svg: fourDotsSpinnerSvg,
-    svgViewBox: '0 0 40 40'
-  })
+  const loading = loadingAction('正在下载数据，请稍候')
   return response
     .then(async (data) => {
       const isBlob = blobValidate(data)
@@ -307,13 +302,7 @@ export function downloadExcel(response: Promise<any>, fileName?: string) {
 
 // 通用Zip下载方法
 export function downloadZip(response: Promise<any>, fileName: string = getCurrentTime() + '.zip') {
-  const loading = ElLoading.service({
-    lock: true,
-    text: '正在下载数据，请稍候',
-    background: 'rgba(0, 0, 0, 0)',
-    svg: fourDotsSpinnerSvg,
-    svgViewBox: '0 0 40 40'
-  })
+  const loading = loadingAction('正在下载数据，请稍候')
   return response
     .then(async (data) => {
       const isBlob = blobValidate(data)
@@ -480,4 +469,18 @@ export function handleTree(
     }
   }
   return tree
+}
+
+// 加载动画
+export function loadingAction(text?: string) {
+  const config: LoadingOptions = {
+    lock: true,
+    background: 'rgba(0, 0, 0, 0)',
+    svg: fourDotsSpinnerSvg,
+    svgViewBox: '0 0 40 40'
+  }
+  if (text) {
+    config.text = text
+  }
+  return ElLoading.service(config)
 }

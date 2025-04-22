@@ -2,7 +2,7 @@ import request from '@/utils/http'
 import { LogininforListPageResult } from '@/types/monitor/logininfor'
 import { CodeMsgResult } from '@/types/axios'
 
-// 系统访问记录
+// 系统访问
 export class LogininforService {
   // 查询系统访问记录列表
   static listLogininfor(query: any) {

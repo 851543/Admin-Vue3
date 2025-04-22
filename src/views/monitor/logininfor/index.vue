@@ -85,31 +85,33 @@
       @selection-change="handleSelectionChange"
       row-key="infoId"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="访问编号" align="center" prop="infoId" v-if="columns[0].show" />
-      <el-table-column label="用户账号" align="center" prop="userName" v-if="columns[1].show" />
-      <el-table-column label="登录地址" align="center" prop="ipaddr" v-if="columns[2].show" />
-      <el-table-column
-        label="登录地点"
-        align="center"
-        prop="loginLocation"
-        v-if="columns[3].show"
-      />
-      <el-table-column label="浏览器类型" align="center" prop="browser" v-if="columns[4].show" />
-      <el-table-column label="操作系统" align="center" prop="os" v-if="columns[5].show" />
-      <el-table-column label="登录状态" align="center" prop="status" v-if="columns[6].show">
-        <template #default="scope">
-          <dict-tag :options="sysCommonStatus" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="提示消息"
-        align="center"
-        prop="msg"
-        :show-overflow-tooltip="true"
-        v-if="columns[7].show"
-      />
-      <el-table-column label="登陆时间" sortable align="center" prop="loginTime" width="180" />
+      <template #default>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="访问编号" align="center" prop="infoId" v-if="columns[0].show" />
+        <el-table-column label="用户账号" align="center" prop="userName" v-if="columns[1].show" />
+        <el-table-column label="登录地址" align="center" prop="ipaddr" v-if="columns[2].show" />
+        <el-table-column
+          label="登录地点"
+          align="center"
+          prop="loginLocation"
+          v-if="columns[3].show"
+        />
+        <el-table-column label="浏览器类型" align="center" prop="browser" v-if="columns[4].show" />
+        <el-table-column label="操作系统" align="center" prop="os" v-if="columns[5].show" />
+        <el-table-column label="登录状态" align="center" prop="status" v-if="columns[6].show">
+          <template #default="scope">
+            <dict-tag :options="sysCommonStatus" :value="scope.row.status" />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="提示消息"
+          align="center"
+          prop="msg"
+          :show-overflow-tooltip="true"
+          v-if="columns[7].show"
+        />
+        <el-table-column label="登陆时间" sortable align="center" prop="loginTime" width="180" />
+      </template>
     </art-table>
   </div>
 </template>
