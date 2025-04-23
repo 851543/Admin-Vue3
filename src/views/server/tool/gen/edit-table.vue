@@ -142,8 +142,8 @@
   import { DictTypeService } from '@/api/system/dict/typeApi'
   import { useRoute, useRouter } from 'vue-router'
   import { ref, getCurrentInstance } from 'vue'
-  import basicInfoForm from './basicInfoForm.vue'
-  import genInfoForm from './genInfoForm.vue'
+  import basicInfoForm from './components/basicInfoForm.vue'
+  import genInfoForm from './components/genInfoForm.vue'
 
   const { proxy } = getCurrentInstance()
   const route = useRoute()
