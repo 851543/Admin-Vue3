@@ -83,7 +83,6 @@
       row-key="userId"
     >
       <template #default>
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="用户ID" align="center" prop="userId" v-if="columns[0].show" />
         <el-table-column label="用户账号" align="center" prop="userName" v-if="columns[1].show" />
         <el-table-column label="用户名" prop="avatar" #default="scope" v-if="columns[2].show">

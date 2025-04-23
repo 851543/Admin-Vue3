@@ -59,7 +59,6 @@
       row-key="dictId"
     >
       <template #default>
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="字典主键" align="center" prop="dictId" v-if="columns[0].show" />
         <el-table-column label="字典名称" align="center" prop="dictName" v-if="columns[1].show" />
         <el-table-column label="字典类型" align="center" prop="dictType" v-if="columns[2].show">

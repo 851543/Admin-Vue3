@@ -92,7 +92,6 @@
       row-key="operId"
     >
       <template #default>
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="日志主键" align="center" prop="operId" v-if="columns[0].show" />
         <el-table-column label="模块标题" align="center" prop="title" v-if="columns[1].show" />
         <el-table-column label="业务类型" align="center" prop="businessType" v-if="columns[2].show">

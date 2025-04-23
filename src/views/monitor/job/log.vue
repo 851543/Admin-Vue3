@@ -52,7 +52,6 @@
       row-key="jobLogId"
     >
       <template #default>
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column
           label="任务日志编号"
           align="center"

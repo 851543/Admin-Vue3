@@ -57,7 +57,6 @@
       row-key="postId"
     >
       <template #default>
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="岗位ID" align="center" prop="postId" v-if="columns[0].show" />
         <el-table-column label="岗位编码" align="center" prop="postCode" v-if="columns[1].show" />
         <el-table-column label="岗位名称" align="center" prop="postName" v-if="columns[2].show" />

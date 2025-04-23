@@ -59,7 +59,6 @@
       row-key="dictCode"
     >
       <template #default>
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="字典编码" align="center" prop="dictCode" v-if="columns[0].show" />
         <el-table-column label="字典排序" align="center" prop="dictSort" v-if="columns[1].show" />
         <el-table-column label="字典标签" align="center" prop="dictLabel" v-if="columns[2].show" />

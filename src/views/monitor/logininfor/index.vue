@@ -86,7 +86,6 @@
       row-key="infoId"
     >
       <template #default>
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="访问编号" align="center" prop="infoId" v-if="columns[0].show" />
         <el-table-column label="用户账号" align="center" prop="userName" v-if="columns[1].show" />
         <el-table-column label="登录地址" align="center" prop="ipaddr" v-if="columns[2].show" />

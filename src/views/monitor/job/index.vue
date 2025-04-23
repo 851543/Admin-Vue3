@@ -58,7 +58,6 @@
       row-key="jobId"
     >
       <template #default>
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="任务编号" align="center" prop="jobId" v-if="columns[0].show" />
         <el-table-column label="任务名称" align="center" prop="jobName" v-if="columns[1].show" />
         <el-table-column label="任务组名" align="center" prop="jobGroup" v-if="columns[2].show" />

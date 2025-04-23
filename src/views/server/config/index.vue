@@ -60,7 +60,6 @@
       row-key="configId"
     >
       <template #default>
-        <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="参数主键" align="center" prop="configId" v-if="columns[0].show" />
         <el-table-column label="参数名称" align="center" prop="configName" v-if="columns[1].show" />
         <el-table-column label="参数键名" align="center" prop="configKey" v-if="columns[2].show" />
