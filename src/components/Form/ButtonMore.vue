@@ -18,6 +18,7 @@
     key: string | number
     label: string
     disabled?: boolean
+    auth?: Array<string>
   }
 
   defineProps<{

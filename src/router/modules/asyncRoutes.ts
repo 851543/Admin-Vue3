@@ -794,5 +794,25 @@ export const asyncRoutes: MenuListType[] = [
         meta: { title: '分配角色', keepAlive: false }
       }
     ]
+  },
+  {
+    id: 13,
+    path: '/monitor/job-log',
+    name: 'JobLog',
+    component: RoutesAlias.Home,
+    meta: {
+      title: '调度日志',
+      keepAlive: false,
+      isHide: true
+    },
+    children: [
+      {
+        id: 1013,
+        path: 'index/:jobId(\\d+)',
+        component: RoutesAlias.JobLog,
+        name: 'JobLogIndex',
+        meta: { title: '调度日志', keepAlive: false }
+      }
+    ]
   }
 ]

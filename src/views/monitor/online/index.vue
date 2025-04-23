@@ -105,7 +105,7 @@
               type="primary"
               icon="Delete"
               @click="handleForceLogout(scope.row)"
-              v-hasPermi="['monitor:online:forceLogout']"
+              v-auth="['monitor:online:forceLogout']"
               >强退</el-button
             >
           </template>
