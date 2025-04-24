@@ -346,7 +346,7 @@
   const router = useRouter()
   // 关闭按钮
   const handleClose = () => {
-    router.push({ path: '/test/test-dict', query: { t: Date.now() } })
+    router.push({ path: '/system/dict', query: { t: Date.now() } })
   }
 
   const route = useRoute()

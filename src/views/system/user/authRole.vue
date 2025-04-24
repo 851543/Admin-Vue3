@@ -71,7 +71,7 @@
 
   /** 关闭按钮 */
   const close = () => {
-    router.push({ path: '/test/test-user' })
+    router.push({ path: '/system/user' })
   }
 
   /** 每页条数改变 */
@@ -105,7 +105,6 @@
     if (userId) {
       loading.value = true
       const res = await UserService.getAuthRole(userId)
-      console.log(res)
       if (res.code === 200) {
         form.value = res.user
         roles.value = res.roles

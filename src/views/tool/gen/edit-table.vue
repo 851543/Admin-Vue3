@@ -199,7 +199,7 @@
   }
 
   function close() {
-    router.push({ path: '/dao/dao-gen', query: { t: Date.now() } })
+    router.push({ path: '/tool/gen', query: { t: Date.now() } })
   }
 
   ;(async () => {
