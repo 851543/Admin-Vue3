@@ -71,7 +71,7 @@ yarn build
 4. 创建一个 Pull Request
 
 ## 致谢
-本项目基于 [vue-element-plus-admin](https://github.com/kailong321200875/vue-element-plus-admin) 模板开发，感谢原作者的开源贡献。
+本项目基于 [art-design-pro](https://github.com/Daymychen/art-design-pro.git) 模板开发，感谢原作者的开源贡献。
 
 ## 许可证
 MIT License
