@@ -6,5 +6,5 @@ export const WEB_LINKS = {
   GITHUB: 'https://github.com/851543/Admin-Vue3',
 
   // 个人博客
-  BLOG: ''
+  BLOG: 'https://github.com/851543'
 }

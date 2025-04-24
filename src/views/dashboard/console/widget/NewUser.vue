@@ -41,12 +41,7 @@
 
 <script setup lang="ts">
   import { onMounted, ref, reactive } from 'vue-demi'
-  import avatar1 from '@/assets/img/avatar/avatar1.jpg'
-  import avatar2 from '@/assets/img/avatar/avatar2.jpg'
-  import avatar3 from '@/assets/img/avatar/avatar3.jpg'
-  import avatar4 from '@/assets/img/avatar/avatar4.jpg'
-  import avatar5 from '@/assets/img/avatar/avatar5.jpg'
-  import avatar6 from '@/assets/img/avatar/avatar6.jpg'
+  import avatar from '@/assets/img/avatar/default-avatar.png'
 
   const radio2 = ref('本月')
 
@@ -59,7 +54,7 @@
       percentage: 60,
       pro: 0,
       color: 'rgb(var(--art-primary)) !important',
-      avatar: avatar1
+      avatar: avatar
     },
     {
       username: '何小荷',
@@ -69,7 +64,7 @@
       percentage: 20,
       pro: 0,
       color: 'rgb(var(--art-secondary)) !important',
-      avatar: avatar2
+      avatar: avatar
     },
     {
       username: '誶誶淰',
@@ -79,7 +74,7 @@
       percentage: 60,
       pro: 0,
       color: 'rgb(var(--art-warning)) !important',
-      avatar: avatar3
+      avatar: avatar
     },
     {
       username: '发呆草',
@@ -89,7 +84,7 @@
       percentage: 50,
       pro: 0,
       color: 'rgb(var(--art-info)) !important',
-      avatar: avatar4
+      avatar: avatar
     },
     {
       username: '甜筒',
@@ -99,7 +94,7 @@
       percentage: 70,
       pro: 0,
       color: 'rgb(var(--art-error)) !important',
-      avatar: avatar5
+      avatar: avatar
     },
     {
       username: '冷月呆呆',
@@ -109,7 +104,7 @@
       percentage: 90,
       pro: 0,
       color: 'rgb(var(--art-success)) !important',
-      avatar: avatar6
+      avatar: avatar
     }
   ])
 

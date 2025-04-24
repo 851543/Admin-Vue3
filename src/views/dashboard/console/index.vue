@@ -20,14 +20,6 @@
         <p>使用了 Vue3、TypeScript、Vite、Element Plus 等前沿技术</p>
 
         <div class="button-wrap">
-          <div class="btn art-custom-card" @click="goPage(WEB_LINKS.DOCS)">
-            <span>项目官网</span>
-            <i class="iconfont-sys">&#xe703;</i>
-          </div>
-          <div class="btn art-custom-card" @click="goPage(WEB_LINKS.INTRODUCE)">
-            <span>文档</span>
-            <i class="iconfont-sys">&#xe703;</i>
-          </div>
           <div class="btn art-custom-card" @click="goPage(WEB_LINKS.GITHUB_HOME)">
             <span>Github</span>
             <i class="iconfont-sys">&#xe703;</i>
