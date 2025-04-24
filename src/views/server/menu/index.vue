@@ -47,9 +47,9 @@
             <i class="iconfont-sys" v-html="scope.row.icon" />
           </template>
         </el-table-column>
-        <el-table-column label="排序" prop="sort" v-if="columns[2].show">
+        <el-table-column label="排序" prop="orderNum" v-if="columns[2].show">
           <template #default="scope">
-            {{ scope.row.sort }}
+            {{ scope.row.orderNum }}
           </template>
         </el-table-column>
         <el-table-column label="权限标识" v-if="columns[3].show">
