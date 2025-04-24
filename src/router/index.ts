@@ -197,7 +197,7 @@ router.beforeEach(async (to, from, next) => {
 async function getMenuData(): Promise<void> {
   // 获取菜单列表
   const { menuList, closeLoading } = await menuService.getMenuList()
-  console.log(menuList)
+
   // 如果菜单列表为空，执行登出操作并跳转到登录页
   if (!Array.isArray(menuList) || menuList.length === 0) {
     closeLoading()

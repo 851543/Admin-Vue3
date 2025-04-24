@@ -183,7 +183,6 @@
             parentMenuId: genData.parentMenuId
           }
         }
-        console.log(genTable)
         const res = await GeneratorApi.updateGenTable(genTable)
         if (res.code === 200) {
           ElMessage.success(res.msg)

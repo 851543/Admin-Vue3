@@ -180,14 +180,6 @@
     }, 10)
   }
 
-  // 获取工具栏
-  // const getToolbar = (editor: IDomEditor) => {
-  //   setTimeout(() => {
-  //     const toolbar = DomEditor.getToolbar(editor)
-  //     console.log(toolbar?.getConfig().toolbarKeys) // 当前菜单排序和分组
-  //   }, 300)
-  // }
-
   // 组件销毁时，也及时销毁编辑器
   onBeforeUnmount(() => {
     const editor = editorRef.value
