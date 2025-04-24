@@ -74,6 +74,9 @@ export const formatMenuTitle = (title: string): string => {
  * @returns 处理后的菜单数据
  */
 export const processBackendMenu = (route: MenuBackendType, parentPath = ''): MenuListType => {
+  if (route.component.includes('ParentView')) {
+    route.component = ''
+  }
   route = backendMenuUtils(route)
   // 构建完整路径
   const currentPath = route.path
