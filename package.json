@@ -60,6 +60,7 @@
     "nprogress": "^0.2.0",
     "pinia": "^2.2.2",
     "qrcode.vue": "^3.6.0",
+    "uuid": "^11.1.0",
     "vue": "^3.5.12",
     "vue-draggable-plus": "^0.6.0",
     "vue-i18n": "^9.14.0",

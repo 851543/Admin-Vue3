@@ -1,7 +1,7 @@
 import { fourDotsSpinnerSvg } from '@/assets/svg/loading'
 import { asyncRoutes } from '@/router/modules/asyncRoutes'
 import { MenuListType } from '@/types/menu'
-import { processRoute } from '@/utils/menu'
+import { processRoute, processBackendMenu } from '@/utils/menu'
 import { ElLoading } from 'element-plus'
 import { LoginService } from './loginApi'
 
@@ -14,14 +14,16 @@ export const menuService = {
     // 获取到的菜单数据
     const menuList = asyncRoutes
 
-    // server路由信息
-    const res = await LoginService.getRouters()
-    if (res.code === 200) {
-      menuList.push(...res.data)
-    }
-
     // 处理后的菜单数据
     const processedMenuList: MenuListType[] = menuList.map((route) => processRoute(route))
+
+    // 获取后端路由信息
+    const res = await LoginService.getRouters()
+    if (res.code === 200) {
+      res.data.forEach((route: any) => {
+        processedMenuList.push(processBackendMenu(route))
+      })
+    }
 
     const loading = ElLoading.service({
       lock: true,

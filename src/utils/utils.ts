@@ -4,6 +4,7 @@ import { ElLoading } from 'element-plus'
 import { saveAs } from 'file-saver'
 import errorCode from '@/utils/errorCode'
 import type { LoadingOptions } from 'element-plus'
+import { v4 as uuidv4 } from 'uuid'
 
 /**
  * 常用 JavaScript 函数片段
@@ -483,4 +484,11 @@ export function loadingAction(text?: string) {
     config.text = text
   }
   return ElLoading.service(config)
+}
+
+// UUID
+export function uuid() {
+  const uuidString = uuidv4()
+  const hash = uuidString.split('-').reduce((acc, part) => acc + parseInt(part, 16), 0)
+  return hash
 }

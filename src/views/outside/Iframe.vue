@@ -27,7 +27,6 @@
       iframeUrl.value = iframeRoute.meta.link
     }
   })
-
   const handleIframeLoad = () => {
     isLoading.value = false
   }

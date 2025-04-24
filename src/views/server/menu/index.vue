@@ -35,26 +35,26 @@
     </table-bar>
 
     <!-- 菜单列表 -->
-    <art-table :data="tableData" ref="tableRef">
+    <art-table :data="tableData" ref="tableRef" row-key="menuId">
       <template #default>
         <el-table-column label="菜单名称" prop="menuName" v-if="columns[0].show">
           <template #default="scope">
-            {{ formatMenuTitle(scope.row.meta?.title) }}
+            {{ formatMenuTitle(scope.row.menuName) }}
           </template>
         </el-table-column>
         <el-table-column label="图标" prop="icon" v-if="columns[1].show">
           <template #default="scope">
-            <i class="iconfont-sys" v-html="scope.row.meta?.icon" />
+            <i class="iconfont-sys" v-html="scope.row.icon" />
           </template>
         </el-table-column>
         <el-table-column label="排序" prop="sort" v-if="columns[2].show">
           <template #default="scope">
-            {{ scope.row.meta?.sort }}
+            {{ scope.row.sort }}
           </template>
         </el-table-column>
         <el-table-column label="权限标识" v-if="columns[3].show">
           <template #default="scope">
-            <template v-if="scope.row.meta?.authList && scope.row.meta.authList.length > 0">
+            <template v-if="scope.row.authList && scope.row.meta.authList.length > 0">
               <div v-for="(auth, index) in scope.row.meta.authList" :key="index">{{
                 auth.auth_mark
               }}</div>
@@ -64,12 +64,12 @@
         <el-table-column label="组件路径" prop="component" v-if="columns[4].show" />
         <el-table-column label="状态" prop="status" v-if="columns[5].show">
           <template #default="scope">
-            <dict-tag :options="sysNormalDisable" :value="scope.row.meta?.status" />
+            <dict-tag :options="sysNormalDisable" :value="scope.row.status" />
           </template>
         </el-table-column>
         <el-table-column label="创建时间" prop="createTime" v-if="columns[6].show">
           <template #default="scope">
-            {{ scope.row.meta?.createTime }}
+            {{ scope.row.createTime }}
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="180px">
@@ -425,11 +425,11 @@
   const tableData = ref<MenuListType[]>([])
   const menuOptions = ref<MenuOptionType[]>([])
 
-  import { processMenu } from '@/utils/menu'
+  import { handleTree } from '@/utils/utils'
   const getMenuList = async () => {
     const res = await MenuService.getMenuList(searchForm)
     if (res.code === 200) {
-      tableData.value = processMenu(res.data)
+      tableData.value = handleTree(res.data, 'menuId')
     }
   }
   const isEdit = ref(false)
@@ -464,9 +464,9 @@
     // 重置表单数据到初始状态
     Object.assign(form, initialFormState)
 
-    form.parentId = row.id
+    form.parentId = row.menuId
     if (type === 'edit' && row) {
-      const res = await getMenuInfo(row.id)
+      const res = await getMenuInfo(row.menuId)
       if (res) {
         form.menuId = res.menuId
         form.menuName = res.menuName
@@ -496,7 +496,7 @@
         type: 'warning'
       })
 
-      const res = await MenuService.deleteMenu(row.id)
+      const res = await MenuService.deleteMenu(row.menuId)
       ElMessage.success(res.msg)
       getMenuList()
     } catch (error) {
@@ -545,6 +545,7 @@
     if (res.code === 200) {
       const menu = { id: 0, label: '主类目', children: [] as MenuOptionType[] }
       menu.children = res.data
+      menuOptions.value = []
       menuOptions.value.push(menu)
     }
   }

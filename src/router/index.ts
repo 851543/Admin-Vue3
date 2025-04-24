@@ -111,6 +111,20 @@ const staticRoutes: AppRouteRecordRaw[] = [
     ]
   },
   {
+    path: '/user',
+    component: Home,
+    name: 'User',
+    meta: { title: 'menus.user.title' },
+    children: [
+      {
+        path: RoutesAlias.UserCenter,
+        name: 'UserCenter',
+        component: () => import('@views/user/user.vue'),
+        meta: { title: 'menus.user.userCenter' }
+      }
+    ]
+  },
+  {
     path: '/outside',
     component: Home,
     name: 'Outside',
@@ -123,12 +137,6 @@ const staticRoutes: AppRouteRecordRaw[] = [
         meta: { title: 'iframe' }
       }
     ]
-  },
-  {
-    path: RoutesAlias.Pricing,
-    name: 'Pricing',
-    component: () => import('@views/template/Pricing.vue'),
-    meta: { title: 'menus.template.pricing', isHideTab: true }
   }
 ]
 
