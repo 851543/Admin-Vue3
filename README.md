@@ -4,7 +4,7 @@
 Admin-Vue3 是一款专注于用户体验和视觉设计的后台管理系统模板，基于 Vue3、TypeScript、Vite 和 Element Plus 等现代前端技术栈开发。项目采用了最新的前端技术栈，提供了丰富的功能组件和优雅的界面设计。
 
 ## 技术栈
-- 样式来自于: [art-design-pro]主题(https://github.com/Daymychen/art-design-pro.git)
+- 样式来自于: [art-design-pro](https://github.com/Daymychen/art-design-pro.git)主题
 - 核心框架：Vue 3
 - 开发语言：TypeScript
 - 构建工具：Vite
