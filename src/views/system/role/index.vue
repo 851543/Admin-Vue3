@@ -124,7 +124,7 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in statusOptions" :key="dict.value" :label="dict.value">{{
+            <el-radio v-for="dict in statusOptions" :key="dict.value" :value="dict.value">{{
               dict.label
             }}</el-radio>
           </el-radio-group>

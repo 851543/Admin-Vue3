@@ -24,7 +24,7 @@
     const iframeRoute = getIframeRoutes().find((item: any) => item.path === route.path)
 
     if (iframeRoute?.meta) {
-      iframeUrl.value = iframeRoute.meta.link
+      iframeUrl.value = iframeRoute.meta.link || ''
     }
   })
   const handleIframeLoad = () => {
