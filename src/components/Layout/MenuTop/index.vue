@@ -8,11 +8,11 @@
       :default-active="routerPath"
       text-color="var(--art-text-gray-700)"
       :popper-offset="16"
-      :style="{ width: width - 300 + 'px' }"
+      :style="{ width: width + 'px' }"
       background-color="transparent"
     >
       <MenuTopSubmenu
-        v-for="item in list"
+        v-for="item in filteredMenuItems"
         :key="item.id"
         :item="item"
         :isMobile="false"
@@ -27,7 +27,7 @@
 
   const route = useRoute()
 
-  defineProps({
+  const props = defineProps({
     list: {
       type: [Array] as PropType<MenuListType[]>,
       default: () => []
@@ -41,6 +41,10 @@
   const routerPath = computed(() => {
     return route.path
   })
+
+  const filteredMenuItems  = computed(() => {
+     return props.list.filter((item) => !item.meta.isHide)
+   })
 </script>
 
 <style lang="scss" scoped>

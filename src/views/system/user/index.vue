@@ -253,7 +253,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择">
+              <el-select v-model="form.postIds" multiple placeholder="请选择" v-show="selectDis">
                 <el-option
                   v-for="item in postOptions"
                   :key="item.postId"
@@ -266,7 +266,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择">
+              <el-select v-model="form.roleIds" multiple placeholder="请选择" v-show="selectDis">
                 <el-option
                   v-for="item in roleOptions"
                   :key="item.roleId"
@@ -339,7 +339,7 @@
 <script setup lang="ts">
   import { UserService } from '@/api/system/userApi'
   import { ref, reactive, onMounted } from 'vue'
-  import { addDateRange, resetForm, AvatarImga, parseTime } from '@/utils/utils'
+  import { addDateRange, resetForm, AvatarImga, parseTime, selectDictLabel } from '@/utils/utils'
   import defaultAvatar from '@/assets/img/avatar/default-avatar.png'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { FormInstance } from 'element-plus'
@@ -578,6 +578,16 @@
     open.value = true
     title.value = '添加用户信息'
   }
+  const selectDis = ref(false)
+  watch(open, (valid) => {
+    if (valid) {
+      setTimeout(() => {
+        selectDis.value = true
+      }, 300)
+    } else {
+      selectDis.value = false
+    }
+  })
 
   /** 修改按钮操作 */
   const handleUpdate = async (row: any) => {

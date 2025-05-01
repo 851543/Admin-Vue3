@@ -80,6 +80,7 @@ export const useUserStore = defineStore({
     setUserInfo(info: UserInfo) {
       info.avatar = AvatarImga(info.avatar) as string
       this.info = info
+      this.saveUserData()
     },
     setLoginStatus(isLogin: boolean) {
       this.isLogin = isLogin

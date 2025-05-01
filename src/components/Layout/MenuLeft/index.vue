@@ -119,7 +119,7 @@
 
   // 一级菜单列表
   const firstLevelMenus = computed(() => {
-    return useMenuStore().getMenuList
+    return useMenuStore().getMenuList.filter((item) => !item.meta.isHide)
   })
 
   const menuList = computed(() => {

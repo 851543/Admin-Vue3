@@ -72,9 +72,6 @@
                 style="width: 63%"
                 @keyup.enter="null"
               >
-                <template #prefix
-                  ><svg-icon icon-class="validCode" class="el-input__icon input-icon"
-                /></template>
               </el-input>
               <div
                 class="login-code"

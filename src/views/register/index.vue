@@ -247,7 +247,7 @@
         position: absolute;
         inset: 0;
         width: 440px;
-        height: 650px;
+        height: 800px;
         padding: 0 5px;
         margin: auto;
         overflow: hidden;

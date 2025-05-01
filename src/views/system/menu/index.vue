@@ -422,7 +422,7 @@
     ]
   })
 
-  const tableData = ref<MenuListType[]>([])
+  const tableData = ref<any[]>([])
   const menuOptions = ref<MenuOptionType[]>([])
 
   import { handleTree } from '@/utils/utils'
