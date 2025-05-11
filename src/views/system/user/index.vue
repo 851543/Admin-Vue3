@@ -253,7 +253,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择" v-show="selectDis">
+              <el-select v-model="form.postIds" multiple placeholder="请选择">
                 <el-option
                   v-for="item in postOptions"
                   :key="item.postId"
@@ -266,7 +266,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择" v-show="selectDis">
+              <el-select v-model="form.roleIds" multiple placeholder="请选择">
                 <el-option
                   v-for="item in roleOptions"
                   :key="item.roleId"
@@ -378,8 +378,8 @@
     updateBy: null,
     updateTime: null,
     remark: null,
-    postIds: [],
-    roleIds: []
+    postIds: [] as number[],
+    roleIds: [] as number[]
   }
   const form = reactive({ ...initialFormState })
   const queryParams = reactive({
@@ -578,16 +578,6 @@
     open.value = true
     title.value = '添加用户信息'
   }
-  const selectDis = ref(false)
-  watch(open, (valid) => {
-    if (valid) {
-      setTimeout(() => {
-        selectDis.value = true
-      }, 300)
-    } else {
-      selectDis.value = false
-    }
-  })
 
   /** 修改按钮操作 */
   const handleUpdate = async (row: any) => {
@@ -597,9 +587,15 @@
       const { posts, roles, data, postIds, roleIds } = res
       postOptions.value = posts
       roleOptions.value = roles
-      Object.assign(form, { ...data, postIds, roleIds })
+      Object.assign(form, { ...data })
       open.value = true
       title.value = '修改用户信息'
+      nextTick(() => {
+        setTimeout(() => {
+          form.postIds = postIds
+          form.roleIds = roleIds
+        }, 150)
+      })
     })
   }
 

@@ -10,11 +10,11 @@ const title = ` ______      __                                    __  __        
                                                                                      `
 
 const asciiArt = `
-\x1b[32m✨ 你好！欢迎使用 Admin-Vue3！
+\x1b[32m✨ 你好！欢迎使用 blog-admin！
 \x1b[0m
 \x1b[36m💡 如果您觉得项目对您有帮助，请点击下面的链接为我点个 ★Star 支持一下！祝您使用愉快！
 \x1b[0m
-\x1b[33m🌟 GitHub: https://github.com/851543/Admin-Vue3
+\x1b[33m🌟 GitHub: https://github.com/851543/blog-admin
 \x1b[0m
 ${title}
 `

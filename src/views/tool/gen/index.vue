@@ -114,10 +114,11 @@
   import importTable from './components/importTable.vue'
   import { GeneratorApi } from '@/api/tool/generatorApi'
   import { GenTableModel } from '@/types/tool/generator'
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
   import { downloadZip } from '@/utils/utils'
 
   const router = useRouter()
+  const route = useRoute()
   const total = ref(0)
   const tableData = ref<GenTableModel[]>([])
 
@@ -191,6 +192,7 @@
   }
 
   const getList = async () => {
+    // searchForm.pageNum = route.query.pageNum ? Number(route.query.pageNum) : searchForm.pageNum
     const res = await GeneratorApi.genList(searchForm)
     if (res.code === 200) {
       tableData.value = res.rows

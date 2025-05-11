@@ -45,34 +45,22 @@
 
           <el-table-column label="插入" min-width="5%">
             <template #default="scope">
-              <el-checkbox
-                :value="scope.row.isInsert"
-                v-model="scope.row.isInsert"
-              ></el-checkbox>
+              <el-checkbox :value="scope.row.isInsert" v-model="scope.row.isInsert"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="编辑" min-width="5%">
             <template #default="scope">
-              <el-checkbox
-                :value="scope.row.isEdit"
-                v-model="scope.row.isEdit"
-              ></el-checkbox>
+              <el-checkbox :value="scope.row.isEdit" v-model="scope.row.isEdit"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="列表" min-width="5%">
             <template #default="scope">
-              <el-checkbox
-                :value="scope.row.isList"
-                v-model="scope.row.isList"
-              ></el-checkbox>
+              <el-checkbox :value="scope.row.isList" v-model="scope.row.isList"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询" min-width="5%">
             <template #default="scope">
-              <el-checkbox
-                :value="scope.row.isQuery"
-                v-model="scope.row.isQuery"
-              ></el-checkbox>
+              <el-checkbox :value="scope.row.isQuery" v-model="scope.row.isQuery"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询方式" min-width="10%">
@@ -205,7 +193,7 @@
   }
 
   function close() {
-    router.push({ path: '/tool/gen', query: { t: Date.now() } })
+    router.push({ path: '/tool/gen', query: { t: Date.now(), pageNum: route.query.pageNum } })
   }
 
   ;(async () => {

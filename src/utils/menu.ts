@@ -2,6 +2,7 @@ import { $t } from '@/language'
 import { MenuListType, MenuBackendType } from '@/types/menu'
 import { RoutesAlias } from '@/router/modules/routesAlias'
 import { uuid } from '@/utils/utils'
+import { ro } from 'element-plus/es/locale'
 
 // 创建递归函数处理嵌套路由
 /**
@@ -65,6 +66,9 @@ export const getIframeRoutes = (): MenuListType[] => {
  * @returns 格式化后的菜单标题
  */
 export const formatMenuTitle = (title: string): string => {
+  if (!title) {
+    return ''
+  }
   return title.startsWith('menus.') ? $t(title) : title
 }
 
@@ -74,6 +78,10 @@ export const formatMenuTitle = (title: string): string => {
  * @returns 处理后的菜单数据
  */
 export const processBackendMenu = (route: MenuBackendType, parentPath = ''): MenuListType => {
+  // 直接菜单
+  if (!route.name && !route.meta && route.children && route.children.length > 0) {
+    return handleDirectMenu(route.children[0])
+  }
   if (route.component.includes('ParentView')) {
     route.component = ''
   }
@@ -86,19 +94,18 @@ export const processBackendMenu = (route: MenuBackendType, parentPath = ''): Men
         ? `${parentPath}/${route.path}`.replace(/\/+/g, '/') // 规范化路径,避免多余的斜杠
         : route.path
     : ''
-
   return {
     id: uuid(),
     name: route.name,
     path: currentPath,
     component: processComponent(route.component),
     meta: {
-      title: formatMenuTitle(route.meta.title),
-      icon: route.meta.icon,
-      link: route.meta.link,
+      title: formatMenuTitle(route.meta?.title),
+      icon: route.meta?.icon,
+      link: route.meta?.link,
       isHide: route.hidden,
       isIframe: route.meta?.isIframe,
-      keepAlive: route.meta.noCache
+      keepAlive: route.meta?.noCache
     },
     children: Array.isArray(route.children)
       ? route.children.map((child) => processBackendMenu(child, currentPath))
@@ -107,10 +114,10 @@ export const processBackendMenu = (route: MenuBackendType, parentPath = ''): Men
 }
 
 export const backendMenuUtils = (route: MenuBackendType) => {
-  if (!route.name.includes('Http')) {
+  if (route.name && !route.name.includes('Http')) {
     return route
   }
-  if (route.name.includes('Http')) {
+  if (route.name && route.name.includes('Http')) {
     route.path = ''
   }
   if (
@@ -143,4 +150,30 @@ export const extractUrlPath = (url: string, path = false): string => {
   regexAfter = path ? regexAfter + '(.*)' : regexAfter + '([^/]+)'
   const match = url.match(new RegExp(regexAfter))
   return match ? match[0] : ''
+}
+
+/**
+ * 处理直接菜单的情况
+ * @param route 没有name和meta但有children的路由
+ * @returns 处理后的菜单项
+ */
+const handleDirectMenu = (firstChild: MenuBackendType): MenuListType => {
+  if (!firstChild.path.includes('/')) {
+    firstChild.path = '/' + firstChild.path
+  }
+  return {
+    id: uuid(),
+    name: firstChild.name,
+    path: firstChild.path,
+    component: firstChild.component,
+    meta: {
+      title: formatMenuTitle(firstChild.meta?.title),
+      icon: firstChild.meta?.icon,
+      link: firstChild.meta?.link,
+      isHide: firstChild.hidden,
+      isIframe: firstChild.meta?.isIframe,
+      keepAlive: firstChild.meta?.noCache,
+      isInMainContainer: true
+    }
+  }
 }

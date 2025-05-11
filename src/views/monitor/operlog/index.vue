@@ -56,7 +56,8 @@
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                   :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
-                ></el-date-picker>
+                >
+                </el-date-picker>
               </el-form-item>
             </el-col>
           </el-row>

@@ -235,7 +235,7 @@ export function isIframe(url: string) {
 
 // 获取完整的路径
 export function AvatarImga(url: string | undefined) {
-  return url ? import.meta.env.VITE_API_BASE_URL + url : url
+  return url ? (url && !url.includes('http') ? import.meta.env.VITE_API_BASE_URL + url : url) : url
 }
 
 /**
