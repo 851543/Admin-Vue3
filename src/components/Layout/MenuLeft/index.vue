@@ -264,5 +264,10 @@
     .el-menu--collapse {
       width: v-bind(menuCloseWidth);
     }
+
+    // 去除 el-menu 出现的边框
+    .el-menu:focus-visible {
+      outline: unset;
+    }
   }
 </style>

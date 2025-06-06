@@ -1,4 +1,4 @@
-// 优化element 组件样式
+// 优化 Element Plus 组件库默认样式
 
 :root {
   // 系统主色
@@ -23,10 +23,6 @@
   .region .el-radio-button__original-radio:checked + .el-radio-button__inner {
     color: var(--main-color);
   }
-
-  body.el-popup-parent--hidden {
-    width: 100% !important;
-  }
 }
 
 // -------------------------------- 修改 el-size=default 组件默认高度 start --------------------------------
@@ -38,7 +34,7 @@
 // 修改 el-select 高度
 .el-select--default {
   .el-select__wrapper {
-    height: var(--el-component-custom-height) !important;
+    min-height: var(--el-component-custom-height) !important;
   }
 }
 
@@ -179,7 +175,15 @@
   .el-checkbox__inner {
     width: 18px !important;
     height: 18px !important;
-    border-radius: 5px !important;
+    border-radius: 4px !important;
+
+    &::before {
+      content: '';
+      height: 3px !important;
+      top: 6px !important;
+      background-color: #fff !important;
+      transform: scale(0.6) !important;
+    }
 
     &::after {
       width: 4px;
@@ -254,6 +258,11 @@
 .dialog-fade-enter-active {
   .el-dialog {
     animation: dialog-open 0.3s cubic-bezier(0.32, 0.14, 0.15, 0.86);
+
+    // 修复 el-dialog 动画后宽度不自适应问题
+    .el-select__selected-item {
+      display: inline-block;
+    }
   }
 }
 
@@ -306,14 +315,15 @@
     padding: 5px !important;
 
     .el-select-dropdown__item {
-      height: 36px !important;
-      line-height: 36px !important;
+      height: 34px !important;
+      line-height: 34px !important;
       border-radius: 6px !important;
 
       &.is-selected {
         color: var(--art-gray-900) !important;
         font-weight: 400 !important;
         background-color: var(--art-gray-200) !important;
+        margin-bottom: 4px !important;
       }
 
       &:hover {
@@ -351,3 +361,4 @@
   position: relative;
   z-index: 10;
 }
+

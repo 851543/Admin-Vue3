@@ -1,9 +1,5 @@
 <template>
-  <el-sub-menu
-    v-if="isNotEmpty(item.children)"
-    :index="item.path || item.meta.title"
-    :level="level"
-  >
+  <el-sub-menu v-if="hasChildren" :index="item.path || item.meta.title">
     <template #title>
       <i
         class="menu-icon iconfont-sys"
@@ -14,26 +10,28 @@
     </template>
     <!-- 递归菜单 -->
     <MenuTopSubmenu
-      v-for="child in item.children"
+      v-for="child in filteredChildren"
       :key="child.id"
       :item="child"
       @close="closeMenu"
       :level="level + 1"
       :theme="theme"
+      :is-mobile="isMobile"
     />
   </el-sub-menu>
 
   <el-menu-item
-    v-if="!isNotEmpty(item.children) && !item.meta.isHide"
+    v-else-if="!item.meta.isHide"
     :index="item.path || item.meta.title"
     @click="goPage(item)"
-    :level-item="level + 1"
   >
-    <template #title>
-      <i class="menu-icon iconfont-sys" v-html="item.meta.icon"></i>
-      <span>{{ formatMenuTitle(item.meta.title) }}</span>
-      <div class="badge" v-if="item.meta.showBadge"></div>
-    </template>
+    <i
+      class="menu-icon iconfont-sys"
+      :style="{ color: theme?.iconColor }"
+      v-html="item.meta.icon"
+    ></i>
+    <span>{{ formatMenuTitle(item.meta.title) }}</span>
+    <div class="badge" v-if="item.meta.showBadge"></div>
   </el-menu-item>
 </template>
 
@@ -42,7 +40,7 @@
   import { handleMenuJump } from '@/utils/jump'
   import { formatMenuTitle } from '@/utils/menu'
 
-  defineProps({
+  const props = defineProps({
     item: {
       type: Object as PropType<MenuListType>,
       required: true
@@ -59,6 +57,16 @@
   })
 
   const emit = defineEmits(['close'])
+
+  // 计算当前项是否有子菜单
+  const hasChildren = computed(() => {
+    return props.item.children && props.item.children.length > 0
+  })
+
+  // 过滤后的子菜单项（不包含隐藏的）
+  const filteredChildren = computed(() => {
+    return props.item.children?.filter((child) => !child.meta.isHide) || []
+  })
 
   const goPage = (item: MenuListType) => {
     closeMenu()

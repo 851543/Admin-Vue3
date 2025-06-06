@@ -1,6 +1,5 @@
 <template>
   <div class="menu-top">
-    <!-- bug: 菜单项过长时，菜单项会超出容器 -->
     <el-menu
       :ellipsis="true"
       class="el-menu-popper-demo"
