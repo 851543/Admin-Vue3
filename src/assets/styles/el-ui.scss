@@ -23,6 +23,11 @@
   .region .el-radio-button__original-radio:checked + .el-radio-button__inner {
     color: var(--main-color);
   }
+
+  // 分页器出现后 弹窗 页面抖动问题
+  body.el-popup-parent--hidden {
+    width: 100% !important;
+  }
 }
 
 // -------------------------------- 修改 el-size=default 组件默认高度 start --------------------------------
@@ -361,4 +366,3 @@
   position: relative;
   z-index: 10;
 }
-
