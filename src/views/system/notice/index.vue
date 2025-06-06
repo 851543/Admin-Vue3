@@ -143,6 +143,7 @@
   const open = ref(false)
   const loading = ref(true)
   const ids = ref([])
+  const titles = ref([])
   const multiple = ref(true)
   const total = ref(0)
   const title = ref('')
@@ -244,6 +245,7 @@
   // 多选框选中数据
   const handleSelectionChange = (selection: any) => {
     ids.value = selection.map((item: any) => item.noticeId)
+    titles.value = selection.map((item: any) => item.noticeTitle)
     multiple.value = !selection.length
   }
 
@@ -293,8 +295,9 @@
   /** 删除按钮操作 */
   const handleDelete = async (row: any) => {
     const _noticeIds = row.noticeId || ids.value
+    const _titels = row.noticeTitle || titles.value
     const Tr = await ElMessageBox.confirm(
-      '是否确认删除通知公告编号为"' + _noticeIds + '"的数据项？'
+      '是否确认删除通知公告标题为"' + _titels + '"的数据项？'
     )
     if (Tr) {
       const res = await NoticeService.deleteNotice(_noticeIds)

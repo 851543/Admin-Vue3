@@ -226,7 +226,8 @@
   /** 删除按钮操作 */
   const handleDelete = async (row: any) => {
     const tableIds = row.tableId || ids.value
-    const Tr = await ElMessageBox.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？')
+    const _tableNames = row.tableName || tableNames.value.join(',')
+    const Tr = await ElMessageBox.confirm('是否确认删除表名称为"' + _tableNames + '"的数据项？')
     if (Tr) {
       const res = await GeneratorApi.remove(tableIds)
       if (res.code === 200) {

@@ -23,6 +23,10 @@
   .region .el-radio-button__original-radio:checked + .el-radio-button__inner {
     color: var(--main-color);
   }
+
+  body.el-popup-parent--hidden {
+    width: 100% !important;
+  }
 }
 
 // -------------------------------- 修改 el-size=default 组件默认高度 start --------------------------------

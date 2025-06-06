@@ -279,7 +279,7 @@
   /** 删除按钮操作 */
   const handleDelete = async (row: any) => {
     const _deptIds = row.deptId
-    const Tr = await ElMessageBox.confirm('是否确认删除部门编号为"' + _deptIds + '"的数据项？')
+    const Tr = await ElMessageBox.confirm('是否确认删除部门名称为"' + row.deptName + '"的数据项？')
     if (Tr) {
       const res = await DeptService.deleteDept(_deptIds)
       if (res.code === 200) {

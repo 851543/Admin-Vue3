@@ -142,6 +142,7 @@
   const open = ref(false)
   const loading = ref(true)
   const ids = ref([])
+  const names = ref([])
   const multiple = ref(true)
   const total = ref(0)
   const title = ref('')
@@ -232,6 +233,7 @@
   // 多选框选中数据
   const handleSelectionChange = (selection: any) => {
     ids.value = selection.map((item: any) => item.configId)
+    names.value = selection.map((item: any) => item.configName)
     multiple.value = !selection.length
   }
 
@@ -281,8 +283,9 @@
   /** 删除按钮操作 */
   const handleDelete = async (row: any) => {
     const _configIds = row.configId || ids.value
+    const _configNames = row.configName || names.value
     const Tr = await ElMessageBox.confirm(
-      '是否确认删除参数配置编号为"' + _configIds + '"的数据项？'
+      '是否确认删除参数配置名称为"' + _configNames + '"的数据项？'
     )
     if (Tr) {
       const res = await SysConfigService.deleteConfig(_configIds)
