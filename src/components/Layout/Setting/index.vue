@@ -133,6 +133,10 @@
         <p class="title" style="margin-top: 40px">{{ $t('setting.basics.title') }}</p>
         <div class="basic-box">
           <div class="item">
+            <span> {{ $t('setting.basics.list[14]') }} </span>
+            <el-switch v-model="openAiBot" @change="setOpenAiBot" />
+          </div>
+          <div class="item">
             <span>{{ $t('setting.basics.list[4]') }}</span>
             <el-switch v-model="showWorkTab" @change="showWorkTabFunc" />
           </div>
@@ -311,6 +315,7 @@
   const showRefreshButton = ref(true)
   const showCrumbs = ref(true)
   let showWorkTab = ref(true)
+  const openAiBot = ref(true)
   const showLanguage = ref(true)
   const showNprogress = ref(true)
   const colorWeak = ref(false)
@@ -423,6 +428,7 @@
   }
 
   const initUserSetting = () => {
+    openAiBot.value = store.openAiBot
     uniqueOpened.value = store.uniqueOpened
     showMenuButton.value = store.showMenuButton
     autoClose.value = store.autoClose
@@ -526,6 +532,8 @@
     }
     isAutoClose()
   }
+
+  const setOpenAiBot = () => autoCloseHandler(store.setOpenAiBot)
 
   const showWorkTabFunc = () => autoCloseHandler(store.setWorkTab, false, !store.showWorkTab)
 

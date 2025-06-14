@@ -53,6 +53,9 @@
 
     <!-- 水印组件 -->
     <Watermark :visible="watermarkVisible"></Watermark>
+
+    <!-- 智能助手 -->
+    <bot/>
   </div>
 </template>
 

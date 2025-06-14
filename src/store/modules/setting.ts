@@ -16,6 +16,7 @@ export interface SettingState {
   menuThemeType: MenuThemeEnum // 菜单主题类型
   systemThemeColor: string // 系统主题颜色
   boxBorderMode: boolean // 盒子模式 border | shadow
+  openAiBot: boolean // 是否开启智能助手
   uniqueOpened: boolean // 是否开启手风琴模式
   showMenuButton: boolean // 是否显示菜单展开按钮
   showRefreshButton: boolean // 是否显示页面刷新按钮
@@ -47,6 +48,7 @@ export const useSettingStore = defineStore({
     systemThemeType: SystemThemeEnum.LIGHT,
     systemThemeMode: SystemThemeEnum.LIGHT,
     menuThemeType: MenuThemeEnum.DESIGN,
+    openAiBot: true,
     boxBorderMode: true,
     uniqueOpened: true,
     systemThemeColor: AppConfig.elementPlusTheme.primary,
@@ -113,6 +115,7 @@ export const useSettingStore = defineStore({
         this.containerWidth = setting.containerWidth || ContainerWidthEnum.FULL
         this.systemThemeColor = setting.systemThemeColor || AppConfig.elementPlusTheme.primary
         this.boxBorderMode = setting.boxBorderMode
+        this.openAiBot = setting.openAiBot
         this.uniqueOpened = setting.uniqueOpened
         this.showMenuButton = setting.showMenuButton
         this.showRefreshButton = setting.showRefreshButton
@@ -163,6 +166,10 @@ export const useSettingStore = defineStore({
     // 设置容器宽度
     setContainerWidth(width: ContainerWidthEnum) {
       this.containerWidth = width
+    },
+    // 设置智能助手
+    setOpenAiBot() {
+      this.openAiBot = !this.openAiBot
     },
     // 设置菜单是否为手风琴模式
     setUniqueOpened() {

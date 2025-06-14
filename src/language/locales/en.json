@@ -65,7 +65,8 @@
         "Menu width",
         "Page animation",
         "Custom radius",
-        "Tab style"
+        "Tab style",
+        "Enable AI Assistant"
       ]
     },
     "tabStyle": {

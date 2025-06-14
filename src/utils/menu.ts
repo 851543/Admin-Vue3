@@ -2,7 +2,6 @@ import { $t } from '@/language'
 import { MenuListType, MenuBackendType } from '@/types/menu'
 import { RoutesAlias } from '@/router/modules/routesAlias'
 import { uuid } from '@/utils/utils'
-import { ro } from 'element-plus/es/locale'
 
 // 创建递归函数处理嵌套路由
 /**
