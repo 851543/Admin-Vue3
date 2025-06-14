@@ -29,6 +29,7 @@ const userStore = useUserStore()
 
 const openAiBot = computed(() => settingStore.openAiBot)
 const locale = computed(() => userStore.language)
+const systemThemeColor = computed(() => settingStore.systemThemeColor)
 const showChat = ref(false)
 
 const toggleChat = () => {
@@ -50,13 +51,13 @@ watch([openAiBot, locale], () => {
 
 const cssVariables = computed(() => {
     return `
-        --aurora-dia--linear-gradient: linear-gradient(130deg, #24c6dc, #5433ff 41.07%, #ff0099 76.05%);
+        --aurora-dia--linear-gradient: linear-gradient(130deg, ${systemThemeColor.value}, #5433ff 41.07%, #ff0099 76.05%);
         --aurora-dia--linear-gradient-hover: linear-gradient(
             to bottom,
-            #5433ff,
-           #ff0099
+            ${systemThemeColor.value},
+            #ff0099
         );
-        --aurora-dia--platform-light: #ff0099;
+        --aurora-dia--platform-light: ${systemThemeColor.value};
     `
 })
 
@@ -244,7 +245,7 @@ onMounted(() => {
     text-shadow: none;
 }
 
-.Aurora-Dia--tips > span {
+.Aurora-Dia--tips>span {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     padding: 0 0.1rem;

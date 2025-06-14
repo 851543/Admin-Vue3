@@ -71,8 +71,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, onMounted, onUnmounted } from 'vue'
+import { ref, defineProps, defineEmits, onMounted, onUnmounted, computed } from 'vue'
 import writer from './writer.vue'
+import { useSettingStore } from '@/store/modules/setting'
+
+const settingStore = useSettingStore()
+const systemThemeColor = computed(() => settingStore.systemThemeColor)
 
 interface ChatMessage {
     text?: string
@@ -231,9 +235,9 @@ const handleImageUpload = (event: Event) => {
 
 .chat-header {
     padding: 16px 20px;
-    background: linear-gradient(130deg, #24c6dc, #5433ff 41.07%, #ff0099 76.05%);
+    background: v-bind(systemThemeColor);
     color: white;
-    box-shadow: 0 2px 12px rgba(84, 51, 255, 0.15);
+    box-shadow: 0 2px 12px v-bind('`${systemThemeColor}26`');
     animation: gradientFlow 10s ease infinite;
     background-size: 200% 200%;
 
@@ -361,10 +365,10 @@ const handleImageUpload = (event: Event) => {
             transform-origin: right center;
 
             .message-content {
-                background: linear-gradient(130deg, #24c6dc, #5433ff);
+                background: v-bind(systemThemeColor);
                 color: white;
                 border-radius: 18px 18px 4px 18px;
-                box-shadow: 0 2px 8px rgba(84, 51, 255, 0.15);
+                box-shadow: 0 2px 8px v-bind('`${systemThemeColor}26`');
                 position: relative;
                 overflow: hidden;
 
@@ -540,7 +544,7 @@ const handleImageUpload = (event: Event) => {
 
     .send-btn {
         padding: 8px 20px;
-        background: linear-gradient(130deg, #24c6dc, #5433ff);
+        background: v-bind(systemThemeColor);
         color: white;
         border: none;
         border-radius: 20px;
