@@ -71,7 +71,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, onMounted, onUnmounted, computed } from 'vue'
 import writer from './writer.vue'
 import { useSettingStore } from '@/store/modules/setting'
 

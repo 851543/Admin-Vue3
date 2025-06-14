@@ -3,7 +3,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
 
 const props = defineProps<{
     text: string
